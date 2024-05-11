@@ -1,0 +1,10 @@
+*.sln.DotSettings.user
+
+# Rider
+.idea
+
+# Output
+bin/
+obj/
+
+
