@@ -1,5 +1,8 @@
 ﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using Scribe.Data.Database;
+using Scribe.Data.Model;
+using Scribe.Data.Repositories;
 using Scribe.UI.Views.Main;
 using Scribe.UI.Views.Splash;
 
@@ -23,5 +26,8 @@ public partial class App : Application
         services.AddTransient<MainWindow>();
         services.AddTransient<MainViewModel>();
         services.AddTransient<SplashViewModel>();
+
+        services.AddTransient<ScribeContext>();
+        services.AddTransient<IRepository<Folder>, FolderRepository>();
     }
 }

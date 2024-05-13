@@ -4,15 +4,18 @@ namespace Scribe.UI.Views.Main;
 
 public class MainViewModel(SplashViewModel splashViewModel) : BaseViewModel
 {
-    private BaseViewModel? _contentViewModel = splashViewModel;
+    private BaseViewModel _contentViewModel = splashViewModel;
 
     public BaseViewModel? ContentViewModel
     {
         get => _contentViewModel;
         set
         {
-            _contentViewModel = value;
+            if (value == null) return;
+            _contentViewModel = value; 
             RaisePropertyChanged();
         }
     }
+
+    public override Task Load() => _contentViewModel.Load();
 }

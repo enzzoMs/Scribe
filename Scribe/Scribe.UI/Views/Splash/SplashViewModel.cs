@@ -1,18 +1,15 @@
-﻿namespace Scribe.UI.Views.Splash;
+﻿using Scribe.Data.Model;
+using Scribe.Data.Repositories;
 
-public class SplashViewModel : BaseViewModel
+namespace Scribe.UI.Views.Splash;
+
+public class SplashViewModel(IRepository<Folder> folderRepository) : BaseViewModel
 {
+    private readonly IRepository<Folder> _folderRepository = folderRepository;
     private bool _splashEnded;
+    private List<Folder>? _folders;
     
-    public bool SplashEnded
-    {
-        get => _splashEnded;
-        private set
-        {
-            _splashEnded = value;
-            RaisePropertyChanged();
-        }
-    }
+    public void EndSplash() => _splashEnded = true;
 
-    public void EndSplash() => SplashEnded = true;
+    public override async Task Load() => _folders = await _folderRepository.GetAll();
 }
