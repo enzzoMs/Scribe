@@ -9,6 +9,6 @@ public class ScribeContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite(@"Data Source=Scribe\Scribe.Data\Database\scribe_database.db");
+        optionsBuilder.UseSqlite(@"Data Source=.\scribe_database.db");
     }
 }

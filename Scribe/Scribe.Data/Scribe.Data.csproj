@@ -10,4 +10,12 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.4"/>
     </ItemGroup>
+    
+    <ItemGroup>
+      <None Include="bin\Debug\net8.0\scribe_database.db" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="bin\Debug\net8.0\" />
+    </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewMain="clr-namespace:Scribe.UI.Views.Main"
     xmlns:viewSplash="clr-namespace:Scribe.UI.Views.Splash"
+    xmlns:viewEditor="clr-namespace:Scribe.UI.Views.Editor"
     mc:Ignorable="d"
     x:Class="Scribe.UI.Views.Main.MainWindow"
     d:DesignWidth="1000"
@@ -17,6 +18,9 @@
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewSplash:SplashViewModel}">
             <viewSplash:SplashControl/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewEditor:EditorViewModel}">
+            <viewEditor:EditorControl/>
         </DataTemplate>
     </Window.Resources>
     

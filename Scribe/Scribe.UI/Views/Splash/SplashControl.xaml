@@ -20,6 +20,12 @@
                 From="0.0" To="110.0" Duration="0:0:1"
                 DecelerationRatio="0.6"/>
         </Storyboard>
+        <Storyboard 
+            x:Key="LogoFadeOutStoryboard">
+            <DoubleAnimation
+                Storyboard.TargetProperty="Opacity" 
+                From="1.0" To="0.0" Duration="0:0:1"/>
+        </Storyboard>
     </UserControl.Resources>
     
     <Image
@@ -32,5 +38,16 @@
                 <BeginStoryboard Storyboard="{StaticResource LogoSplashStoryboard}"/>
             </EventTrigger>
         </Image.Triggers>
+        <Image.Style>
+            <Style>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding SplashEnded}" Value="true">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard Storyboard="{StaticResource LogoFadeOutStoryboard}"/>
+                        </DataTrigger.EnterActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Image.Style>
     </Image>
 </UserControl>

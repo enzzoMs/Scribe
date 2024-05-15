@@ -8,6 +8,6 @@ public partial class SplashControl : UserControl
 
     private void LogoSplashStoryboard_OnCompleted(object? sender, EventArgs e)
     {
-        (DataContext as SplashViewModel)?.EndSplash();
+        (DataContext as SplashViewModel)?.EndLogoAnimation();
     }
 }
