@@ -1,0 +1,19 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <DrawingImage x:Key="DoubleArrowDrawing">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V40 H40 V0 H0 Z">
+                <DrawingGroup>
+                    <GeometryDrawing
+                        Brush="{StaticResource DarkIconBrush}" 
+                        Geometry=
+                            "F1 M40,40z M0,0z M18.2738,30.3187L7.95459,19.9999 18.2738,9.68115 20.9258,12.3332 13.2908,
+                            19.9999 20.9258,27.6666 18.2738,30.3187z M29.3929,30.3187L19.0742,19.9999 29.3929,9.68115 
+                            32.0454,12.3332 24.4204,19.9999 32.0454,27.6666 29.3929,30.3187z" />
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+</ResourceDictionary>

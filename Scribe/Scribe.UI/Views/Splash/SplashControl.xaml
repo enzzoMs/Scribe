@@ -12,8 +12,8 @@
 
     <UserControl.Resources>
         <Storyboard 
-            x:Key="LogoSplashStoryboard"
-            Completed="LogoSplashStoryboard_OnCompleted">
+            x:Key="LogoPopUpStoryboard"
+            Completed="LogoPopUpStoryboard_OnCompleted">
             <DoubleAnimation 
                 Storyboard.TargetName="AppLogo" 
                 Storyboard.TargetProperty="Width" 
@@ -21,10 +21,11 @@
                 DecelerationRatio="0.6"/>
         </Storyboard>
         <Storyboard 
-            x:Key="LogoFadeOutStoryboard">
+            x:Key="LogoFadeOutStoryboard"
+            Completed="LogoFadeOutStoryboard_OnCompleted">
             <DoubleAnimation
                 Storyboard.TargetProperty="Opacity" 
-                From="1.0" To="0.0" Duration="0:0:1"/>
+                From="1.0" To="0.0" Duration="0:0:0.2"/>
         </Storyboard>
     </UserControl.Resources>
     
@@ -35,13 +36,13 @@
         Width="0">
         <Image.Triggers>
             <EventTrigger RoutedEvent="Image.Loaded">
-                <BeginStoryboard Storyboard="{StaticResource LogoSplashStoryboard}"/>
+                <BeginStoryboard Storyboard="{StaticResource LogoPopUpStoryboard}"/>
             </EventTrigger>
         </Image.Triggers>
         <Image.Style>
             <Style>
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding SplashEnded}" Value="true">
+                    <DataTrigger Binding="{Binding SplashCompleted}" Value="true">
                         <DataTrigger.EnterActions>
                             <BeginStoryboard Storyboard="{StaticResource LogoFadeOutStoryboard}"/>
                         </DataTrigger.EnterActions>

@@ -6,8 +6,13 @@ public partial class SplashControl : UserControl
 {
     public SplashControl() => InitializeComponent();
 
-    private void LogoSplashStoryboard_OnCompleted(object? sender, EventArgs e)
+    private void LogoPopUpStoryboard_OnCompleted(object? sender, EventArgs e)
     {
-        (DataContext as SplashViewModel)?.EndLogoAnimation();
+        (DataContext as SplashViewModel)?.FinishLogoAnimation();
+    }
+
+    private void LogoFadeOutStoryboard_OnCompleted(object? sender, EventArgs e)
+    {
+        (DataContext as SplashViewModel)?.FinishSplash();
     }
 }

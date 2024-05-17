@@ -1,0 +1,8 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <FontFamily x:Key="ExtraBoldText">/Resources/Fonts/#Lexend ExtraBold"</FontFamily>
+    <FontFamily x:Key="SemiBoldText">/Resources/Fonts/#Lexend SemiBold"</FontFamily>
+    <FontFamily x:Key="MediumText">/Resources/Fonts/#Lexend Medium"</FontFamily>
+</ResourceDictionary>

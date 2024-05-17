@@ -39,8 +39,9 @@ public class MainViewModel : BaseViewModel
     
     public override Task Load() => _contentViewModel.Load();
 
-    private void NavigateToEditorScreen(List<Folder> folders)
+    private void NavigateToEditorScreen(IEnumerable<Folder> folders)
     {
+        _editorViewModel.LoadFolders(folders);
         ContentViewModel = _editorViewModel;
     }
 }

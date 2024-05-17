@@ -1,0 +1,86 @@
+﻿<UserControl 
+     x:Class="Scribe.UI.Views.Folders.FoldersControl"
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+     xmlns:viewFolders="clr-namespace:Scribe.UI.Views.Folders"
+     xmlns:components="clr-namespace:Scribe.UI.Views.Components"
+     mc:Ignorable="d"
+     d:DesignHeight="800"
+     d:DesignWidth="300"
+     d:DataContext="{d:DesignInstance viewFolders:FoldersViewModel}"
+     Background="{StaticResource SurfaceBrush}">
+    
+    <Grid Margin="25 25 25 0" ShowGridLines="False">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <Image
+            Grid.Row="0"
+            Grid.Column="0"
+            Width="35"
+            Source="{StaticResource ScribeLogoDrawing}"/>
+        <TextBlock
+            Grid.Row="0"
+            Grid.Column="1"
+            Text="Scribe"
+            FontSize="30"
+            FontWeight="Bold"
+            FontFamily="{StaticResource ExtraBoldText}"
+            VerticalAlignment="Center"
+            Margin="16 0 0 0"/>
+        <Image
+            Grid.Row="0"
+            Grid.Column="2"
+            Width="30"
+            Source="{StaticResource DoubleArrowDrawing}"
+            VerticalAlignment="Center"/>
+        <TextBlock
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Text="Pastas" 
+            FontSize="18"
+            Foreground="{StaticResource TextSecondaryBrush}"
+            Margin="0 20 0 10"
+            VerticalAlignment="Center"/>
+        <components:IconButton
+            Grid.Row="1"
+            Grid.Column="2"
+            Command="{Binding AddFolderCommand}"
+            Width="30"
+            Height="30"
+            ToolTip="Nova Pasta"
+            IconPadding="6"
+            IconSource="{StaticResource AddDrawing}"
+            Margin="0 20 0 10"
+            VerticalAlignment="Bottom"/>
+        <Rectangle
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Style="{StaticResource HorizontalDividerStyle}"/>
+        <components:SearchBox
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            ToolTip="Pesquisar Pasta"
+            HintText="Pesquisar..."
+            Margin="0 20 0 20"/>
+        <viewFolders:FoldersListControl
+            Grid.Row="4"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"/>
+    </Grid>
+</UserControl>

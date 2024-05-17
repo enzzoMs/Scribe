@@ -3,11 +3,21 @@ using Scribe.Data.Database;
 
 namespace Scribe.Data.Repositories;
 
-public abstract class GenericRepository<T>(ScribeContext context) : IRepository<T> where T : class
+public abstract class GenericRepository<T> : IRepository<T> where T : class
 {
-    private readonly ScribeContext _context = context;
+    public async Task<T> Add(T entity)
+    {
+        await using var context = new ScribeContext();
+        
+        var addedEntity = await context.AddAsync(entity);
+        await context.SaveChangesAsync();
+        
+        return addedEntity.Entity;
+    }
 
-    public Task<List<T>> GetAll() => _context.Set<T>().ToListAsync();
-
-    public Task SaveChanges() => _context.SaveChangesAsync();
+    public Task<List<T>> GetAll()
+    {
+        using var context = new ScribeContext(); 
+        return context.Set<T>().ToListAsync();
+    }
 }

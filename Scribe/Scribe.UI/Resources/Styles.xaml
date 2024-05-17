@@ -1,0 +1,32 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Style TargetType="TextBlock">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="FontFamily" Value="{StaticResource MediumText}"/>
+        </Style.Setters>
+    </Style>
+    
+    <Style TargetType="TextBox">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="FontFamily" Value="{StaticResource MediumText}"/>
+        </Style.Setters>
+    </Style>
+    
+    <Style x:Key="HorizontalDividerStyle">
+        <Style.Setters>
+            <Setter Property="Rectangle.Height" Value="3"/>
+            <Setter Property="Rectangle.Fill" Value="{StaticResource DividerBrush}"/>
+        </Style.Setters>
+    </Style>
+    
+    <Style x:Key="VerticalDividerStyle">
+        <Style.Setters>
+            <Setter Property="Rectangle.Width" Value="3"/>
+            <Setter Property="Rectangle.Fill" Value="{StaticResource DividerBrush}"/>
+        </Style.Setters>
+    </Style>
+</ResourceDictionary>

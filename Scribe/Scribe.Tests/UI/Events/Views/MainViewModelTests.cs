@@ -3,6 +3,7 @@ using Scribe.Data.Model;
 using Scribe.Data.Repositories;
 using Scribe.UI.Events;
 using Scribe.UI.Views.Editor;
+using Scribe.UI.Views.Folders;
 using Scribe.UI.Views.Main;
 using Scribe.UI.Views.Splash;
 
@@ -19,7 +20,7 @@ public class MainViewModelTests
         var foldersRepository = Substitute.For<IRepository<Folder>>();
         foldersRepository.GetAll().Returns([]);
         
-        var editorViewModel = new EditorViewModel();
+        var editorViewModel = new EditorViewModel(new FoldersViewModel(foldersRepository));
         _splashViewModel = new SplashViewModel(_eventAggregator, foldersRepository);
         _mainViewModel = new MainViewModel(_eventAggregator, _splashViewModel, editorViewModel);
     }
@@ -30,8 +31,9 @@ public class MainViewModelTests
     [Fact]
     public async Task NavigateToEditorWhenSplashFinishes()
     {
-        _splashViewModel.EndLogoAnimation();
         await _splashViewModel.Load();
+        _splashViewModel.FinishLogoAnimation();
+        _splashViewModel.FinishSplash();
         
         Assert.IsType<EditorViewModel>(_mainViewModel.ContentViewModel);
     }

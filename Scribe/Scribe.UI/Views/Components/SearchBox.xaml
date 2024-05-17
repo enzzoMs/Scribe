@@ -1,0 +1,72 @@
+﻿<UserControl 
+    x:Class="Scribe.UI.Views.Components.SearchBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d"
+    d:DesignWidth="200"
+    x:Name="Root">
+    
+    <Border
+        DataContext="{Binding ElementName=Root}"
+        Background="Transparent"
+        BorderThickness="3"
+        CornerRadius="5"
+        Padding="10 8">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ElementName=TextBoxTextField, Path=IsSelectionActive}" Value="True">
+                        <Setter Property="BorderBrush" Value="{StaticResource SelectedBorderBrush}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+                <Style.Setters>
+                    <Setter Property="BorderBrush" Value="{StaticResource UnselectedBorderBrush}"/>
+                </Style.Setters>
+            </Style>
+        </Border.Style>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Image
+                Height="20"
+                Source="{StaticResource SearchDrawing}"/>
+            <TextBlock
+                Grid.Column="1"
+                Text="{Binding HintText}"
+                FontSize="16"
+                Foreground="{StaticResource TextSecondaryBrush}"
+                Opacity="0.6"
+                VerticalAlignment="Center"
+                Margin="8 0 0 0">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=TextBoxTextField, Path=Text}" Value="">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Style.Setters>
+                            <Setter Property="Visibility" Value="Hidden"/>
+                        </Style.Setters>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <TextBox
+                Name="TextBoxTextField"
+                Grid.Column="1"
+                FontSize="16"
+                Foreground="{StaticResource TextSecondaryBrush}"
+                Background="Transparent"
+                BorderThickness="0"
+                VerticalAlignment="Center"
+                Margin="6 0 0 0">
+            </TextBox>
+        </Grid>
+    </Border>
+</UserControl>

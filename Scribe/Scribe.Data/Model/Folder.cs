@@ -1,8 +1,8 @@
 ﻿namespace Scribe.Data.Model;
 
-public class Folder(int id, string name, int index)
+public class Folder(string name, int index, int id = 0)
 {
-    public int Id { get; set; } = id;
-    public string Name { get; set; } = name;
-    public int Index { get; set; } = index;
+    public int Id { get; init; } = id;
+    public string Name { get; init; } = name;
+    public int Index { get; init; } = index;
 }

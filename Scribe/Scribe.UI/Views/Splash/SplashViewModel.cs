@@ -11,41 +11,43 @@ public class SplashViewModel(
     private readonly IRepository<Folder> _folderRepository = folderRepository;
     private readonly IEventAggregator _eventAggregator = eventAggregator;
 
-    private bool _splashEnded;
+    private bool _loadEventPublished;
+    private bool _splashCompleted;
     private bool _logoAnimationFinished;
     private List<Folder>? _folders;
-
-    public bool SplashEnded
+    
+    public bool SplashCompleted
     {
-        get => _splashEnded;
+        get => _splashCompleted; 
         set
         {
-            _splashEnded = value;
+            _splashCompleted = value;
             RaisePropertyChanged();
         }
-}
-
-    public void EndLogoAnimation()
+    }
+    
+    public void FinishSplash() => PublishLoadEvent();
+        
+    public void FinishLogoAnimation()
     {
         _logoAnimationFinished = true;
-        PublishLoadEvent();
+        CheckSplashCompletion();
     }
-
+    
     public override async Task Load()
     {
-        if (_folders == null)
-        {
-            _folders = await _folderRepository.GetAll();
-            PublishLoadEvent();
-        }
-    }
+        _folders ??= await _folderRepository.GetAll();
+        CheckSplashCompletion();
+    } 
 
+    private void CheckSplashCompletion() => SplashCompleted = _logoAnimationFinished && _folders != null;
+    
     private void PublishLoadEvent()
     {
-        if (!SplashEnded && _logoAnimationFinished && _folders != null)
+        if (!_loadEventPublished && SplashCompleted)
         {
-            _eventAggregator.Publish(new FoldersLoadedEvent(_folders));
-            SplashEnded = true;
+            _eventAggregator.Publish(new FoldersLoadedEvent(_folders!));
+            _loadEventPublished = true;
         }
     }
 }

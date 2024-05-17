@@ -17,14 +17,15 @@ public class SplashViewModelTests
     [Fact]
     public async Task DataIsLoadedAndReceived()
     {
-        List<Folder> expectedFolders = [new Folder(0, "", 0), new Folder(1, "", 3)];
+        List<Folder> expectedFolders = [new Folder("", 0), new Folder("", 3)];
         List<Folder>? receivedFolders = null;
         
         _foldersRepository.GetAll().Returns(expectedFolders);
         _eventAggregator.Subscribe<FoldersLoadedEvent>(e => receivedFolders = e.Folders);
-        
+
         await _splashViewModel.Load();
-        _splashViewModel.EndLogoAnimation();
+        _splashViewModel.FinishLogoAnimation();
+        _splashViewModel.FinishSplash();
 
         Assert.NotNull(receivedFolders);
         Assert.Equal(expectedFolders, receivedFolders);
@@ -39,12 +40,13 @@ public class SplashViewModelTests
         _foldersRepository.GetAll().Returns(expectedFolders);
         _eventAggregator.Subscribe<FoldersLoadedEvent>(e => receivedFolders = e.Folders);
         
-        _splashViewModel.EndLogoAnimation();
         await _splashViewModel.Load();
+        _splashViewModel.FinishLogoAnimation();
+        _splashViewModel.FinishSplash();
 
         Assert.Equal(expectedFolders, receivedFolders);
 
-        _foldersRepository.GetAll().Returns([new Folder(0, "", 0)]);
+        _foldersRepository.GetAll().Returns([new Folder("", 0)]);
 
         await _splashViewModel.Load();
         
@@ -59,11 +61,11 @@ public class SplashViewModelTests
         _foldersRepository.GetAll().Returns([]);
         _eventAggregator.Subscribe<FoldersLoadedEvent>(_ => publishedEvents++);
         
-        _splashViewModel.EndLogoAnimation();
         await _splashViewModel.Load();
+        _splashViewModel.FinishLogoAnimation();
+        _splashViewModel.FinishSplash();
         
-        _splashViewModel.EndLogoAnimation();
-        await _splashViewModel.Load();
+        _splashViewModel.FinishSplash();
 
         Assert.Equal(1, publishedEvents);
     }

@@ -4,5 +4,9 @@
     
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="ScribeLogoDrawing.xaml"/>
+        <ResourceDictionary Source="DoubleArrowDrawing.xaml"/>
+        <ResourceDictionary Source="AddDrawing.xaml"/>
+        <ResourceDictionary Source="SearchDrawing.xaml"/>
+        <ResourceDictionary Source="FolderDrawing.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
