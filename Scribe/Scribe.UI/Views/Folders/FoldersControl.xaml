@@ -58,7 +58,7 @@
         <components:IconButton
             Grid.Row="1"
             Grid.Column="2"
-            Command="{Binding AddFolderCommand}"
+            Command="{Binding CreateFolderCommand}"
             Width="30"
             Height="30"
             ToolTip="Nova Pasta"
@@ -75,10 +75,13 @@
             Grid.Row="3"
             Grid.Column="0"
             Grid.ColumnSpan="3"
+            SearchText="{Binding 
+                SearchFoldersFilter, 
+                Mode=TwoWay, 
+                UpdateSourceTrigger=PropertyChanged}"
             ToolTip="Pesquisar Pasta"
-            HintText="Pesquisar..."
             Margin="0 20 0 20"/>
-        <viewFolders:FoldersListControl
+        <viewFolders:FoldersList
             Grid.Row="4"
             Grid.Column="0"
             Grid.ColumnSpan="3"/>

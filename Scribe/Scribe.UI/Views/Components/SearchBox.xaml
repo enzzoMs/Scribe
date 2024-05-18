@@ -17,7 +17,7 @@
         <Border.Style>
             <Style TargetType="Border">
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding ElementName=TextBoxTextField, Path=IsSelectionActive}" Value="True">
+                    <DataTrigger Binding="{Binding ElementName=SearchBoxField, Path=IsSelectionActive}" Value="True">
                         <Setter Property="BorderBrush" Value="{StaticResource SelectedBorderBrush}"/>
                     </DataTrigger>
                 </Style.Triggers>
@@ -38,7 +38,7 @@
                 Source="{StaticResource SearchDrawing}"/>
             <TextBlock
                 Grid.Column="1"
-                Text="{Binding HintText}"
+                Text="Pesquisar..."
                 FontSize="16"
                 Foreground="{StaticResource TextSecondaryBrush}"
                 Opacity="0.6"
@@ -47,7 +47,7 @@
                 <TextBlock.Style>
                     <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=TextBoxTextField, Path=Text}" Value="">
+                            <DataTrigger Binding="{Binding ElementName=SearchBoxField, Path=Text}" Value="">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -58,8 +58,9 @@
                 </TextBlock.Style>
             </TextBlock>
             <TextBox
-                Name="TextBoxTextField"
+                Name="SearchBoxField"
                 Grid.Column="1"
+                Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                 FontSize="16"
                 Foreground="{StaticResource TextSecondaryBrush}"
                 Background="Transparent"

@@ -5,17 +5,16 @@ namespace Scribe.UI.Views.Components;
 
 public partial class SearchBox : UserControl
 {
-    public static readonly DependencyProperty HintTextProperty = DependencyProperty.Register(
-        name: nameof(HintText),
+    public static readonly DependencyProperty SearchTextProperty = DependencyProperty.Register(
+        name: nameof(SearchText),
         propertyType: typeof(string),
-        ownerType: typeof(UserControl),
-        typeMetadata: new FrameworkPropertyMetadata(defaultValue: "")
+        ownerType: typeof(UserControl)
     );
 
-    public string HintText
+    public string SearchText
     {
-        get => GetValue(HintTextProperty) as string ?? "";
-        set => SetValue(HintTextProperty, value);
+        get => GetValue(SearchTextProperty) as string ?? "";
+        set => SetValue(SearchTextProperty, value);
     }
 
     public SearchBox() => InitializeComponent();
