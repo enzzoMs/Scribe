@@ -6,11 +6,15 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Brushes.xaml"/>
                 <ResourceDictionary Source="Resources/Fonts/Fonts.xaml"/>
                 <ResourceDictionary Source="Resources/Drawings/Drawings.xaml"/>
-                <ResourceDictionary Source="Resources/Styles.xaml"/>
-                <ResourceDictionary Source="Resources/Templates/ScrollBarTemplate.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Template.ScrollBar.xaml"/>
+                
+                <!-- These resources are only to assist at design time and will be removed before the app runs -->
+                <ResourceDictionary Source="Resources/Brushes/Brushes.Light.xaml"/>
+                <ResourceDictionary Source="Resources/Dimens.xaml"/>
+                <ResourceDictionary Source="Resources/Strings/Strings.EnUs.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         </ResourceDictionary>

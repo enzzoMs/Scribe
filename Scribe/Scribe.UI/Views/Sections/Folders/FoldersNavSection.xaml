@@ -1,0 +1,108 @@
+﻿<UserControl 
+     x:Class="Scribe.UI.Views.Sections.Folders.FoldersNavSection"
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+     xmlns:sectionFolders="clr-namespace:Scribe.UI.Views.Sections.Folders"
+     xmlns:sectionConfigurations="clr-namespace:Scribe.UI.Views.Sections.Configurations"
+     xmlns:components="clr-namespace:Scribe.UI.Views.Components"
+     mc:Ignorable="d"
+     d:DesignHeight="800"
+     d:DesignWidth="300"
+     d:DataContext="{d:DesignInstance sectionFolders:FoldersViewModel}"
+     Background="{DynamicResource Brush.Surface}">
+    
+    <Grid Margin="{DynamicResource Dimen.Nav.InnerMargin}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <Image
+            Grid.Row="0"
+            Grid.Column="0"
+            Width="{DynamicResource Dimen.Nav.AppLogo.Size}"
+            Source="{StaticResource Drawing.ScribeLogo}"/>
+        <TextBlock
+            Grid.Row="0"
+            Grid.Column="1"
+            Text="{DynamicResource String.AppTitle}"
+            FontSize="{DynamicResource Dimen.TextSize.AppTitle}"
+            FontWeight="Bold"
+            FontFamily="{StaticResource Text.ExtraBold}"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.Nav.AppTitle.Margin}"/>
+        <Image
+            Grid.Row="0"
+            Grid.Column="2"
+            Width="{DynamicResource Dimen.Nav.CloseIcon.Size}"
+            Source="{StaticResource Drawing.DoubleArrow}"
+            VerticalAlignment="Center"/>
+        <TextBlock
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Text="{DynamicResource String.Folders}"
+            FontSize="{DynamicResource Dimen.TextSize.Normal2}"
+            Foreground="{DynamicResource Brush.Text.Secondary}"
+            Margin="{DynamicResource Dimen.Nav.Subtitle.Margin}"
+            VerticalAlignment="Center"/>
+        <components:IconButton
+            Grid.Row="1"
+            Grid.Column="2"
+            Command="{Binding CreateFolderCommand}"
+            Width="{DynamicResource Dimen.Nav.NewFolderIcon.Size}"
+            Height="{DynamicResource Dimen.Nav.NewFolderIcon.Size}"
+            ToolTip="{DynamicResource String.Folders.Tooltip.Create}"
+            IconPadding="{DynamicResource Dimen.Nav.NewFolderIcon.Padding}"
+            IconSource="{StaticResource Drawing.Add}"
+            Margin="{DynamicResource Dimen.Nav.Subtitle.Margin}"
+            VerticalAlignment="Bottom"/>
+        <Rectangle
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Style="{StaticResource Brush.Divider.Horizontal}"/>
+        <components:SearchBox
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            SearchText="{Binding
+                SearchFoldersFilter,
+                Mode=TwoWay, 
+                UpdateSourceTrigger=PropertyChanged}"
+            ToolTip="{DynamicResource String.Folders.Tooltip.Search}"
+            Margin="{DynamicResource Dimen.Nav.FolderSearchBox.Margin}"/>
+        <sectionFolders:FoldersListSection
+            Grid.Row="4"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"/>
+        <Rectangle
+            Grid.Row="5"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Style="{StaticResource Brush.Divider.Horizontal}"
+            Margin="{DynamicResource Dimen.Config.Section.Margin}"/>
+        <StackPanel
+            Grid.Row="6"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            DataContext="{Binding ConfigurationsViewModel}">
+  
+            <sectionConfigurations:ThemeConfigSection/>
+            <sectionConfigurations:LanguageConfigSection/>
+            <sectionConfigurations:ScaleConfigSection/>
+        </StackPanel>
+    </Grid>
+</UserControl>

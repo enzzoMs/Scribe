@@ -1,0 +1,42 @@
+﻿<UserControl 
+     x:Class="Scribe.UI.Views.Screens.Editor.EditorControl"
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+     xmlns:screenEditor="clr-namespace:Scribe.UI.Views.Screens.Editor"
+     xmlns:folders="clr-namespace:Scribe.UI.Views.Sections.Folders"
+     mc:Ignorable="d"
+     d:DesignHeight="800"
+     d:DesignWidth="1000"
+     d:DataContext="{d:DesignInstance screenEditor:EditorViewModel}">
+    
+    <UserControl.Resources>
+        <Storyboard 
+            x:Key="EditorFadeInStoryboard">
+            <DoubleAnimation
+                Storyboard.TargetName="EditorScreen" 
+                Storyboard.TargetProperty="Opacity" 
+                From="0.0" To="1.0" Duration="0:0:0.3"/>
+        </Storyboard>
+    </UserControl.Resources>
+    
+    <Grid Name="EditorScreen">
+        <Grid.Triggers>
+            <EventTrigger RoutedEvent="Grid.Loaded">
+                <BeginStoryboard Storyboard="{StaticResource EditorFadeInStoryboard}"/>
+            </EventTrigger>
+        </Grid.Triggers>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{DynamicResource Dimen.Nav.Size}"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <folders:FoldersNavSection DataContext="{Binding FoldersViewModel}"/>
+        <Rectangle
+            Grid.Column="1"
+            Style="{StaticResource Brush.Divider.Vertical}"/>
+    </Grid>
+</UserControl>

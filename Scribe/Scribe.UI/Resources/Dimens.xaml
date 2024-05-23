@@ -1,0 +1,49 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorelib">
+    
+    <sys:Double x:Key="Dimen.TextSize.AppTitle">28</sys:Double>
+    <sys:Double x:Key="Dimen.TextSize.Normal1">14</sys:Double>
+    <sys:Double x:Key="Dimen.TextSize.Normal2">16</sys:Double>
+
+    <sys:Double x:Key="Dimen.Splash.Size">110</sys:Double>
+
+    <GridLength x:Key="Dimen.Nav.Size">250</GridLength>
+    <Thickness x:Key="Dimen.Nav.InnerMargin">25</Thickness>
+    <sys:Double x:Key="Dimen.Nav.AppLogo.Size">32</sys:Double>
+    <Thickness x:Key="Dimen.Nav.AppTitle.Margin" Left="16"/>
+    <Thickness x:Key="Dimen.Nav.Subtitle.Margin" Top="20" Bottom="10"/>
+    <sys:Double x:Key="Dimen.Nav.CloseIcon.Size">28</sys:Double>
+    <sys:Double x:Key="Dimen.Nav.NewFolderIcon.Size">26</sys:Double>
+    <sys:Double x:Key="Dimen.Nav.NewFolderIcon.Padding">2</sys:Double>
+    <Thickness x:Key="Dimen.Nav.FolderSearchBox.Margin" Top="20" Bottom="10"/>
+    
+    <Thickness x:Key="Dimen.FolderItem.Padding" Left="12" Right="12" Top="6" Bottom="6"/>
+    <CornerRadius x:Key="Dimen.FolderItem.Radius">8</CornerRadius>
+    <sys:Double x:Key="Dimen.FolderItem.Icon.Size">24</sys:Double>
+    <Thickness x:Key="Dimen.FolderItem.Name.Padding" Left="10" Right="10"/>
+
+    <Thickness x:Key="Dimen.Config.Section.Margin" Top="12" Bottom="10"/>
+    <Thickness x:Key="Dimen.Config.Item.Margin" Left="10" Right="10" Top="8" Bottom="8"/>
+    <sys:Double x:Key="Dimen.Config.Item.Icon.Size">24</sys:Double>
+
+    <sys:Double x:Key="Dimen.Divider.Size">3</sys:Double>
+    
+    <sys:Double x:Key="Dimen.ScrollBar.Size">24</sys:Double>
+    <CornerRadius x:Key="Dimen.ScrollBar.Radius">6</CornerRadius>
+
+    <Thickness x:Key="Dimen.SearchBox.Border.Thickness">3</Thickness>
+    <CornerRadius x:Key="Dimen.SearchBox.Border.Radius">5</CornerRadius>
+    <Thickness x:Key="Dimen.SearchBox.Border.Padding" Left="10" Right="10" Top="8" Bottom="8"/>
+    <sys:Double x:Key="Dimen.SearchBox.Icon.Size">18</sys:Double>
+    <Thickness x:Key="Dimen.SearchBox.Text.Margin" Left="8"/>
+    <Thickness x:Key="Dimen.SearchBox.Hint.Margin" Left="6"/>
+    
+    <sys:Double x:Key="Dimen.DropDownBox.Button.Size">14</sys:Double>
+    <Thickness x:Key="Dimen.DropDownBox.Button.Margin" Left="6"/>
+    
+    <sys:Double x:Key="Dimen.IncrementalBox.Buttons.Size">22</sys:Double>
+    <sys:Double x:Key="Dimen.IncrementalBox.Buttons.Padding">2</sys:Double>
+    <Thickness x:Key="Dimen.IncrementalBox.Buttons.Margin" Left="4" Right="4"/>
+</ResourceDictionary>

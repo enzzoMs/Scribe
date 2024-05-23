@@ -1,0 +1,33 @@
+﻿<UserControl 
+    x:Class=
+    "Scribe.UI.Views.Sections.Configurations.ScaleConfigSection"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:sectionConfigurations="clr-namespace:Scribe.UI.Views.Sections.Configurations"
+    xmlns:componentes="clr-namespace:Scribe.UI.Views.Components"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance sectionConfigurations:ConfigurationsViewModel}">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <Image
+            Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
+            Source="{StaticResource Drawing.Ruler}"
+            VerticalAlignment="Center"/>
+        <TextBlock
+            Grid.Column="1"
+            Text="{DynamicResource String.Config.Scale}"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.Config.Item.Margin}"/>
+        <componentes:IncrementalDecimalBox
+            CurrentValue="{Binding CurrentScale, Mode=TwoWay}"
+            Grid.Column="2"/>
+    </Grid>
+</UserControl>

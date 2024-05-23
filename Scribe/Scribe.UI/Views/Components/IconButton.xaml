@@ -14,12 +14,20 @@
             x:Key="ButtonRipple">
             <ColorAnimation 
                 Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" 
-                From="Transparent" To="{StaticResource IconButtonRippleColor}" Duration="0:0:0.15"/>
+                From="Transparent" To="#FFE0E0E0" Duration="0:0:0.15"/>
             <ColorAnimation 
                 Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" 
                 BeginTime="0:0:0.4"
-                From="{StaticResource IconButtonRippleColor}" To="Transparent" Duration="0:0:0.15"/>
+                From="#FFE0E0E0" To="Transparent" Duration="0:0:0.15"/>
         </Storyboard>
+        
+        <Style TargetType="{x:Type Button}">
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="Button.Click">
+                    <BeginStoryboard Storyboard="{StaticResource ButtonRipple}"/>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
     
     <Button
@@ -30,32 +38,22 @@
         Background="Transparent"
         BorderThickness="0"
         Padding="0">
-        <Image
-            Name="ButtonIcon"
-            Source="{Binding IconSource}"
-            Loaded="ButtonIcon_OnLoaded"/>
         <Button.Template>
             <ControlTemplate TargetType="{x:Type Button}">
                 <Grid>
-                    <Ellipse 
+                    <Ellipse
                         Width="{TemplateBinding Width}"
                         Height="{TemplateBinding Height}"
                         Fill="{TemplateBinding Background}"/>
-                    <ContentPresenter
-                        Content="{TemplateBinding Content}"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"/>
+                    <Border Padding="{Binding IconPadding}">
+                        <Image
+                            Name="ButtonIcon"
+                            Source="{Binding IconSource}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+                    </Border>
                 </Grid>
             </ControlTemplate>
         </Button.Template>
-        <Button.Style>
-            <Style TargetType="{x:Type Button}">
-                <Style.Triggers>
-                    <EventTrigger RoutedEvent="Button.Click">
-                        <BeginStoryboard Storyboard="{StaticResource ButtonRipple}"/>
-                    </EventTrigger>
-                </Style.Triggers>
-            </Style>
-        </Button.Style>
     </Button>
 </UserControl>

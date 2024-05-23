@@ -3,10 +3,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="ScribeLogoDrawing.xaml"/>
-        <ResourceDictionary Source="DoubleArrowDrawing.xaml"/>
-        <ResourceDictionary Source="AddDrawing.xaml"/>
-        <ResourceDictionary Source="SearchDrawing.xaml"/>
-        <ResourceDictionary Source="FolderDrawing.xaml"/>
+        <ResourceDictionary Source="Drawing.ScribeLogo.xaml"/>
+        <ResourceDictionary Source="Drawing.DoubleArrow.xaml"/>
+        <ResourceDictionary Source="Drawing.Add.xaml"/>
+        <ResourceDictionary Source="Drawing.Minus.xaml"/>
+        <ResourceDictionary Source="Drawing.Search.xaml"/>
+        <ResourceDictionary Source="Drawing.Folder.xaml"/>
+        <ResourceDictionary Source="Drawing.Contrast.xaml"/>
+        <ResourceDictionary Source="Drawing.Globe.xaml"/>
+        <ResourceDictionary Source="Drawing.Ruler.xaml"/>
+        <ResourceDictionary Source="Drawing.DownArrow.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

@@ -1,0 +1,28 @@
+﻿<Window 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:screenMain="clr-namespace:Scribe.UI.Views.Screens.Main"
+    xmlns:screenSplash="clr-namespace:Scribe.UI.Views.Screens.Splash"
+    xmlns:screenEditor="clr-namespace:Scribe.UI.Views.Screens.Editor"
+    mc:Ignorable="d"
+    x:Class="Scribe.UI.Views.Screens.Main.MainWindow"
+    d:DesignWidth="1000"
+    d:DesignHeight="800"
+    d:DataContext="{d:DesignInstance screenMain:MainViewModel}"
+    Title="Scribe"
+    Icon="../../../Resources/Images/scribe_logo.png"
+    WindowState="Maximized">
+    
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type screenSplash:SplashViewModel}">
+            <screenSplash:SplashControl/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type screenEditor:EditorViewModel}">
+            <screenEditor:EditorControl/>
+        </DataTemplate>
+    </Window.Resources>
+    
+    <ContentControl Content="{Binding ContentViewModel}"/>
+</Window>

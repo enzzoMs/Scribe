@@ -1,0 +1,25 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    
+    <sys:String x:Key="String.AppTitle">Scribe</sys:String>
+
+    <sys:String x:Key="String.Component.SearchBox.Hint">Search...</sys:String>
+
+    <sys:String x:Key="String.Folders">Folders</sys:String>
+    <sys:String x:Key="String.Folders.DefaultName">New Folder</sys:String>
+    <sys:String x:Key="String.Folders.Tooltip.Search">Search Folder</sys:String>
+    <sys:String x:Key="String.Folders.Tooltip.Create">Create Folder</sys:String>
+
+    <sys:String x:Key="String.Config.Theme">Theme</sys:String>
+    <sys:String x:Key="String.Config.Theme.Light">Light</sys:String>
+    <sys:String x:Key="String.Config.Theme.Dark">Dark</sys:String>
+    <sys:String x:Key="String.Config.Language">Language</sys:String>
+    <sys:String x:Key="String.Config.Scale">Scale</sys:String>
+    <sys:String x:Key="String.Config.Scale.Increase">Increase value</sys:String>
+    <sys:String x:Key="String.Config.Scale.Decrease">Decrease value</sys:String>
+    
+    <sys:String x:Key="String.Config.Lang.Pt.Br">PT-BR</sys:String>
+    <sys:String x:Key="String.Config.Lang.En.Us">EN-US</sys:String>
+</ResourceDictionary>

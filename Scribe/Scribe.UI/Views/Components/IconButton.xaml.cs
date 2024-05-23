@@ -45,13 +45,4 @@ public partial class IconButton : UserControl
     }
 
     public IconButton() => InitializeComponent();
-
-    private void ButtonIcon_OnLoaded(object sender, RoutedEventArgs e)
-    {
-        var iconWidth = ButtonContainer.ActualWidth - IconPadding;
-        var iconHeight = ButtonContainer.ActualHeight - IconPadding;
-            
-        ButtonIcon.Width = iconWidth < 0 ? 0 : iconWidth;
-        ButtonIcon.Height = iconHeight < 0 ? 0 : iconHeight;
-    }
 }
