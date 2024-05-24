@@ -5,7 +5,7 @@
      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
      xmlns:screenEditor="clr-namespace:Scribe.UI.Views.Screens.Editor"
-     xmlns:folders="clr-namespace:Scribe.UI.Views.Sections.Folders"
+     xmlns:navSection="clr-namespace:Scribe.UI.Views.Sections.Navigation"
      mc:Ignorable="d"
      d:DesignHeight="800"
      d:DesignWidth="1000"
@@ -15,13 +15,12 @@
         <Storyboard 
             x:Key="EditorFadeInStoryboard">
             <DoubleAnimation
-                Storyboard.TargetName="EditorScreen" 
                 Storyboard.TargetProperty="Opacity" 
                 From="0.0" To="1.0" Duration="0:0:0.3"/>
         </Storyboard>
     </UserControl.Resources>
     
-    <Grid Name="EditorScreen">
+    <Grid>
         <Grid.Triggers>
             <EventTrigger RoutedEvent="Grid.Loaded">
                 <BeginStoryboard Storyboard="{StaticResource EditorFadeInStoryboard}"/>
@@ -29,14 +28,14 @@
         </Grid.Triggers>
         
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="{DynamicResource Dimen.Nav.Size}"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <folders:FoldersNavSection DataContext="{Binding FoldersViewModel}"/>
+        <navSection:NavSection DataContext="{Binding NavigationViewModel}"/>
         <Rectangle
             Grid.Column="1"
-            Style="{StaticResource Brush.Divider.Vertical}"/>
+            Style="{StaticResource Style.Divider.Vertical}"/>
     </Grid>
 </UserControl>

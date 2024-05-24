@@ -2,7 +2,6 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace Scribe.UI.Views.Components;
 
@@ -26,6 +25,12 @@ public partial class IconButton : UserControl
         ownerType: typeof(UserControl)
     );
     
+    public static readonly DependencyProperty CommandParameterProperty = DependencyProperty.Register(
+        name: nameof(CommandParameter),
+        propertyType: typeof(object),
+        ownerType: typeof(UserControl)
+    );
+    
     public ImageSource? IconSource
     {
         get => GetValue(IconSourceProperty) as ImageSource;
@@ -42,6 +47,12 @@ public partial class IconButton : UserControl
     {
         get => GetValue(CommandProperty) as ICommand;
         set => SetValue(CommandProperty, value);
+    }
+    
+    public object CommandParameter
+    {
+        get => GetValue(CommandParameterProperty);
+        set => SetValue(CommandParameterProperty, value);
     }
 
     public IconButton() => InitializeComponent();

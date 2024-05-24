@@ -31,9 +31,9 @@
     </UserControl.Resources>
     
     <Button
-        Name="ButtonContainer"
         DataContext="{Binding ElementName=Root}"
         Command="{Binding Command}"
+        CommandParameter="{Binding CommandParameter}"
         Cursor="Hand"
         Background="Transparent"
         BorderThickness="0"

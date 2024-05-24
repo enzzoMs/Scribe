@@ -7,6 +7,9 @@
     
     <sys:String x:Key="String.Component.SearchBox.Hint">Pesquisar...</sys:String>
 
+    <sys:String x:Key="String.Nav.Close">Fechar Navegação</sys:String>
+    <sys:String x:Key="String.Nav.Open">Abrir Navegação</sys:String>
+
     <sys:String x:Key="String.Folders">Pastas</sys:String>
     <sys:String x:Key="String.Folders.DefaultName">Nova Pasta</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Search">Pesquisar Pasta</sys:String>

@@ -1,11 +1,11 @@
 ﻿using Scribe.Data.Model;
-using Scribe.UI.Views.Sections.Folders;
+using Scribe.UI.Views.Sections.Navigation;
 
 namespace Scribe.UI.Views.Screens.Editor;
 
-public class EditorViewModel(FoldersViewModel foldersViewModel) : BaseViewModel
+public class EditorViewModel(NavigationViewModel navigationViewModel) : BaseViewModel
 {
-    public FoldersViewModel FoldersViewModel { get; } = foldersViewModel;
+    public NavigationViewModel NavigationViewModel { get; } = navigationViewModel;
 
-    public void LoadFolders(IEnumerable<Folder> folders) => FoldersViewModel.LoadFolders(folders);
+    public void LoadFolders(IEnumerable<Folder> folders) => NavigationViewModel.LoadFolders(folders);
 }

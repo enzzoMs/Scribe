@@ -7,6 +7,9 @@
 
     <sys:String x:Key="String.Component.SearchBox.Hint">Search...</sys:String>
 
+    <sys:String x:Key="String.Nav.Close">Close Navigation</sys:String>
+    <sys:String x:Key="String.Nav.Open">Open Navigation</sys:String>
+    
     <sys:String x:Key="String.Folders">Folders</sys:String>
     <sys:String x:Key="String.Folders.DefaultName">New Folder</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Search">Search Folder</sys:String>

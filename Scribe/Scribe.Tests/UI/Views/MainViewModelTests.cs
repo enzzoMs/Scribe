@@ -7,6 +7,7 @@ using Scribe.UI.Views.Screens.Main;
 using Scribe.UI.Views.Screens.Splash;
 using Scribe.UI.Views.Sections.Configurations;
 using Scribe.UI.Views.Sections.Folders;
+using Scribe.UI.Views.Sections.Navigation;
 
 namespace Scribe.Tests.UI.Views;
 
@@ -21,7 +22,7 @@ public class MainViewModelTests
         var foldersRepository = Substitute.For<IRepository<Folder>>();
         foldersRepository.GetAll().Returns([]);
         
-        var editorViewModel = new EditorViewModel(new FoldersViewModel(foldersRepository, new ConfigurationsViewModel()));
+        var editorViewModel = new EditorViewModel(new NavigationViewModel(foldersRepository, new ConfigurationsViewModel()));
         _splashViewModel = new SplashViewModel(_eventAggregator, foldersRepository);
         _mainViewModel = new MainViewModel(_eventAggregator, _splashViewModel, editorViewModel);
     }

@@ -9,20 +9,27 @@
 
     <sys:Double x:Key="Dimen.Splash.Size">110</sys:Double>
 
-    <GridLength x:Key="Dimen.Nav.Size">250</GridLength>
-    <Thickness x:Key="Dimen.Nav.InnerMargin">25</Thickness>
-    <sys:Double x:Key="Dimen.Nav.AppLogo.Size">32</sys:Double>
-    <Thickness x:Key="Dimen.Nav.AppTitle.Margin" Left="16"/>
-    <Thickness x:Key="Dimen.Nav.Subtitle.Margin" Top="20" Bottom="10"/>
-    <sys:Double x:Key="Dimen.Nav.CloseIcon.Size">28</sys:Double>
-    <sys:Double x:Key="Dimen.Nav.NewFolderIcon.Size">26</sys:Double>
-    <sys:Double x:Key="Dimen.Nav.NewFolderIcon.Padding">2</sys:Double>
-    <Thickness x:Key="Dimen.Nav.FolderSearchBox.Margin" Top="20" Bottom="10"/>
+    <sys:Double x:Key="Dimen.Nav.OpenAndCloseIcon.Size">28</sys:Double>
+
+    <sys:Double x:Key="Dimen.Nav.Expanded.Size">200</sys:Double>
+    <Thickness x:Key="Dimen.Nav.Expanded.InnerMargin">25</Thickness>
+    <sys:Double x:Key="Dimen.Nav.Expanded.AppLogo.Size">32</sys:Double>
+    <Thickness x:Key="Dimen.Nav.Expanded.AppTitle.Margin" Left="16"/>
+    <Thickness x:Key="Dimen.Nav.Expanded.Subtitle.Margin" Top="20" Bottom="10"/>
+    <sys:Double x:Key="Dimen.Nav.Expanded.NewFolderIcon.Size">26</sys:Double>
+    <sys:Double x:Key="Dimen.Nav.Expanded.NewFolderIcon.Padding">2</sys:Double>
+    <Thickness x:Key="Dimen.Nav.Expanded.FolderSearchBox.Margin" Top="20" Bottom="10"/>
     
+    <sys:Double x:Key="Dimen.Nav.Condensed.Size">40</sys:Double>
+    <Thickness x:Key="Dimen.Nav.Condensed.InnerMargin" Top="29" Bottom="27" Left="17" Right="17"/>
+    <Thickness x:Key="Dimen.Nav.Condensed.Divider.Margin" Top="10" Bottom="10"/>
+    <Thickness x:Key="Dimen.Nav.Condensed.NewFolderIcon.Margin" Bottom="8"/>
+    <Thickness x:Key="Dimen.Nav.Condensed.ConfigIcon.Margin" Top="6" Bottom="3"/>
+
     <Thickness x:Key="Dimen.FolderItem.Padding" Left="12" Right="12" Top="6" Bottom="6"/>
     <CornerRadius x:Key="Dimen.FolderItem.Radius">8</CornerRadius>
     <sys:Double x:Key="Dimen.FolderItem.Icon.Size">24</sys:Double>
-    <Thickness x:Key="Dimen.FolderItem.Name.Padding" Left="10" Right="10"/>
+    <Thickness x:Key="Dimen.FolderItem.Name.Padding" Left="12" Right="12"/>
 
     <Thickness x:Key="Dimen.Config.Section.Margin" Top="12" Bottom="10"/>
     <Thickness x:Key="Dimen.Config.Item.Margin" Left="10" Right="10" Top="8" Bottom="8"/>

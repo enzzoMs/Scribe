@@ -7,14 +7,16 @@ using Scribe.Data.Repositories;
 using Scribe.UI.Command;
 using Scribe.UI.Views.Sections.Configurations;
 
-namespace Scribe.UI.Views.Sections.Folders;
+namespace Scribe.UI.Views.Sections.Navigation;
 
-public class FoldersViewModel : BaseViewModel
+public class NavigationViewModel : BaseViewModel
 {    
     private readonly IRepository<Folder> _foldersRepository;
     
     private List<Folder> _allFolders = [];
     private ObservableCollection<Folder> _currentFolders = [];
+
+    private bool _isNavigationCondensed;
     
     private readonly DispatcherTimer _searchTimer;
     private string _searchFoldersFilter = "";
@@ -42,15 +44,34 @@ public class FoldersViewModel : BaseViewModel
             _searchTimer.Start();
         }
     }
-    public ICommand CreateFolderCommand { get; private set; }
-    
 
-    public FoldersViewModel(IRepository<Folder> foldersRepository, ConfigurationsViewModel configurationsViewModel)
+    public bool IsNavigationCondensed
+    {
+        get => _isNavigationCondensed;
+        set
+        {
+            _isNavigationCondensed = value;
+            RaisePropertyChanged();
+        }
+    }
+    
+    public ICommand CreateFolderCommand { get; private set; }
+    public ICommand CondenseNavigationCommand { get; private set; }
+
+    public NavigationViewModel(IRepository<Folder> foldersRepository, ConfigurationsViewModel configurationsViewModel)
     {
         ConfigurationsViewModel = configurationsViewModel;
         
         _foldersRepository = foldersRepository;
+        
         CreateFolderCommand = new DelegateCommand(_ => CreateFolder());
+        CondenseNavigationCommand = new DelegateCommand(parameter =>
+        {
+            if (parameter is bool isCondensed)
+            {
+                IsNavigationCondensed = isCondensed;
+            }
+        });
         
         _searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(SearchDelayMs) };
         _searchTimer.Tick += (_, _) =>

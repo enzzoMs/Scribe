@@ -18,14 +18,14 @@
         </Style.Setters>
     </Style>
     
-    <Style x:Key="Brush.Divider.Horizontal">
+    <Style x:Key="Style.Divider.Horizontal">
         <Style.Setters>
             <Setter Property="Rectangle.Height" Value="{DynamicResource Dimen.Divider.Size}"/>
             <Setter Property="Rectangle.Fill" Value="{DynamicResource Brush.Divider}"/>
         </Style.Setters>
     </Style>
     
-    <Style x:Key="Brush.Divider.Vertical">
+    <Style x:Key="Style.Divider.Vertical">
         <Style.Setters>
             <Setter Property="Rectangle.Width" Value="{DynamicResource Dimen.Divider.Size}"/>
             <Setter Property="Rectangle.Fill" Value="{DynamicResource Brush.Divider}"/>
