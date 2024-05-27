@@ -5,22 +5,54 @@ using System.Windows.Threading;
 using Scribe.Data.Model;
 using Scribe.Data.Repositories;
 using Scribe.UI.Command;
+using Scribe.UI.Events;
 using Scribe.UI.Views.Sections.Configurations;
 
 namespace Scribe.UI.Views.Sections.Navigation;
 
 public class NavigationViewModel : BaseViewModel
-{    
+{
+    private readonly IEventAggregator _eventAggregator;
     private readonly IRepository<Folder> _foldersRepository;
     
     private List<Folder> _allFolders = [];
     private ObservableCollection<Folder> _currentFolders = [];
+    private Folder? _selectedFolder;
 
-    private bool _isNavigationCondensed;
+    private bool _isNavigationCollapsed;
     
     private readonly DispatcherTimer _searchTimer;
     private string _searchFoldersFilter = "";
     private const int SearchDelayMs = 800;
+
+    private Action<FolderUpdatedEvent> _onFolderUpdated;
+    
+    public NavigationViewModel(
+        IEventAggregator eventAggregator, 
+        IRepository<Folder> foldersRepository,
+        ConfigurationsViewModel configurationsViewModel)
+    {
+        _eventAggregator = eventAggregator;
+        _foldersRepository = foldersRepository;
+        
+        _searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(SearchDelayMs) };
+        _searchTimer.Tick += (_, _) =>
+        {
+            _searchTimer.Stop();
+            FilterFolders();
+        };
+
+        _onFolderUpdated = _ => RaisePropertyChanged(nameof(SelectedFolder));
+        _eventAggregator.Subscribe(_onFolderUpdated);
+        
+        ConfigurationsViewModel = configurationsViewModel;
+
+        CreateFolderCommand = new DelegateCommand(_ => CreateFolder());
+        CollapseNavigationCommand = new DelegateCommand(parameter =>
+        {
+            if (parameter is bool isCollapsed) IsNavigationCollapsed = isCollapsed;
+        });
+    }
     
     public ConfigurationsViewModel ConfigurationsViewModel { get; private set; }
     
@@ -31,6 +63,16 @@ public class NavigationViewModel : BaseViewModel
         {
             _currentFolders = value;
             RaisePropertyChanged();
+        }
+    }
+
+    public Folder? SelectedFolder
+    {
+        get => _selectedFolder;
+        set
+        {
+            _selectedFolder = value;
+            _eventAggregator.Publish(new FolderSelectedEvent(_selectedFolder));
         }
     }
 
@@ -45,41 +87,19 @@ public class NavigationViewModel : BaseViewModel
         }
     }
 
-    public bool IsNavigationCondensed
+    public bool IsNavigationCollapsed
     {
-        get => _isNavigationCondensed;
+        get => _isNavigationCollapsed;
         set
         {
-            _isNavigationCondensed = value;
+            _isNavigationCollapsed = value;
             RaisePropertyChanged();
         }
     }
     
     public ICommand CreateFolderCommand { get; private set; }
-    public ICommand CondenseNavigationCommand { get; private set; }
-
-    public NavigationViewModel(IRepository<Folder> foldersRepository, ConfigurationsViewModel configurationsViewModel)
-    {
-        ConfigurationsViewModel = configurationsViewModel;
-        
-        _foldersRepository = foldersRepository;
-        
-        CreateFolderCommand = new DelegateCommand(_ => CreateFolder());
-        CondenseNavigationCommand = new DelegateCommand(parameter =>
-        {
-            if (parameter is bool isCondensed)
-            {
-                IsNavigationCondensed = isCondensed;
-            }
-        });
-        
-        _searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(SearchDelayMs) };
-        _searchTimer.Tick += (_, _) =>
-        {
-            _searchTimer.Stop();
-            FilterFolders();
-        };
-    }
+    
+    public ICommand CollapseNavigationCommand { get; private set; }
 
     public void LoadFolders(IEnumerable<Folder> folders)
     {
@@ -91,8 +111,8 @@ public class NavigationViewModel : BaseViewModel
     {
         var filterText = _searchFoldersFilter.Trim();
         var filteredFolders = _allFolders.Where(folder => folder.Name.Contains(
-            filterText, StringComparison.CurrentCultureIgnoreCase)
-        );
+            filterText, StringComparison.CurrentCultureIgnoreCase
+        ));
         CurrentFolders = new ObservableCollection<Folder>(filteredFolders);
     }
     

@@ -84,6 +84,11 @@
         <XamlRuntime>Wpf</XamlRuntime>
         <SubType>Designer</SubType>
       </Page>
+      <Page Update="Views\Sections\FolderContents\FolderDetailsHeaderSection.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
     </ItemGroup>
     
     <ItemGroup>
@@ -95,7 +100,6 @@
         </Resource>
         
         <Resource Include="Resources\Fonts\*.ttf"/>
-        <Resource Include="Resources\Brushes\*.xaml"/>
         
         <Content Include="bin\Debug\net8.0-windows\appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -104,6 +108,5 @@
     
     <ItemGroup>
       <Folder Include="Views\Screens\" />
-      <Folder Include="Views\Sections\" />
     </ItemGroup>
 </Project>

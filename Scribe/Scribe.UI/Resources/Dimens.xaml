@@ -7,6 +7,12 @@
     <sys:Double x:Key="Dimen.TextSize.Normal1">14</sys:Double>
     <sys:Double x:Key="Dimen.TextSize.Normal2">16</sys:Double>
 
+    <Thickness x:Key="Dimen.TextBox.Border" Bottom="2"/>
+    <Thickness x:Key="Dimen.TextBox.Padding" Bottom="3"/>
+    <sys:Double x:Key="Dimen.Divider.Size">3</sys:Double>
+    <sys:Double x:Key="Dimen.ScrollBar.Size">24</sys:Double>
+    <CornerRadius x:Key="Dimen.ScrollBar.Radius">6</CornerRadius>
+    
     <sys:Double x:Key="Dimen.Splash.Size">110</sys:Double>
 
     <sys:Double x:Key="Dimen.Nav.OpenAndCloseIcon.Size">28</sys:Double>
@@ -20,11 +26,21 @@
     <sys:Double x:Key="Dimen.Nav.Expanded.NewFolderIcon.Padding">2</sys:Double>
     <Thickness x:Key="Dimen.Nav.Expanded.FolderSearchBox.Margin" Top="20" Bottom="10"/>
     
-    <sys:Double x:Key="Dimen.Nav.Condensed.Size">40</sys:Double>
-    <Thickness x:Key="Dimen.Nav.Condensed.InnerMargin" Top="29" Bottom="27" Left="17" Right="17"/>
-    <Thickness x:Key="Dimen.Nav.Condensed.Divider.Margin" Top="10" Bottom="10"/>
-    <Thickness x:Key="Dimen.Nav.Condensed.NewFolderIcon.Margin" Bottom="8"/>
-    <Thickness x:Key="Dimen.Nav.Condensed.ConfigIcon.Margin" Top="6" Bottom="3"/>
+    <sys:Double x:Key="Dimen.Nav.Collapsed.Size">40</sys:Double>
+    <Thickness x:Key="Dimen.Nav.Collapsed.InnerMargin" Top="29" Bottom="27" Left="17" Right="17"/>
+    <Thickness x:Key="Dimen.Nav.Collapsed.Divider.Margin" Top="10" Bottom="10"/>
+    <Thickness x:Key="Dimen.Nav.Collapsed.NewFolderIcon.Margin" Bottom="8"/>
+    <Thickness x:Key="Dimen.Nav.Collapsed.ConfigIcon.Margin" Top="6" Bottom="3"/>
+
+    <sys:Double x:Key="Dimen.FolderDetails.Size">250</sys:Double>
+    <Thickness x:Key="Dimen.FolderDetails.InnerMargin">20</Thickness>
+    
+    <sys:Double x:Key="Dimen.FolderDetails.Header.Folder.Size">26</sys:Double>
+    <Thickness x:Key="Dimen.FolderDetails.Header.Name.Margin" Right="8" Left="8"/>
+    <Thickness x:Key="Dimen.FolderDetails.Header.Error.Margin" Top="8" Bottom="8"/>
+    <sys:Double x:Key="Dimen.FolderDetails.Header.Icon.Size">30</sys:Double>
+    <sys:Double x:Key="Dimen.FolderDetails.Header.Icon.Padding">4</sys:Double>
+    <Thickness x:Key="Dimen.FolderDetails.Header.Icon.Margin" Right="4"/>
 
     <Thickness x:Key="Dimen.FolderItem.Padding" Left="12" Right="12" Top="6" Bottom="6"/>
     <CornerRadius x:Key="Dimen.FolderItem.Radius">8</CornerRadius>
@@ -34,11 +50,6 @@
     <Thickness x:Key="Dimen.Config.Section.Margin" Top="12" Bottom="10"/>
     <Thickness x:Key="Dimen.Config.Item.Margin" Left="10" Right="10" Top="8" Bottom="8"/>
     <sys:Double x:Key="Dimen.Config.Item.Icon.Size">24</sys:Double>
-
-    <sys:Double x:Key="Dimen.Divider.Size">3</sys:Double>
-    
-    <sys:Double x:Key="Dimen.ScrollBar.Size">24</sys:Double>
-    <CornerRadius x:Key="Dimen.ScrollBar.Radius">6</CornerRadius>
 
     <Thickness x:Key="Dimen.SearchBox.Border.Thickness">3</Thickness>
     <CornerRadius x:Key="Dimen.SearchBox.Border.Radius">5</CornerRadius>

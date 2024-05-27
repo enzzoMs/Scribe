@@ -8,6 +8,7 @@ using Scribe.UI.Views.Screens.Editor;
 using Scribe.UI.Views.Screens.Main;
 using Scribe.UI.Views.Screens.Splash;
 using Scribe.UI.Views.Sections.Configurations;
+using Scribe.UI.Views.Sections.FolderDetails;
 using Scribe.UI.Views.Sections.Navigation;
 using MainWindow = Scribe.UI.Views.Screens.Main.MainWindow;
 
@@ -95,7 +96,6 @@ public partial class App : Application
                     bottomLeft: r.BottomLeft * scale,
                     bottomRight: r.BottomRight * scale
                 ),
-                GridLength g => new GridLength(g.Value * scale),
                 _ => dimension
             };
         }
@@ -113,6 +113,7 @@ public partial class App : Application
         services.AddTransient<EditorViewModel>();
         services.AddTransient<NavigationViewModel>();
         services.AddTransient<ConfigurationsViewModel>();
+        services.AddTransient<FolderDetailsViewModel>();
 
         services.AddTransient<IRepository<Folder>, FolderRepository>();
     }

@@ -12,8 +12,10 @@ public class SplashViewModel(
     private readonly IEventAggregator _eventAggregator = eventAggregator;
 
     private bool _loadEventPublished;
+    
     private bool _splashCompleted;
     private bool _logoAnimationFinished;
+    
     private List<Folder>? _folders;
     
     public bool SplashCompleted

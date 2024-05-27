@@ -55,7 +55,7 @@
             IconSource="{StaticResource Drawing.DoubleArrow.Left}"
             VerticalAlignment="Center"
             ToolTip="{DynamicResource String.Nav.Close}"
-            Command="{Binding CondenseNavigationCommand}">
+            Command="{Binding CollapseNavigationCommand}">
             <components:IconButton.CommandParameter>
                 <sys:Boolean>True</sys:Boolean>
             </components:IconButton.CommandParameter>

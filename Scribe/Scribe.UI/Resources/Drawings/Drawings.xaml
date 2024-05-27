@@ -13,5 +13,10 @@
         <ResourceDictionary Source="Drawing.Globe.xaml"/>
         <ResourceDictionary Source="Drawing.Ruler.xaml"/>
         <ResourceDictionary Source="Drawing.DownArrow.xaml"/>
+        <ResourceDictionary Source="Drawing.Edit.xaml"/>
+        <ResourceDictionary Source="Drawing.Delete.xaml"/>
+        <ResourceDictionary Source="Drawing.Star.xaml"/>
+        <ResourceDictionary Source="Drawing.Close.xaml"/>
+        <ResourceDictionary Source="Drawing.Confirm.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

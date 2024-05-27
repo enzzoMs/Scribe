@@ -11,6 +11,15 @@ public class ConfigurationsViewModel : BaseViewModel
     private AppConfigurations _currentConfiguration;
     private double _currentScale;
     
+    public ConfigurationsViewModel()
+    {
+        _currentConfiguration = ConfigurationsManager.GetAllConfigurations();
+        _currentScale = _currentConfiguration.Scale;
+        
+        SelectLanguageCommand = new DelegateCommand(SelectLanguage);
+        SelectThemeCommand = new DelegateCommand(SelectTheme);
+    }
+    
     public AppConfigurations CurrentConfiguration
     {
         get => _currentConfiguration;
@@ -31,17 +40,9 @@ public class ConfigurationsViewModel : BaseViewModel
         }
     }
 
-    public ICommand SelectLanguageCommand { get; private set; }
-    public ICommand SelectThemeCommand { get; private set; }
-
-    public ConfigurationsViewModel()
-    {
-        _currentConfiguration = ConfigurationsManager.GetAllConfigurations();
-        _currentScale = _currentConfiguration.Scale;
-        
-        SelectLanguageCommand = new DelegateCommand(SelectLanguage);
-        SelectThemeCommand = new DelegateCommand(SelectTheme);
-    }
+    public ICommand SelectLanguageCommand { get; }
+    
+    public ICommand SelectThemeCommand { get; }
 
     private void SelectLanguage(object? parameter)
     {
@@ -114,7 +115,6 @@ public class ConfigurationsViewModel : BaseViewModel
                     bottomLeft: r.BottomLeft * _currentScale,
                     bottomRight: r.BottomRight * _currentScale
                 ),
-                GridLength g => new GridLength(g.Value * _currentScale),
                 _ => dimension
             };
         }

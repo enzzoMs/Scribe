@@ -18,14 +18,14 @@
                     Value="{x:Static model:LanguageConfiguration.PtBr}">
                     <Setter
                         Property="components:DropDownBox.Text" 
-                        Value="{DynamicResource String.Config.Lang.Pt.Br}"/>
+                        Value="{DynamicResource String.Config.Language.Pt.Br}"/>
                 </DataTrigger>
                 <DataTrigger 
                     Binding="{Binding CurrentConfiguration.Language}"
                     Value="{x:Static model:LanguageConfiguration.EnUs}">
                     <Setter
                         Property="components:DropDownBox.Text" 
-                        Value="{DynamicResource String.Config.Lang.En.Us}"/>
+                        Value="{DynamicResource String.Config.Language.En.Us}"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -52,7 +52,7 @@
             HorizontalAlignment="Right">
             <components:DropDownBox.MenuItems>
                 <MenuItem
-                    Header="{DynamicResource String.Config.Lang.Pt.Br}"
+                    Header="{DynamicResource String.Config.Language.Pt.Br}"
                     Command="{Binding SelectLanguageCommand}"
                     CommandParameter="{x:Static model:LanguageConfiguration.PtBr}">
                     <MenuItem.Icon>
@@ -60,7 +60,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem 
-                    Header="{DynamicResource String.Config.Lang.En.Us}"
+                    Header="{DynamicResource String.Config.Language.En.Us}"
                     Command="{Binding SelectLanguageCommand}"
                     CommandParameter="{x:Static model:LanguageConfiguration.EnUs}">
                     <MenuItem.Icon>

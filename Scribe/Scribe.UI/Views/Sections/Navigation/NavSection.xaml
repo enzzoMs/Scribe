@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:navSection="clr-namespace:Scribe.UI.Views.Sections.Navigation"
     xmlns:expandedNavSection="clr-namespace:Scribe.UI.Views.Sections.Navigation.Expanded"
-    xmlns:condensedNavSection="clr-namespace:Scribe.UI.Views.Sections.Navigation.Condensed"
+    xmlns:collapsedNavSection="clr-namespace:Scribe.UI.Views.Sections.Navigation.Collapsed"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance navSection:NavigationViewModel}">
     
@@ -14,15 +14,14 @@
         <ContentControl.Style>
             <Style TargetType="ContentControl">
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsNavigationCondensed}" Value="True">
+                    <DataTrigger Binding="{Binding IsNavigationCollapsed}" Value="True">
                         <Setter Property="Content">
                             <Setter.Value>
-                                <condensedNavSection:CondensedNavSection/>
+                                <collapsedNavSection:CollapsedNavSection/>
                             </Setter.Value>
                         </Setter>
                     </DataTrigger>
-                    
-                    <DataTrigger Binding="{Binding IsNavigationCondensed}" Value="False">
+                    <DataTrigger Binding="{Binding IsNavigationCollapsed}" Value="False">
                         <Setter Property="Content">
                             <Setter.Value>
                                 <expandedNavSection:ExpandedNavSection/>

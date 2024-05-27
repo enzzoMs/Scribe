@@ -1,0 +1,173 @@
+﻿<UserControl 
+    x:Class="Scribe.UI.Views.Sections.FolderDetails.FolderDetailsHeaderSection"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:components="clr-namespace:Scribe.UI.Views.Components"
+    xmlns:folderDetails="clr-namespace:Scribe.UI.Views.Sections.FolderDetails"
+    mc:Ignorable="d"
+    d:DesignHeight="50" 
+    d:DesignWidth="300"
+    d:DataContext="{d:DesignInstance folderDetails:FolderDetailsViewModel}">
+    
+    <UserControl.Resources>
+        <StackPanel x:Key="ConfirmAndCancelButtons" Orientation="Horizontal">
+            <components:IconButton
+                Width="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
+                Height="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
+                IconSource="{StaticResource Drawing.Confirm}"
+                IconPadding="{DynamicResource Dimen.FolderDetails.Header.Icon.Padding}"
+                ToolTip="{DynamicResource String.Button.Confirm}"
+                VerticalAlignment="Center"
+                Margin="{DynamicResource Dimen.FolderDetails.Header.Icon.Margin}">
+                <components:IconButton.Style>
+                    <Style TargetType="components:IconButton">
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Visibility, ElementName=FolderNameErrorField}" Value="Collapsed"/>
+                                    <Condition Binding="{Binding OnEditMode}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Command" Value="{Binding UpdateFolderNameCommand}"/>
+                                    <Setter Property="CommandParameter" Value="{Binding Text, ElementName=FolderNameEditBox}"/>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </components:IconButton.Style>
+            </components:IconButton>
+            <components:IconButton
+                Width="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
+                Height="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
+                IconSource="{StaticResource Drawing.Close}"
+                IconPadding="{DynamicResource Dimen.FolderDetails.Header.Icon.Padding}"
+                ToolTip="{DynamicResource String.Button.Cancel}"
+                Command="{Binding ExitCurrentModeCommand}"
+                VerticalAlignment="Center"/>
+        </StackPanel>
+        
+        <StackPanel x:Key="EditAndDeleteButtons" Orientation="Horizontal">
+            <components:IconButton
+                Width="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
+                Height="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
+                IconSource="{StaticResource Drawing.Edit}"
+                IconPadding="{DynamicResource Dimen.FolderDetails.Header.Icon.Padding}"
+                ToolTip="{DynamicResource String.Button.Edit}"
+                Command="{Binding EnterEditModeCommand}"
+                VerticalAlignment="Center"
+                Margin="{DynamicResource Dimen.FolderDetails.Header.Icon.Margin}"/>
+            <components:IconButton
+                Width="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
+                Height="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
+                IconSource="{StaticResource Drawing.Delete}"
+                ToolTip="{DynamicResource String.Button.Delete}"
+                IconPadding="{DynamicResource Dimen.FolderDetails.Header.Icon.Padding}"
+                VerticalAlignment="Center"/>
+        </StackPanel>
+        
+        <Style x:Key="FolderActionsContentStyle">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding OnEditMode}" Value="True">
+                    <Setter Property="ContentControl.Content" Value="{StaticResource ConfirmAndCancelButtons}"/>
+                </DataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding OnEditMode}" Value="False"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="ContentControl.Content" Value="{StaticResource EditAndDeleteButtons}"/>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <Image
+            Width="{DynamicResource Dimen.FolderDetails.Header.Folder.Size}"
+            Source="{StaticResource Drawing.Dark.Folder}"
+            VerticalAlignment="Center"/>
+        <TextBlock
+            Grid.Row="0"
+            Grid.Column="1"
+            Text="{Binding CurrentFolder.Name, FallbackValue=#}"
+            FontSize="{DynamicResource Dimen.TextSize.Normal2}"
+            TextTrimming="WordEllipsis"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.FolderDetails.Header.Name.Margin}">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding OnEditMode}" Value="True">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <TextBox
+            Name="FolderNameEditBox"
+            Grid.Row="0"
+            Grid.Column="1"
+            Foreground="{DynamicResource Brush.Text.Primary}"
+            FontSize="{DynamicResource Dimen.TextSize.Normal2}"
+            VerticalAlignment="Center"
+            Visibility="{Binding OnEditMode, Converter={StaticResource BooleanToVisibilityConverter}}"
+            Margin="{DynamicResource Dimen.FolderDetails.Header.Name.Margin}">
+            <TextBox.Style>
+                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding OnEditMode}" Value="True">
+                            <Setter 
+                                Property="Text" 
+                                Value="{Binding CurrentFolder.Name, FallbackValue=#, Mode=OneWay}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
+                            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Warming}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <ContentControl
+            Grid.Row="0"
+            Grid.Column="2"
+            Style="{StaticResource FolderActionsContentStyle}"/>
+        <TextBlock
+            Name="FolderNameErrorField"
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Text="{DynamicResource String.Error.RequiredField}"
+            Foreground="{DynamicResource Brush.Warming}"
+            Margin="{DynamicResource Dimen.FolderDetails.Header.Error.Margin}">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding OnEditMode}" Value="True"/>
+                                <Condition Binding="{Binding Text, ElementName=FolderNameEditBox}" Value=""/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+    </Grid>
+</UserControl>

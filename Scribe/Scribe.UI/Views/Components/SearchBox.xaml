@@ -63,6 +63,7 @@
                 Foreground="{DynamicResource Brush.Text.Secondary}"
                 Background="Transparent"
                 BorderThickness="0"
+                Padding="0"
                 VerticalAlignment="Center"
                 Margin="{DynamicResource Dimen.SearchBox.Hint.Margin}">
             </TextBox>

@@ -9,7 +9,7 @@ public class EventAggregatorTests
     private readonly EventAggregator _eventAggregator = new();
     
     [Fact]
-    public void SubscribeAndPublishEvent()
+    public void SubscribesAndPublishesEvent()
     {
         var eventHandled = false;
         
@@ -20,7 +20,7 @@ public class EventAggregatorTests
     }
     
     [Fact]
-    public void UnsubscribeFromEvent()
+    public void UnsubscribesFromEvent()
     {
         var eventHandled = false;
         Action<TestEvent> handler = _ => eventHandled = true;

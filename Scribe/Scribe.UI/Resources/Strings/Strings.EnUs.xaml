@@ -19,10 +19,16 @@
     <sys:String x:Key="String.Config.Theme.Light">Light</sys:String>
     <sys:String x:Key="String.Config.Theme.Dark">Dark</sys:String>
     <sys:String x:Key="String.Config.Language">Language</sys:String>
+    <sys:String x:Key="String.Config.Language.Pt.Br">PT-BR</sys:String>
+    <sys:String x:Key="String.Config.Language.En.Us">EN-US</sys:String>
     <sys:String x:Key="String.Config.Scale">Scale</sys:String>
     <sys:String x:Key="String.Config.Scale.Increase">Increase value</sys:String>
     <sys:String x:Key="String.Config.Scale.Decrease">Decrease value</sys:String>
     
-    <sys:String x:Key="String.Config.Lang.Pt.Br">PT-BR</sys:String>
-    <sys:String x:Key="String.Config.Lang.En.Us">EN-US</sys:String>
+    <sys:String x:Key="String.Button.Confirm">Confirm</sys:String>
+    <sys:String x:Key="String.Button.Cancel">Cancel</sys:String>
+    <sys:String x:Key="String.Button.Edit">Edit</sys:String>
+    <sys:String x:Key="String.Button.Delete">Delete</sys:String>
+    
+    <sys:String x:Key="String.Error.RequiredField">* Required Field</sys:String>
 </ResourceDictionary>

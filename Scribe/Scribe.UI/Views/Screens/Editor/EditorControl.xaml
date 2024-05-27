@@ -6,6 +6,7 @@
      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
      xmlns:screenEditor="clr-namespace:Scribe.UI.Views.Screens.Editor"
      xmlns:navSection="clr-namespace:Scribe.UI.Views.Sections.Navigation"
+     xmlns:folderDetailsSection="clr-namespace:Scribe.UI.Views.Sections.FolderDetails"
      mc:Ignorable="d"
      d:DesignHeight="800"
      d:DesignWidth="1000"
@@ -30,12 +31,34 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <navSection:NavSection DataContext="{Binding NavigationViewModel}"/>
+        <navSection:NavSection 
+            DataContext="{Binding NavigationViewModel}"/>
         <Rectangle
             Grid.Column="1"
             Style="{StaticResource Style.Divider.Vertical}"/>
+        <folderDetailsSection:FolderDetailsSection
+            x:Name="FolderDetailsSection"
+            Grid.Column="2"
+            DataContext="{Binding FolderDetailsViewModel}"/>
+        <Rectangle
+            Grid.Column="3">
+            <Rectangle.Style>
+                <Style TargetType="Rectangle" BasedOn="{StaticResource Style.Divider.Vertical}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger
+                            Binding="{Binding Visibility, ElementName=FolderDetailsSection}"
+                            Value="Visible">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Rectangle.Style>
+        </Rectangle>
     </Grid>
 </UserControl>

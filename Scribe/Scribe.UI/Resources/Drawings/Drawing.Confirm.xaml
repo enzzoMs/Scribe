@@ -1,0 +1,18 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <DrawingImage x:Key="Drawing.Confirm">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <DrawingGroup>
+                    <GeometryDrawing 
+                        Brush="{DynamicResource Brush.Icon.Dark}" 
+                        Geometry=
+                            "F1 M24,24z M0,0z M9.54998,18L3.84998,12.3 5.27498,10.875 9.54998,15.15 18.725,5.97498 
+                            20.15,7.39998 9.54998,18z"/>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+</ResourceDictionary>

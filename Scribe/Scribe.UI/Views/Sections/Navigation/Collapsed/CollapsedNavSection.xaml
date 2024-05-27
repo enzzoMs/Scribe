@@ -1,13 +1,13 @@
 ﻿<UserControl 
-     x:Class="Scribe.UI.Views.Sections.Navigation.Condensed.CondensedNavSection"
+     x:Class="Scribe.UI.Views.Sections.Navigation.Collapsed.CollapsedNavSection"
      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
      xmlns:navSection="clr-namespace:Scribe.UI.Views.Sections.Navigation"
-     xmlns:condensedNavSection="clr-namespace:Scribe.UI.Views.Sections.Navigation.Condensed"
      xmlns:components="clr-namespace:Scribe.UI.Views.Components"
      xmlns:sys="clr-namespace:System;assembly=mscorlib"
+     xmlns:collapsed="clr-namespace:Scribe.UI.Views.Sections.Navigation.Collapsed"
      mc:Ignorable="d"
      d:DesignHeight="800"
      d:DesignWidth="300"
@@ -15,8 +15,8 @@
      Background="{DynamicResource Brush.Surface}">
     
     <Grid
-        Width="{DynamicResource Dimen.Nav.Condensed.Size}"
-        Margin="{DynamicResource Dimen.Nav.Condensed.InnerMargin}">
+        Width="{DynamicResource Dimen.Nav.Collapsed.Size}"
+        Margin="{DynamicResource Dimen.Nav.Collapsed.InnerMargin}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -34,7 +34,7 @@
             IconSource="{StaticResource Drawing.DoubleArrow.Right}"
             HorizontalAlignment="Center"
             ToolTip="{DynamicResource String.Nav.Open}"
-            Command="{Binding CondenseNavigationCommand}">
+            Command="{Binding CollapseNavigationCommand}">
             <components:IconButton.CommandParameter>
                 <sys:Boolean>False</sys:Boolean>
             </components:IconButton.CommandParameter>
@@ -42,7 +42,7 @@
         <Rectangle
             Grid.Row="1"
             Style="{StaticResource Style.Divider.Horizontal}"
-            Margin="{DynamicResource Dimen.Nav.Condensed.Divider.Margin}"/>
+            Margin="{DynamicResource Dimen.Nav.Collapsed.Divider.Margin}"/>
         <components:IconButton
             Grid.Row="2"
             Command="{Binding CreateFolderCommand}"
@@ -51,22 +51,22 @@
             ToolTip="{DynamicResource String.Folders.Tooltip.Create}"
             IconPadding="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Padding}"
             IconSource="{StaticResource Drawing.Add}"
-            Margin="{DynamicResource Dimen.Nav.Condensed.NewFolderIcon.Margin}"
+            Margin="{DynamicResource Dimen.Nav.Collapsed.NewFolderIcon.Margin}"
             HorizontalAlignment="Center"/>
-        <condensedNavSection:CondensedFoldersSection
+        <collapsed:CollapsedFoldersSection
             Grid.Row="3"/>
         <Rectangle
             Grid.Row="4"
             Style="{StaticResource Style.Divider.Horizontal}"
-            Margin="{DynamicResource Dimen.Nav.Condensed.Divider.Margin}"/>
+            Margin="{DynamicResource Dimen.Nav.Collapsed.Divider.Margin}"/>
         <components:IconButton
             Grid.Row="5"
             Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
             Height="{DynamicResource Dimen.Config.Item.Icon.Size}"
             IconSource="{StaticResource Drawing.Contrast}"
-            Margin="{DynamicResource Dimen.Nav.Condensed.ConfigIcon.Margin}"
+            Margin="{DynamicResource Dimen.Nav.Collapsed.ConfigIcon.Margin}"
             ToolTip="{DynamicResource String.Config.Theme}"
-            Command="{Binding CondenseNavigationCommand}">
+            Command="{Binding CollapseNavigationCommand}">
             <components:IconButton.CommandParameter>
                 <sys:Boolean>False</sys:Boolean>
             </components:IconButton.CommandParameter>
@@ -76,9 +76,9 @@
             Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
             Height="{DynamicResource Dimen.Config.Item.Icon.Size}"
             IconSource="{StaticResource Drawing.Globe}"
-            Margin="{DynamicResource Dimen.Nav.Condensed.ConfigIcon.Margin}"
+            Margin="{DynamicResource Dimen.Nav.Collapsed.ConfigIcon.Margin}"
             ToolTip="{DynamicResource String.Config.Language}"
-            Command="{Binding CondenseNavigationCommand}">
+            Command="{Binding CollapseNavigationCommand}">
             <components:IconButton.CommandParameter>
                 <sys:Boolean>False</sys:Boolean>
             </components:IconButton.CommandParameter>
@@ -88,9 +88,9 @@
             Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
             Height="{DynamicResource Dimen.Config.Item.Icon.Size}"
             IconSource="{StaticResource Drawing.Ruler}"
-            Margin="{DynamicResource Dimen.Nav.Condensed.ConfigIcon.Margin}"
+            Margin="{DynamicResource Dimen.Nav.Collapsed.ConfigIcon.Margin}"
             ToolTip="{DynamicResource String.Config.Scale}"
-            Command="{Binding CondenseNavigationCommand}">
+            Command="{Binding CollapseNavigationCommand}">
             <components:IconButton.CommandParameter>
                 <sys:Boolean>False</sys:Boolean>
             </components:IconButton.CommandParameter>
