@@ -103,7 +103,7 @@ public class NavigationViewModel : BaseViewModel
 
     public void LoadFolders(IEnumerable<Folder> folders)
     {
-        _allFolders = folders.OrderBy(folder => folder.Index).ToList();
+        _allFolders = folders.OrderBy(folder => folder.NavigationPosition).ToList();
         CurrentFolders = new ObservableCollection<Folder>(_allFolders);
     }
 
@@ -120,7 +120,10 @@ public class NavigationViewModel : BaseViewModel
     {
         var folderName = (string) Application.Current.TryFindResource("String.Folders.DefaultName") ?? "New Folder";
         
-        var newFolder = await _foldersRepository.Add(new Folder(folderName, _allFolders.Count + 1));
+        var newFolder = await _foldersRepository.Add(new Folder(
+            name: folderName,
+            navigationPosition: _allFolders.Count + 1
+        ));
         
         _allFolders.Insert(0, newFolder);
         CurrentFolders.Insert(0, newFolder);

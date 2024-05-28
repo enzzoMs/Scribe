@@ -24,8 +24,9 @@
         Margin="{DynamicResource Dimen.FolderDetails.InnerMargin}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
-        <folderDetailsSection:FolderDetailsHeaderSection/>
+        <folderDetailsSection:FolderNameSection/>
     </Grid>
 </UserControl>

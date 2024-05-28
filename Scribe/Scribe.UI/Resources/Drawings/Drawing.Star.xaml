@@ -6,7 +6,7 @@
         <DrawingImage.Drawing>
             <DrawingGroup ClipGeometry="M0,0 V14 H15 V0 H0 Z">
                 <GeometryDrawing 
-                    Brush="{DynamicResource Brush.Icon.Dark}" 
+                    Brush="{DynamicResource Brush.Text.Secondary}" 
                     Geometry=
                         "F1 M15,14z M0,0z M5.99771,13.8343L6.43657,9.11657 6.912,9.15314 2.59657,12.1154 0.841143,
                         9.04343 5.48571,7.06857 5.44914,7.36114 0.768,5.20343 2.56,2.168 6.98514,5.31314 6.43657,
