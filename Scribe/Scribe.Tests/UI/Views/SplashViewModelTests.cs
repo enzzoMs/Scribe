@@ -9,10 +9,10 @@ namespace Scribe.Tests.UI.Views;
 public class SplashViewModelTests
 {
     private readonly EventAggregator _eventAggregator = new();
-    private readonly IRepository<Folder> _foldersRepository = Substitute.For<IRepository<Folder>>();
+    private readonly IRepository<Folder> _foldersRepositoryMock = Substitute.For<IRepository<Folder>>();
     private readonly SplashViewModel _splashViewModel;
 
-    public SplashViewModelTests() => _splashViewModel = new SplashViewModel(_eventAggregator, _foldersRepository);
+    public SplashViewModelTests() => _splashViewModel = new SplashViewModel(_eventAggregator, _foldersRepositoryMock);
     
     [Fact]
     public async Task DataIsLoadedAndReceived()
@@ -20,7 +20,7 @@ public class SplashViewModelTests
         List<Folder> expectedFolders = [new Folder("", 0), new Folder("", 3)];
         List<Folder>? receivedFolders = null;
         
-        _foldersRepository.GetAll().Returns(expectedFolders);
+        _foldersRepositoryMock.GetAll().Returns(expectedFolders);
         _eventAggregator.Subscribe<FoldersLoadedEvent>(e => receivedFolders = e.Folders);
 
         await _splashViewModel.Load();
@@ -37,7 +37,7 @@ public class SplashViewModelTests
         List<Folder> expectedFolders = [];
         List<Folder>? receivedFolders = null;
         
-        _foldersRepository.GetAll().Returns(expectedFolders);
+        _foldersRepositoryMock.GetAll().Returns(expectedFolders);
         _eventAggregator.Subscribe<FoldersLoadedEvent>(e => receivedFolders = e.Folders);
         
         await _splashViewModel.Load();
@@ -46,7 +46,7 @@ public class SplashViewModelTests
 
         Assert.Equal(expectedFolders, receivedFolders);
 
-        _foldersRepository.GetAll().Returns([new Folder("", 0)]);
+        _foldersRepositoryMock.GetAll().Returns([new Folder("", 0)]);
 
         await _splashViewModel.Load();
         
@@ -54,11 +54,11 @@ public class SplashViewModelTests
     }
     
     [Fact]
-    public async Task EventIsPublishedOnlyOnce()
+    public async Task LoadedEventIsPublishedOnlyOnce()
     {
         var publishedEvents = 0;
         
-        _foldersRepository.GetAll().Returns([]);
+        _foldersRepositoryMock.GetAll().Returns([]);
         _eventAggregator.Subscribe<FoldersLoadedEvent>(_ => publishedEvents++);
         
         await _splashViewModel.Load();

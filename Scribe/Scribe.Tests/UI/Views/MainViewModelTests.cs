@@ -1,7 +1,9 @@
 ﻿using NSubstitute;
+using Scribe.Data.Configurations;
 using Scribe.Data.Model;
 using Scribe.Data.Repositories;
 using Scribe.UI.Events;
+using Scribe.UI.Resources;
 using Scribe.UI.Views.Screens.Editor;
 using Scribe.UI.Views.Screens.Main;
 using Scribe.UI.Views.Screens.Splash;
@@ -22,7 +24,15 @@ public class MainViewModelTests
         var foldersRepository = Substitute.For<IRepository<Folder>>();
         foldersRepository.GetAll().Returns([]);
 
-        var navigationViewModel = new NavigationViewModel(_eventAggregator, foldersRepository, new ConfigurationsViewModel());
+        var configurationsRepository = Substitute.For<IConfigurationsRepository>();
+        configurationsRepository.GetAllConfigurations().Returns(
+            new AppConfigurations(ThemeConfiguration.Light, LanguageConfiguration.EnUs, 1.0)    
+        );
+        
+        var resourcesManager = Substitute.For<IResourceManager>();
+
+        var configurationsViewModel = new ConfigurationsViewModel(configurationsRepository, resourcesManager);
+        var navigationViewModel = new NavigationViewModel(_eventAggregator, foldersRepository, configurationsViewModel);
         var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, foldersRepository);
         var editorViewModel = new EditorViewModel(navigationViewModel, folderDetailsViewModel);
         
@@ -34,7 +44,7 @@ public class MainViewModelTests
     public void SplashIsFirstViewModel() => Assert.IsType<SplashViewModel>(_mainViewModel.CurrentViewModel);
 
     [Fact]
-    public async Task NavigateToEditorWhenSplashFinishes()
+    public async Task NavigatesToEditorWhenSplashFinishes()
     {
         await _splashViewModel.Load();
         _splashViewModel.FinishLogoAnimation();

@@ -4,7 +4,7 @@ using Scribe.Data.Model;
 
 namespace Scribe.Data.Configurations;
 
-public static class ConfigurationsManager
+public class ConfigurationsRepository : IConfigurationsRepository
 {
     private const string ConfigFilePath = "./appsettings.json";
     private static readonly JsonSerializerOptions SerializerOptions = new()
@@ -12,12 +12,12 @@ public static class ConfigurationsManager
         WriteIndented = true, Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
     };
     
-    public static AppConfigurations GetAllConfigurations() => JsonSerializer.Deserialize<AppConfigurations>(
+    public AppConfigurations GetAllConfigurations() => JsonSerializer.Deserialize<AppConfigurations>(
         File.ReadAllText(ConfigFilePath), options: SerializerOptions
     )!;
     
     /// <returns>The updated app configuration.</returns>
-    public static AppConfigurations SaveConfiguration(LanguageConfiguration config)
+    public AppConfigurations SaveConfiguration(LanguageConfiguration config)
     {
         var currentAppConfigurations = GetAllConfigurations();
         
@@ -32,7 +32,7 @@ public static class ConfigurationsManager
     }
     
     /// <returns>The updated app configuration.</returns>
-    public static AppConfigurations SaveConfiguration(ThemeConfiguration config)
+    public AppConfigurations SaveConfiguration(ThemeConfiguration config)
     {
         var currentAppConfigurations = GetAllConfigurations();
         
@@ -46,8 +46,7 @@ public static class ConfigurationsManager
         return newAppConfiguration;
     }
     
-    /// <returns>The updated app configuration.</returns>
-    public static AppConfigurations SaveConfiguration(double scale)
+    public AppConfigurations SaveConfiguration(double scale)
     {
         var currentAppConfigurations = GetAllConfigurations();
         

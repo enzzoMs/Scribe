@@ -1,23 +1,35 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Scribe.Data.Configurations;
 using Scribe.Data.Model;
 using Scribe.UI.Command;
+using Scribe.UI.Resources;
 
 namespace Scribe.UI.Views.Sections.Configurations;
 
 public class ConfigurationsViewModel : BaseViewModel
 {
+    private readonly IConfigurationsRepository _configurationsRepository;
+    private readonly IResourceManager _resourceManager;
+    
     private AppConfigurations _currentConfiguration;
     private double _currentScale;
     
-    public ConfigurationsViewModel()
+    public ConfigurationsViewModel(IConfigurationsRepository configurationsRepository, IResourceManager resourceManager)
     {
-        _currentConfiguration = ConfigurationsManager.GetAllConfigurations();
-        _currentScale = _currentConfiguration.Scale;
+        _configurationsRepository = configurationsRepository;
+        _resourceManager = resourceManager;
         
-        SelectLanguageCommand = new DelegateCommand(SelectLanguage);
-        SelectThemeCommand = new DelegateCommand(SelectTheme);
+        _currentConfiguration = configurationsRepository.GetAllConfigurations();
+        _currentScale = _currentConfiguration.Scale;
+
+        SelectLanguageCommand = new DelegateCommand(parameter =>
+        {
+            if (parameter is LanguageConfiguration langConfig) SelectLanguage(langConfig);
+        });
+        SelectThemeCommand = new DelegateCommand(parameter =>
+        {
+            if (parameter is ThemeConfiguration themeConfig) SelectTheme(themeConfig);
+        });
     }
     
     public AppConfigurations CurrentConfiguration
@@ -43,80 +55,29 @@ public class ConfigurationsViewModel : BaseViewModel
     public ICommand SelectLanguageCommand { get; }
     
     public ICommand SelectThemeCommand { get; }
-
-    private void SelectLanguage(object? parameter)
+    
+    private void SelectLanguage(LanguageConfiguration langConfig)
     {
-        if (parameter is not LanguageConfiguration langConfig) return;
+        if (CurrentConfiguration.Language == langConfig) return;
         
-        var newConfiguration = ConfigurationsManager.SaveConfiguration(langConfig);
-
-        if (newConfiguration != CurrentConfiguration)
-        {
-            var langDictionaryPath = $"/Resources/Strings/Strings.{langConfig}.xaml";
-            var langDictionaryIndex = App.Self().StringsDictionaryIndex;
-
-            Application.Current.Resources.MergedDictionaries[langDictionaryIndex] = new ResourceDictionary
-            {
-                Source = new Uri(langDictionaryPath, UriKind.Relative)
-            };
-        }
-
-        CurrentConfiguration = newConfiguration;
+        CurrentConfiguration = _configurationsRepository.SaveConfiguration(langConfig);
+        _resourceManager.UpdateLanguageResource(langConfig);
     }
     
-    private void SelectTheme(object? parameter)
+    private void SelectTheme(ThemeConfiguration themeConfig)
     {
-        if (parameter is not ThemeConfiguration themeConfig) return;
+        if (CurrentConfiguration.Theme == themeConfig) return;
         
-        var newConfiguration = ConfigurationsManager.SaveConfiguration(themeConfig);
-
-        if (newConfiguration != CurrentConfiguration)
-        {
-            var themeDictionaryPath = $"/Resources/Brushes/Brushes.{themeConfig}.xaml";
-            var themeDictionaryIndex = App.Self().ThemeDictionaryIndex;
-
-            Application.Current.Resources.MergedDictionaries[themeDictionaryIndex] = new ResourceDictionary
-            {
-                Source = new Uri(themeDictionaryPath, UriKind.Relative)
-            };
-        }
-
-        CurrentConfiguration = newConfiguration;
+        CurrentConfiguration = _configurationsRepository.SaveConfiguration(themeConfig);
+        _resourceManager.UpdateThemeResource(themeConfig);
     }
 
     private void ScaleApp()
     {
-        var newConfiguration = ConfigurationsManager.SaveConfiguration(_currentScale);
-
-        if (newConfiguration == CurrentConfiguration) return;
-
-        CurrentConfiguration = newConfiguration;
-
-        var baseDimensions = new ResourceDictionary { Source = new Uri("Resources/Dimens.xaml", UriKind.Relative) };
-
-        var currentDimensions = Application.Current.Resources.MergedDictionaries[App.Self().DimensDictionaryIndex];
+        const double scaleTolerance = 0.001;
+        if (Math.Abs(CurrentConfiguration.Scale - _currentScale) < scaleTolerance) return;
         
-        foreach (var dimensionKey in currentDimensions.Keys)
-        {
-            var dimension = baseDimensions[dimensionKey];
-
-            currentDimensions[dimensionKey] = dimension switch
-            {
-                double d => d * _currentScale,
-                Thickness t => new Thickness(
-                    left: t.Left * _currentScale, 
-                    right: t.Right * _currentScale,
-                    top: t.Top * _currentScale, 
-                    bottom: t.Bottom * _currentScale
-                ),
-                CornerRadius r => new CornerRadius(
-                    topLeft: r.TopLeft * _currentScale,
-                    topRight: r.TopRight * _currentScale, 
-                    bottomLeft: r.BottomLeft * _currentScale,
-                    bottomRight: r.BottomRight * _currentScale
-                ),
-                _ => dimension
-            };
-        }
+        CurrentConfiguration = _configurationsRepository.SaveConfiguration(_currentScale);
+        _resourceManager.UpdateDimensionsResource(_currentScale);
     }
 }
