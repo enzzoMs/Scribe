@@ -14,6 +14,15 @@
      d:DataContext="{d:DesignInstance navSection:NavigationViewModel}"
      Background="{DynamicResource Brush.Surface}">
     
+    <UserControl.Resources>
+        <Style x:Key="ConfigItemStyle" TargetType="components:IconButton">
+            <Setter Property="Width" Value="{DynamicResource Dimen.Config.Item.Icon.Size}"/>
+            <Setter Property="Height" Value="{DynamicResource Dimen.Config.Item.Icon.Size}"/>
+            <Setter Property="IconBrush" Value="{DynamicResource Brush.Text.Primary}"/>
+            <Setter Property="Margin" Value="{DynamicResource Dimen.Nav.Collapsed.ConfigIcon.Margin}"/>
+        </Style>
+    </UserControl.Resources>
+    
     <Grid
         Width="{DynamicResource Dimen.Nav.Collapsed.Size}"
         Margin="{DynamicResource Dimen.Nav.Collapsed.InnerMargin}">
@@ -31,10 +40,11 @@
         <components:IconButton
             Width="{DynamicResource Dimen.Nav.OpenAndCloseIcon.Size}"
             Height="{DynamicResource Dimen.Nav.OpenAndCloseIcon.Size}"
-            IconSource="{StaticResource Drawing.DoubleArrow.Right}"
-            HorizontalAlignment="Center"
+            IconGeometry="{StaticResource Drawing.DoubleArrow.Right}"
+            IconBrush="{DynamicResource Brush.Text.Primary}"
             ToolTip="{DynamicResource String.Nav.Open}"
-            Command="{Binding CollapseNavigationCommand}">
+            Command="{Binding CollapseNavigationCommand}"
+            HorizontalAlignment="Center">
             <components:IconButton.CommandParameter>
                 <sys:Boolean>False</sys:Boolean>
             </components:IconButton.CommandParameter>
@@ -45,12 +55,13 @@
             Margin="{DynamicResource Dimen.Nav.Collapsed.Divider.Margin}"/>
         <components:IconButton
             Grid.Row="2"
-            Command="{Binding CreateFolderCommand}"
             Width="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Size}"
             Height="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Size}"
-            ToolTip="{DynamicResource String.Folders.Tooltip.Create}"
             IconPadding="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Padding}"
-            IconSource="{StaticResource Drawing.Add}"
+            IconBrush="{DynamicResource Brush.Text.Primary}"
+            IconGeometry="{StaticResource Drawing.Add}"
+            Command="{Binding CreateFolderCommand}"
+            ToolTip="{DynamicResource String.Folders.Tooltip.Create}"
             Margin="{DynamicResource Dimen.Nav.Collapsed.NewFolderIcon.Margin}"
             HorizontalAlignment="Center"/>
         <collapsed:CollapsedFoldersSection
@@ -61,36 +72,30 @@
             Margin="{DynamicResource Dimen.Nav.Collapsed.Divider.Margin}"/>
         <components:IconButton
             Grid.Row="5"
-            Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
-            Height="{DynamicResource Dimen.Config.Item.Icon.Size}"
-            IconSource="{StaticResource Drawing.Contrast}"
-            Margin="{DynamicResource Dimen.Nav.Collapsed.ConfigIcon.Margin}"
+            IconGeometry="{StaticResource Drawing.Contrast}"
             ToolTip="{DynamicResource String.Config.Theme}"
-            Command="{Binding CollapseNavigationCommand}">
+            Command="{Binding CollapseNavigationCommand}"
+            Style="{StaticResource ConfigItemStyle}">
             <components:IconButton.CommandParameter>
                 <sys:Boolean>False</sys:Boolean>
             </components:IconButton.CommandParameter>
         </components:IconButton>
         <components:IconButton
             Grid.Row="6"
-            Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
-            Height="{DynamicResource Dimen.Config.Item.Icon.Size}"
-            IconSource="{StaticResource Drawing.Globe}"
-            Margin="{DynamicResource Dimen.Nav.Collapsed.ConfigIcon.Margin}"
+            IconGeometry="{StaticResource Drawing.Globe}"
             ToolTip="{DynamicResource String.Config.Language}"
-            Command="{Binding CollapseNavigationCommand}">
+            Command="{Binding CollapseNavigationCommand}"
+            Style="{StaticResource ConfigItemStyle}">
             <components:IconButton.CommandParameter>
                 <sys:Boolean>False</sys:Boolean>
             </components:IconButton.CommandParameter>
         </components:IconButton>
         <components:IconButton
             Grid.Row="7"
-            Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
-            Height="{DynamicResource Dimen.Config.Item.Icon.Size}"
-            IconSource="{StaticResource Drawing.Ruler}"
-            Margin="{DynamicResource Dimen.Nav.Collapsed.ConfigIcon.Margin}"
+            IconGeometry="{StaticResource Drawing.Ruler}"
             ToolTip="{DynamicResource String.Config.Scale}"
-            Command="{Binding CollapseNavigationCommand}">
+            Command="{Binding CollapseNavigationCommand}"
+            Style="{StaticResource ConfigItemStyle}">
             <components:IconButton.CommandParameter>
                 <sys:Boolean>False</sys:Boolean>
             </components:IconButton.CommandParameter>

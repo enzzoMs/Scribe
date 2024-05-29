@@ -7,15 +7,21 @@ namespace Scribe.UI.Views.Components;
 
 public partial class IconButton : UserControl
 {
-    public static readonly DependencyProperty IconSourceProperty = DependencyProperty.Register(
-        name: nameof(IconSource),
-        propertyType: typeof(ImageSource),
+    public static readonly DependencyProperty IconGeometryProperty = DependencyProperty.Register(
+        name: nameof(IconGeometry),
+        propertyType: typeof(Geometry),
         ownerType: typeof(UserControl)
     );
     
     public static readonly DependencyProperty IconPaddingProperty = DependencyProperty.Register(
         name: nameof(IconPadding),
         propertyType: typeof(double),
+        ownerType: typeof(UserControl)
+    );
+    
+    public static readonly DependencyProperty IconBrushProperty = DependencyProperty.Register(
+        name: nameof(IconBrush),
+        propertyType: typeof(Brush),
         ownerType: typeof(UserControl)
     );
 
@@ -31,16 +37,22 @@ public partial class IconButton : UserControl
         ownerType: typeof(UserControl)
     );
     
-    public ImageSource? IconSource
+    public Geometry? IconGeometry
     {
-        get => GetValue(IconSourceProperty) as ImageSource;
-        set => SetValue(IconSourceProperty, value);
+        get => GetValue(IconGeometryProperty) as Geometry;
+        set => SetValue(IconGeometryProperty, value);
     }
     
     public double IconPadding
     {
         get => GetValue(IconPaddingProperty) as double? ?? 0;
         set => SetValue(IconPaddingProperty, value);
+    }
+    
+    public Brush? IconBrush
+    {
+        get => GetValue(IconBrushProperty) as Brush;
+        set => SetValue(IconBrushProperty, value);
     }
     
     public ICommand? Command

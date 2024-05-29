@@ -6,112 +6,21 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
     </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Scribe.Data\Scribe.Data.csproj"/>
+    </ItemGroup>
     
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     </ItemGroup>
     
     <ItemGroup>
-        <ProjectReference Include="..\Scribe.Data\Scribe.Data.csproj"/>
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Page Update="Resources\Drawings\Drawing.ScribeLogo.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Resources\Drawings\Drawings.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Resources\Strings\Strings.EnUS.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Views\Screens\Splash\SplashControl.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="Views\Screens\Editor\EditorControl.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="Views\Sections\Configurations\ThemeConfigSection.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="Views\Sections\Configurations\LanguageConfigSection.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="Views\Sections\Folders\FoldersListSection.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="Views\Screens\Main\MainWindow.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="Resources\Styles\Styles.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Resources\Drawings\Drawing.Minus.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Views\Sections\Folders\Expanded\ExpandedNavControl.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Views\Sections\Navigation\NavSection.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Views\Sections\Navigation\Expanded\ExpandedFoldersSection.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Views\Sections\Navigation\Condensed\CondensedFoldersSection.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Views\Sections\Navigation\Condensed\CondensedNavSection.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Views\Sections\FolderContents\FolderDetailsHeaderSection.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Resources\Dimens\Dimens.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-    </ItemGroup>
-    
-    <ItemGroup>
-        <None Include="bin\Debug\net8.0-windows\scribe_database.db" />
-        
         <None Remove="Resources\Images\scribe_logo.png" />
         <Resource Include="Resources\Images\scribe_logo.png">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Resource>
         
         <Resource Include="Resources\Fonts\*.ttf"/>
-        
-        <Content Include="bin\Debug\net8.0-windows\appsettings.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="Views\Screens\" />
     </ItemGroup>
 </Project>

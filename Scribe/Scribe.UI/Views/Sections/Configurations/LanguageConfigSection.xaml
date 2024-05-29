@@ -38,9 +38,11 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <Image
+        <Path
             Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
-            Source="{StaticResource Drawing.Globe}"
+            Data="{StaticResource Drawing.Globe}"
+            Fill="{DynamicResource Brush.Text.Primary}"
+            Stretch="Uniform"
             VerticalAlignment="Center"/>
         <TextBlock
             Grid.Column="1"
@@ -56,7 +58,10 @@
                     Command="{Binding SelectLanguageCommand}"
                     CommandParameter="{x:Static model:LanguageConfiguration.PtBr}">
                     <MenuItem.Icon>
-                        <Image Source="{StaticResource Drawing.Globe}"/>
+                        <Path 
+                            Data="{StaticResource Drawing.Globe}"
+                            Fill="{DynamicResource Brush.Text.Primary}"
+                            Stretch="Uniform"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem 
@@ -64,7 +69,10 @@
                     Command="{Binding SelectLanguageCommand}"
                     CommandParameter="{x:Static model:LanguageConfiguration.EnUs}">
                     <MenuItem.Icon>
-                        <Image Source="{StaticResource Drawing.Globe}"/>
+                        <Path 
+                            Data="{StaticResource Drawing.Globe}"
+                            Fill="{DynamicResource Brush.Text.Primary}"
+                            Stretch="Uniform"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </components:DropDownBox.MenuItems>

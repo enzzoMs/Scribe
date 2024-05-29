@@ -25,7 +25,8 @@
         
         <components:IconButton
             x:Name="IncreaseButton"
-            IconSource="{StaticResource Drawing.Add}"
+            IconGeometry="{StaticResource Drawing.Add}"
+            IconBrush="{DynamicResource Brush.Text.Secondary}"
             ToolTip="{DynamicResource String.Config.Scale.Increase}"
             VerticalAlignment="Center"/>
         <TextBlock
@@ -38,7 +39,8 @@
         <components:IconButton
             x:Name="DecreaseButton"
             Grid.Column="2"
-            IconSource="{StaticResource Drawing.Minus}"
+            IconGeometry="{StaticResource Drawing.Minus}"
+            IconBrush="{DynamicResource Brush.Text.Secondary}"
             ToolTip="{DynamicResource String.Config.Scale.Decrease}"
             VerticalAlignment="Center"/>    
     </Grid>

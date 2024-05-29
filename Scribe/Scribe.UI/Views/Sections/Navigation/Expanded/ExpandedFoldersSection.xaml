@@ -23,9 +23,11 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Image
+                    <Path
                         Width="{DynamicResource Dimen.FolderItem.Icon.Size}"
-                        Source="{StaticResource Drawing.Light.Folder}"
+                        Data="{StaticResource Drawing.Folder}"
+                        Fill="White"
+                        Stretch="Uniform"
                         VerticalAlignment="Center"/>
                     <TextBlock
                         Grid.Column="1"
@@ -48,9 +50,11 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Image
+                    <Path
                         Width="{DynamicResource Dimen.FolderItem.Icon.Size}"
-                        Source="{StaticResource Drawing.Dark.Folder}"
+                        Data="{StaticResource Drawing.Folder}"
+                        Fill="{DynamicResource Brush.Text.Primary}"
+                        Stretch="Uniform"
                         VerticalAlignment="Center"/>
                     <TextBlock
                         Grid.Column="1"

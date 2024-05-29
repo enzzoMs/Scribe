@@ -12,12 +12,16 @@
     d:DataContext="{d:DesignInstance folderDetails:FolderDetailsViewModel}">
     
     <UserControl.Resources>
+        <Style TargetType="components:IconButton">
+            <Setter Property="Width" Value="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"/>
+            <Setter Property="Height" Value="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"/>
+            <Setter Property="IconBrush" Value="{DynamicResource Brush.Text.Primary}"/>
+            <Setter Property="IconPadding" Value="{DynamicResource Dimen.FolderDetails.Header.Icon.Padding}"/>
+        </Style>
+        
         <StackPanel x:Key="ConfirmAndCancelButtons" Orientation="Horizontal">
             <components:IconButton
-                Width="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
-                Height="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
-                IconSource="{StaticResource Drawing.Confirm}"
-                IconPadding="{DynamicResource Dimen.FolderDetails.Header.Icon.Padding}"
+                IconGeometry="{StaticResource Drawing.Confirm}"
                 ToolTip="{DynamicResource String.Button.Confirm}"
                 VerticalAlignment="Center"
                 Margin="{DynamicResource Dimen.FolderDetails.Header.Icon.Margin}">
@@ -39,10 +43,7 @@
                 </components:IconButton.Style>
             </components:IconButton>
             <components:IconButton
-                Width="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
-                Height="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
-                IconSource="{StaticResource Drawing.Close}"
-                IconPadding="{DynamicResource Dimen.FolderDetails.Header.Icon.Padding}"
+                IconGeometry="{StaticResource Drawing.Close}"
                 ToolTip="{DynamicResource String.Button.Cancel}"
                 Command="{Binding ExitCurrentModeCommand}"
                 VerticalAlignment="Center"/>
@@ -50,20 +51,14 @@
         
         <StackPanel x:Key="EditAndDeleteButtons" Orientation="Horizontal">
             <components:IconButton
-                Width="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
-                Height="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
-                IconSource="{StaticResource Drawing.Edit}"
-                IconPadding="{DynamicResource Dimen.FolderDetails.Header.Icon.Padding}"
+                IconGeometry="{StaticResource Drawing.Edit}"
                 ToolTip="{DynamicResource String.Button.Edit}"
                 Command="{Binding EnterEditModeCommand}"
                 VerticalAlignment="Center"
                 Margin="{DynamicResource Dimen.FolderDetails.Header.Icon.Margin}"/>
             <components:IconButton
-                Width="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
-                Height="{DynamicResource Dimen.FolderDetails.Header.Icon.Size}"
-                IconSource="{StaticResource Drawing.Delete}"
+                IconGeometry="{StaticResource Drawing.Delete}"
                 ToolTip="{DynamicResource String.Button.Delete}"
-                IconPadding="{DynamicResource Dimen.FolderDetails.Header.Icon.Padding}"
                 VerticalAlignment="Center"/>
         </StackPanel>
         
@@ -93,9 +88,11 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <Image
+        <Path
             Width="{DynamicResource Dimen.FolderDetails.Header.Folder.Size}"
-            Source="{StaticResource Drawing.Dark.Folder}"
+            Data="{StaticResource Drawing.Folder}"
+            Fill="{DynamicResource Brush.Text.Primary}"
+            Stretch="Uniform"
             VerticalAlignment="Center"/>
         <TextBlock
             Grid.Row="0"

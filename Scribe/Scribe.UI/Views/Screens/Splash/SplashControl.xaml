@@ -29,16 +29,18 @@
         </Storyboard>
     </UserControl.Resources>
     
-    <Image
+    <Path
         x:Name="AppLogo"
-        Source="{StaticResource Drawing.ScribeLogo}"
+        Stretch="Uniform"
+        Data="{StaticResource Drawing.ScribeLogo}"
+        Fill="{DynamicResource Brush.Primary}"
         Width="0">
-        <Image.Triggers>
-            <EventTrigger RoutedEvent="Image.Loaded">
+        <Path.Triggers>
+            <EventTrigger RoutedEvent="Path.Loaded">
                 <BeginStoryboard Storyboard="{StaticResource LogoPopUpStoryboard}"/>
             </EventTrigger>
-        </Image.Triggers>
-        <Image.Style>
+        </Path.Triggers>
+        <Path.Style>
             <Style>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding SplashCompleted}" Value="true">
@@ -48,6 +50,6 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-        </Image.Style>
-    </Image>
+        </Path.Style>
+    </Path>
 </UserControl>

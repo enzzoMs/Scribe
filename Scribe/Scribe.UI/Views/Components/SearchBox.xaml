@@ -33,9 +33,11 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             
-            <Image
+            <Path
                 Height="{DynamicResource Dimen.SearchBox.Icon.Size}"
-                Source="{StaticResource Drawing.Search}"/>
+                Data="{StaticResource Drawing.Search}"
+                Fill="{DynamicResource Brush.Text.Secondary}"
+                Stretch="Uniform"/>
             <TextBlock
                 Grid.Column="1"
                 Text="{DynamicResource String.Component.SearchBox.Hint}"

@@ -38,9 +38,11 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <Image
+        <Path
             Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
-            Source="{StaticResource Drawing.Contrast}"
+            Data="{StaticResource Drawing.Contrast}"
+            Fill="{DynamicResource Brush.Text.Primary}"
+            Stretch="Uniform"
             VerticalAlignment="Center"/>
         <TextBlock
             Grid.Row="0"
@@ -58,7 +60,10 @@
                     Command="{Binding SelectThemeCommand}"
                     CommandParameter="{x:Static model:ThemeConfiguration.Light}">
                     <MenuItem.Icon>
-                        <Image Source="{StaticResource Drawing.Contrast}"/>
+                        <Path 
+                            Data="{StaticResource Drawing.Contrast}"
+                            Fill="{DynamicResource Brush.Text.Primary}"
+                            Stretch="Uniform"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem 
@@ -66,7 +71,10 @@
                     Command="{Binding SelectThemeCommand}"
                     CommandParameter="{x:Static model:ThemeConfiguration.Dark}">
                     <MenuItem.Icon>
-                        <Image Source="{StaticResource Drawing.Contrast}"/>
+                        <Path 
+                            Data="{StaticResource Drawing.Contrast}"
+                            Fill="{DynamicResource Brush.Text.Primary}"
+                            Stretch="Uniform"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </components:DropDownBox.MenuItems>

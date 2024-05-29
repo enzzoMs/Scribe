@@ -46,9 +46,11 @@
                         Height="{TemplateBinding Height}"
                         Fill="{TemplateBinding Background}"/>
                     <Border Padding="{Binding IconPadding}">
-                        <Image
+                        <Path
                             Name="ButtonIcon"
-                            Source="{Binding IconSource}"
+                            Data="{Binding IconGeometry}"
+                            Fill="{Binding IconBrush}"
+                            Stretch="Uniform"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"/>
                     </Border>

@@ -27,9 +27,11 @@
                         Text="{Binding Text}"
                         Foreground="{DynamicResource Brush.Text.Secondary}"
                         VerticalAlignment="Center"/>
-                    <Image
+                    <Path
+                        Data="{StaticResource Drawing.DownArrow}"
                         Width="{DynamicResource Dimen.DropDownBox.Button.Size}"
-                        Source="{StaticResource Drawing.DownArrow}"
+                        Fill="{DynamicResource Brush.Text.Secondary}"
+                        Stretch="Uniform"
                         VerticalAlignment="Center"
                         Margin="{DynamicResource Dimen.DropDownBox.Button.Margin}"/>
                 </StackPanel>

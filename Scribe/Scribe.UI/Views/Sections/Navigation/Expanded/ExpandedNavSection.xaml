@@ -33,11 +33,13 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <Image
+        <Path
             Grid.Row="0"
             Grid.Column="0"
             Width="{DynamicResource Dimen.Nav.Expanded.AppLogo.Size}"
-            Source="{StaticResource Drawing.ScribeLogo}"/>
+            Data="{StaticResource Drawing.ScribeLogo}"
+            Fill="{DynamicResource Brush.Primary}"
+            Stretch="Uniform"/>
         <TextBlock
             Grid.Row="0"
             Grid.Column="1"
@@ -52,7 +54,8 @@
             Grid.Column="2"
             Width="{DynamicResource Dimen.Nav.OpenAndCloseIcon.Size}"
             Height="{DynamicResource Dimen.Nav.OpenAndCloseIcon.Size}"
-            IconSource="{StaticResource Drawing.DoubleArrow.Left}"
+            IconGeometry="{StaticResource Drawing.DoubleArrow.Left}"
+            IconBrush="{DynamicResource Brush.Text.Primary}"
             VerticalAlignment="Center"
             ToolTip="{DynamicResource String.Nav.Close}"
             Command="{Binding CollapseNavigationCommand}">
@@ -72,12 +75,13 @@
         <components:IconButton
             Grid.Row="1"
             Grid.Column="2"
-            Command="{Binding CreateFolderCommand}"
             Width="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Size}"
             Height="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Size}"
-            ToolTip="{DynamicResource String.Folders.Tooltip.Create}"
             IconPadding="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Padding}"
-            IconSource="{StaticResource Drawing.Add}"
+            IconBrush="{DynamicResource Brush.Text.Secondary}"
+            IconGeometry="{StaticResource Drawing.Add}"
+            ToolTip="{DynamicResource String.Folders.Tooltip.Create}"
+            Command="{Binding CreateFolderCommand}"
             Margin="{DynamicResource Dimen.Nav.Expanded.Subtitle.Margin}"
             VerticalAlignment="Bottom"/>
         <Rectangle
