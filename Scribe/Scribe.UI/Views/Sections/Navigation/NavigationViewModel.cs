@@ -118,6 +118,10 @@ public class NavigationViewModel : BaseViewModel
     
     private async void CreateFolder()
     {
+        _searchFoldersFilter = "";
+        RaisePropertyChanged(nameof(SearchFoldersFilter));
+        FilterFolders();
+        
         var folderName = (string) Application.Current.TryFindResource("String.Folders.DefaultName") ?? "New Folder";
         
         var newFolder = await _foldersRepository.Add(new Folder(

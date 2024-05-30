@@ -12,6 +12,7 @@
 
     <sys:String x:Key="String.Folders">Pastas</sys:String>
     <sys:String x:Key="String.Folders.DefaultName">Nova Pasta</sys:String>
+    <sys:String x:Key="String.Folders.Tooltip.None">Nenhuma Pasta</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Search">Pesquisar Pasta</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Create">Criar Pasta</sys:String>
 

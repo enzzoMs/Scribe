@@ -40,6 +40,7 @@
         
         <Path
             Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
+            Height="{DynamicResource Dimen.Config.Item.Icon.Size}"
             Data="{StaticResource Drawing.Globe}"
             Fill="{DynamicResource Brush.Text.Primary}"
             Stretch="Uniform"

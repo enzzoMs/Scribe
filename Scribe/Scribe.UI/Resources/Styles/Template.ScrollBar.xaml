@@ -12,26 +12,33 @@
                 <ControlTemplate TargetType="{x:Type Thumb}">
                     <Border
                         CornerRadius="6"
-                        Background="#232323"
-                        BorderBrush="#232323"
-                        BorderThickness="1" />
+                        Background="#232323" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
     <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="0.00001*" />
-            </Grid.RowDefinitions>
-            <Border 
-                Background="#DDDDDD" 
-                CornerRadius="{DynamicResource Dimen.ScrollBar.Radius}" 
-                Margin="14 0 0 0">
-                <Track x:Name="PART_Track" IsDirectionReversed="true">
+        <Border 
+            CornerRadius="{DynamicResource Dimen.ScrollBar.Thumb.Radius}" 
+            Margin="14 0 0 0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <Border
+                    CornerRadius="{DynamicResource Dimen.ScrollBar.Track.Radius}" 
+                    Background="#DDDDDD"
+                    Width="{DynamicResource Dimen.ScrollBar.Track.Size}"
+                    HorizontalAlignment="Center"/>
+                <Track 
+                    x:Name="PART_Track" 
+                    IsDirectionReversed="true"
+                    Width="{DynamicResource Dimen.ScrollBar.Thumb.Size}"
+                    HorizontalAlignment="Center">
                     <Track.Thumb>
-                        <Thumb Style="{StaticResource ScrollBarThumb}" Margin="0">
+                        <Thumb Style="{StaticResource ScrollBarThumb}">
                             <Thumb.BorderBrush>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                     <LinearGradientBrush.GradientStops>
@@ -55,8 +62,8 @@
                         </Thumb>
                     </Track.Thumb>
                 </Track>
-            </Border>
-        </Grid>
+            </Grid>
+        </Border>
     </ControlTemplate>
 
     <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
@@ -97,13 +104,7 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Style.Triggers>
-            <Trigger Property="Orientation" Value="Horizontal">
-                <Setter Property="Width" Value="Auto" />
-                <Setter Property="Height" Value="{DynamicResource Dimen.ScrollBar.Size}" />
-                <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
-            </Trigger>
             <Trigger Property="Orientation" Value="Vertical">
-                <Setter Property="Width" Value="{DynamicResource Dimen.ScrollBar.Size}" />
                 <Setter Property="Height" Value="Auto" />
                 <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
             </Trigger>

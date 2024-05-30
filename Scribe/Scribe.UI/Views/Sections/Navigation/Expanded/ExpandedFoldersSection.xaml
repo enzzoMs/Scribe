@@ -25,6 +25,7 @@
                     </Grid.ColumnDefinitions>
                     <Path
                         Width="{DynamicResource Dimen.FolderItem.Icon.Size}"
+                        Height="{DynamicResource Dimen.FolderItem.Icon.Size}"
                         Data="{StaticResource Drawing.Folder}"
                         Fill="White"
                         Stretch="Uniform"
@@ -40,6 +41,7 @@
                 </Grid>
             </Border>
         </ControlTemplate>
+        
         <ControlTemplate x:Key="UnselectedItemTemplate">
             <Border 
                 Padding="{DynamicResource Dimen.FolderItem.Padding}" 
@@ -52,6 +54,7 @@
                     </Grid.ColumnDefinitions>
                     <Path
                         Width="{DynamicResource Dimen.FolderItem.Icon.Size}"
+                        Height="{DynamicResource Dimen.FolderItem.Icon.Size}"
                         Data="{StaticResource Drawing.Folder}"
                         Fill="{DynamicResource Brush.Text.Primary}"
                         Stretch="Uniform"
@@ -67,30 +70,79 @@
             </Border>
         </ControlTemplate>
     </UserControl.Resources>    
-    
-    <ListView
-        ItemsSource="{Binding CurrentFolders}"
-        SelectedItem="{Binding SelectedFolder}"
-        Background="Transparent"
-        BorderThickness="0"
-        HorizontalContentAlignment="Stretch"
-        ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-        <ListView.ItemContainerStyle>
-            <Style TargetType="ListViewItem">
-                <Setter Property="Padding" Value="0"/>
-                <Setter Property="Margin" Value="0"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Template" Value="{StaticResource UnselectedItemTemplate}"/>
-                <Style.Triggers>
-                    <MultiTrigger>
-                        <MultiTrigger.Conditions>
-                            <Condition Property="IsSelected" Value="true"/>
-                            <Condition Property="Selector.IsSelected" Value="true"/>
-                        </MultiTrigger.Conditions>                            
-                        <Setter Property="Template" Value="{StaticResource SelectedItemTemplate}" />                            
-                    </MultiTrigger>
-                </Style.Triggers>
-            </Style>
-        </ListView.ItemContainerStyle>
-    </ListView>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <ListView
+            Name="FoldersListView"
+            Grid.RowSpan="2"
+            ItemsSource="{Binding CurrentFolders}"
+            SelectedItem="{Binding SelectedFolder}"
+            Background="Transparent"
+            BorderThickness="0"
+            HorizontalContentAlignment="Stretch"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Template" Value="{StaticResource UnselectedItemTemplate}"/>
+                    <Style.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="true"/>
+                                <Condition Property="Selector.IsSelected" Value="true"/>
+                            </MultiTrigger.Conditions>                            
+                            <Setter Property="Template" Value="{StaticResource SelectedItemTemplate}" />                            
+                        </MultiTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+        
+        <Path
+            Grid.Row="0"
+            Width="{DynamicResource Dimen.Nav.Expanded.NoFolder.Icon.Size}"
+            Data="{StaticResource Drawing.Folder}"
+            Fill="{DynamicResource Brush.Text.Secondary}"
+            Opacity="0.5"
+            Stretch="Uniform"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Center"
+            Margin="{DynamicResource Dimen.Nav.Expanded.NoFolder.Margin}">
+            <Path.Style>
+                <Style TargetType="Path">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Items.Count, ElementName=FoldersListView}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Path.Style>
+        </Path>
+        <TextBlock
+            Grid.Row="1"
+            Text="{DynamicResource String.Folders.Tooltip.None}"
+            Foreground="{DynamicResource Brush.Text.Secondary}"
+            Opacity="0.8"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Center">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Items.Count, ElementName=FoldersListView}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+    </Grid>
 </UserControl>

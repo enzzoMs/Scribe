@@ -12,6 +12,7 @@
     
     <sys:String x:Key="String.Folders">Folders</sys:String>
     <sys:String x:Key="String.Folders.DefaultName">New Folder</sys:String>
+    <sys:String x:Key="String.Folders.Tooltip.None">No Folders</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Search">Search Folder</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Create">Create Folder</sys:String>
 

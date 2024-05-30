@@ -30,6 +30,7 @@
                     <Path
                         Data="{StaticResource Drawing.DownArrow}"
                         Width="{DynamicResource Dimen.DropDownBox.Button.Size}"
+                        Height="{DynamicResource Dimen.DropDownBox.Button.Size}"
                         Fill="{DynamicResource Brush.Text.Secondary}"
                         Stretch="Uniform"
                         VerticalAlignment="Center"

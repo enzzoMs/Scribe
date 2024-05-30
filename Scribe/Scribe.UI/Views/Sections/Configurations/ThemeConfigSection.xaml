@@ -40,6 +40,7 @@
         
         <Path
             Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
+            Height="{DynamicResource Dimen.Config.Item.Icon.Size}"
             Data="{StaticResource Drawing.Contrast}"
             Fill="{DynamicResource Brush.Text.Primary}"
             Stretch="Uniform"
@@ -63,7 +64,7 @@
                         <Path 
                             Data="{StaticResource Drawing.Contrast}"
                             Fill="{DynamicResource Brush.Text.Primary}"
-                            Stretch="Uniform"/>
+                            Stretch="Fill"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem 

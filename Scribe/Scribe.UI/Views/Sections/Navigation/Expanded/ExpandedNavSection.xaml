@@ -37,6 +37,7 @@
             Grid.Row="0"
             Grid.Column="0"
             Width="{DynamicResource Dimen.Nav.Expanded.AppLogo.Size}"
+            Height="{DynamicResource Dimen.Nav.Expanded.AppLogo.Size}"
             Data="{StaticResource Drawing.ScribeLogo}"
             Fill="{DynamicResource Brush.Primary}"
             Stretch="Uniform"/>
@@ -93,10 +94,7 @@
             Grid.Row="3"
             Grid.Column="0"
             Grid.ColumnSpan="3"
-            SearchText="{Binding
-                SearchFoldersFilter,
-                Mode=TwoWay, 
-                UpdateSourceTrigger=PropertyChanged}"
+            SearchText="{Binding SearchFoldersFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             ToolTip="{DynamicResource String.Folders.Tooltip.Search}"
             Margin="{DynamicResource Dimen.Nav.Expanded.FolderSearchBox.Margin}"/>
         <expandedNavSection:ExpandedFoldersSection

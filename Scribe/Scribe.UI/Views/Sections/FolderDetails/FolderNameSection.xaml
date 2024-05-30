@@ -90,6 +90,7 @@
         
         <Path
             Width="{DynamicResource Dimen.FolderDetails.Header.Folder.Size}"
+            Height="{DynamicResource Dimen.FolderDetails.Header.Folder.Size}"
             Data="{StaticResource Drawing.Folder}"
             Fill="{DynamicResource Brush.Text.Primary}"
             Stretch="Uniform"
