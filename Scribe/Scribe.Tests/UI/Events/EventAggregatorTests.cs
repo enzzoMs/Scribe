@@ -3,13 +3,14 @@
 namespace Scribe.Tests.UI.Events;
 
 internal class TestEvent : IEvent;
+internal class TestEventSubclass : TestEvent;
 
 public class EventAggregatorTests
 {
     private readonly EventAggregator _eventAggregator = new();
     
     [Fact]
-    public void SubscribesAndPublishesEvent()
+    public void AllowsToSubscribeAndPublishEvent()
     {
         var eventHandled = false;
         
@@ -20,7 +21,19 @@ public class EventAggregatorTests
     }
     
     [Fact]
-    public void UnsubscribesFromEvent()
+    public void SubclassEventIsReceived_When_SubscribedToSuperclass()
+    {
+        TestEvent? eventData = null;
+        
+        _eventAggregator.Subscribe<TestEvent>(e => eventData = e);
+        _eventAggregator.Publish(new TestEventSubclass());
+        
+        Assert.NotNull(eventData);
+        Assert.IsType<TestEventSubclass>(eventData);
+    }
+    
+    [Fact]
+    public void AllowsToUnsubscribeFromEvent()
     {
         var eventHandled = false;
         Action<TestEvent> handler = _ => eventHandled = true;
@@ -33,7 +46,7 @@ public class EventAggregatorTests
     }
     
     [Fact]
-    public void EventDataIsReceived()
+    public void PublishedEventDataIsReceived()
     {
         TestEvent testEvent = new();
         IEvent? receivedEvent = null;

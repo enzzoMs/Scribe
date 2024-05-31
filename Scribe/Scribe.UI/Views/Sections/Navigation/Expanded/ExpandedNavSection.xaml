@@ -8,7 +8,6 @@
      xmlns:navSection="clr-namespace:Scribe.UI.Views.Sections.Navigation"
      xmlns:expandedNavSection="clr-namespace:Scribe.UI.Views.Sections.Navigation.Expanded"
      xmlns:components="clr-namespace:Scribe.UI.Views.Components"
-     xmlns:sys="clr-namespace:System;assembly=mscorlib"
      mc:Ignorable="d"
      d:DesignHeight="800"
      d:DesignWidth="300"
@@ -59,11 +58,8 @@
             IconBrush="{DynamicResource Brush.Text.Primary}"
             VerticalAlignment="Center"
             ToolTip="{DynamicResource String.Nav.Close}"
-            Command="{Binding CollapseNavigationCommand}">
-            <components:IconButton.CommandParameter>
-                <sys:Boolean>True</sys:Boolean>
-            </components:IconButton.CommandParameter>
-        </components:IconButton>
+            Command="{Binding CollapseNavigationCommand}"
+            CommandParameter="{StaticResource True}"/>
         <TextBlock
             Grid.Row="1"
             Grid.Column="0"

@@ -29,8 +29,12 @@
             Text="{DynamicResource String.Config.Scale}"
             VerticalAlignment="Center"
             Margin="{DynamicResource Dimen.Config.Item.Margin}"/>
-        <componentes:IncrementalDecimalBox
+        <componentes:IncrementalNumberBox
+            Grid.Column="2"
             CurrentValue="{Binding CurrentScale, Mode=TwoWay}"
-            Grid.Column="2"/>
+            IncrementStep="0.05"
+            MinValue="0.05"
+            TextSize="{DynamicResource Dimen.TextSize.Normal2}"
+            ShowDecimalPlaces="{StaticResource True}"/>
     </Grid>
 </UserControl>

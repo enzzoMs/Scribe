@@ -26,7 +26,7 @@
                 VerticalAlignment="Center"
                 Margin="{DynamicResource Dimen.FolderDetails.Header.Icon.Margin}">
                 <components:IconButton.Style>
-                    <Style TargetType="components:IconButton">
+                    <Style TargetType="components:IconButton" BasedOn="{StaticResource {x:Type components:IconButton}}">
                         <Style.Triggers>
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>

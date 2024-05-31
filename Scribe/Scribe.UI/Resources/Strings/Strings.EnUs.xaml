@@ -16,6 +16,8 @@
     <sys:String x:Key="String.Folders.Tooltip.Search">Search Folder</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Create">Create Folder</sys:String>
 
+    <sys:String x:Key="String.Folder.Property.Position">Position</sys:String>
+
     <sys:String x:Key="String.Config.Theme">Theme</sys:String>
     <sys:String x:Key="String.Config.Theme.Light">Light</sys:String>
     <sys:String x:Key="String.Config.Theme.Dark">Dark</sys:String>

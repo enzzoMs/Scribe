@@ -24,6 +24,14 @@
         </Style.Setters>
     </Style>
     
+    <Style TargetType="Label">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+            <Setter Property="FontFamily" Value="{StaticResource Text.Medium}"/>
+            <Setter Property="FontSize" Value="{DynamicResource Dimen.TextSize.Normal1}"/>
+        </Style.Setters>
+    </Style>
+    
     <Style TargetType="TextBox">
         <Style.Setters>
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}"/>

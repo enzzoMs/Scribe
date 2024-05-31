@@ -17,6 +17,7 @@
     
     <ItemGroup>
         <None Remove="Resources\Images\scribe_logo.png" />
+        <None Include="bin\Debug\net8.0-windows\scribe_database.db" />
         <Resource Include="Resources\Images\scribe_logo.png">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Resource>

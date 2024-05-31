@@ -42,7 +42,7 @@ public class NavigationViewModel : BaseViewModel
             FilterFolders();
         };
 
-        _onFolderUpdated = _ => RaisePropertyChanged(nameof(SelectedFolder));
+        _onFolderUpdated = OnFolderUpdated;
         _eventAggregator.Subscribe(_onFolderUpdated);
         
         ConfigurationsViewModel = configurationsViewModel;
@@ -103,7 +103,7 @@ public class NavigationViewModel : BaseViewModel
 
     public void LoadFolders(IEnumerable<Folder> folders)
     {
-        _allFolders = folders.OrderBy(folder => folder.NavigationPosition).ToList();
+        _allFolders = folders.OrderBy(folder => folder.NavigationIndex).ToList();
         CurrentFolders = new ObservableCollection<Folder>(_allFolders);
     }
 
@@ -115,21 +115,54 @@ public class NavigationViewModel : BaseViewModel
         ));
         CurrentFolders = new ObservableCollection<Folder>(filteredFolders);
     }
-    
-    private async void CreateFolder()
+
+    private void ClearFilter()
     {
         _searchFoldersFilter = "";
         RaisePropertyChanged(nameof(SearchFoldersFilter));
         FilterFolders();
+    }
+    
+    private async void CreateFolder()
+    {
+        ClearFilter();
         
         var folderName = (string) Application.Current.TryFindResource("String.Folders.DefaultName") ?? "New Folder";
         
         var newFolder = await _foldersRepository.Add(new Folder(
             name: folderName,
-            navigationPosition: _allFolders.Count + 1
+            navigationIndex: _allFolders.Count
         ));
         
-        _allFolders.Insert(0, newFolder);
-        CurrentFolders.Insert(0, newFolder);
+        _allFolders.Add(newFolder);
+        CurrentFolders.Add(newFolder);
+    }
+
+    private async void OnFolderUpdated(FolderUpdatedEvent folderEvent)
+    {
+        if (folderEvent is FolderPositionUpdatedEvent positionEvent)
+        {
+            if (positionEvent.NewIndex >= _allFolders.Count) return;
+            
+            // Swapping folder positions
+
+            var folderInOldPosition = _allFolders[positionEvent.OldIndex];
+
+            var folderInNewPosition = _allFolders[positionEvent.NewIndex];
+            
+            folderInNewPosition.NavigationIndex = positionEvent.OldIndex;
+            folderInOldPosition.NavigationIndex = positionEvent.NewIndex;
+
+            await _foldersRepository.Update(folderInNewPosition);
+            await _foldersRepository.Update(folderInOldPosition);
+
+            (_allFolders[positionEvent.NewIndex], _allFolders[positionEvent.OldIndex]) = 
+                (_allFolders[positionEvent.OldIndex], _allFolders[positionEvent.NewIndex]);
+            
+            ClearFilter();
+        }
+        
+        if (folderEvent.UpdatedFolderId == _selectedFolder?.Id) 
+            RaisePropertyChanged(nameof(SelectedFolder));
     }
 }

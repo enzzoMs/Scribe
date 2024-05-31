@@ -16,6 +16,8 @@
     <sys:String x:Key="String.Folders.Tooltip.Search">Pesquisar Pasta</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Create">Criar Pasta</sys:String>
 
+    <sys:String x:Key="String.Folder.Property.Position">Posição</sys:String>
+
     <sys:String x:Key="String.Config.Theme">Tema</sys:String>
     <sys:String x:Key="String.Config.Theme.Light">Claro</sys:String>
     <sys:String x:Key="String.Config.Theme.Dark">Escuro</sys:String>

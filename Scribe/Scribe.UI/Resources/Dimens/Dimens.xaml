@@ -47,6 +47,10 @@
     <sys:Double x:Key="Dimen.FolderDetails.Header.Icon.Padding">4</sys:Double>
     <Thickness x:Key="Dimen.FolderDetails.Header.Icon.Margin" Right="4"/>
 
+    <sys:Double x:Key="Dimen.FolderDetails.Properties.Icon.Size">14</sys:Double>
+    <Thickness x:Key="Dimen.FolderDetails.Properties.InnerMargin" Left="8" Right="8"/>
+    <Thickness x:Key="Dimen.FolderDetails.Properties.OuterMargin" Top="8" Bottom="8"/>
+
     <Thickness x:Key="Dimen.FolderItem.Padding" Left="12" Right="12" Top="6" Bottom="6"/>
     <CornerRadius x:Key="Dimen.FolderItem.Radius">8</CornerRadius>
     <sys:Double x:Key="Dimen.FolderItem.Icon.Size">24</sys:Double>

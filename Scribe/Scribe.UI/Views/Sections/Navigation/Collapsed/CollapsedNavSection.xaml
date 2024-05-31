@@ -6,7 +6,6 @@
      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
      xmlns:navSection="clr-namespace:Scribe.UI.Views.Sections.Navigation"
      xmlns:components="clr-namespace:Scribe.UI.Views.Components"
-     xmlns:sys="clr-namespace:System;assembly=mscorlib"
      xmlns:collapsed="clr-namespace:Scribe.UI.Views.Sections.Navigation.Collapsed"
      mc:Ignorable="d"
      d:DesignHeight="800"
@@ -22,11 +21,7 @@
             <Setter Property="IconBrush" Value="{DynamicResource Brush.Text.Primary}"/>
             <Setter Property="Margin" Value="{DynamicResource Dimen.Nav.Collapsed.ConfigIcon.Margin}"/>
             <Setter Property="Command" Value="{Binding CollapseNavigationCommand}"/>
-            <Setter Property="CommandParameter">
-                <Setter.Value>
-                    <sys:Boolean>False</sys:Boolean>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="CommandParameter" Value="{StaticResource False}"/>
         </Style>
     </UserControl.Resources>
     
@@ -51,11 +46,8 @@
             IconBrush="{DynamicResource Brush.Text.Primary}"
             ToolTip="{DynamicResource String.Nav.Open}"
             Command="{Binding CollapseNavigationCommand}"
-            HorizontalAlignment="Center">
-            <components:IconButton.CommandParameter>
-                <sys:Boolean>False</sys:Boolean>
-            </components:IconButton.CommandParameter>
-        </components:IconButton>
+            CommandParameter="{StaticResource False}"
+            HorizontalAlignment="Center"/>
         <Rectangle
             Grid.Row="1"
             Style="{StaticResource Style.Divider.Horizontal}"

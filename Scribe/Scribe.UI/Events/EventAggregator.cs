@@ -6,16 +6,20 @@ public class EventAggregator : IEventAggregator
     
     public void Publish<T>(T eventData) where T : IEvent
     {
-        var eventType = typeof(T);
+        var publishType = typeof(T);
 
-        if (!_eventSubscribers.TryGetValue(eventType, out var subscribers))
-            return;
-        
-        var eventCallbacks = subscribers.Where(onEvent => onEvent.IsAlive);
-            
-        foreach (var eventReference in eventCallbacks)
+        var subscribersTypes = _eventSubscribers.Keys.Where(eventType => 
+            publishType == eventType || publishType.IsSubclassOf(eventType)
+        );
+
+        foreach (var eventType in subscribersTypes)
         {
-            (eventReference.Target as Action<T>)?.Invoke(eventData);
+            var eventCallbacks = _eventSubscribers[eventType].Where(onEvent => onEvent.IsAlive);
+            
+            foreach (var eventReference in eventCallbacks)
+            {
+                (eventReference.Target as Action<T>)?.Invoke(eventData);
+            }   
         }
     }
 

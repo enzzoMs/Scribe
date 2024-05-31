@@ -28,5 +28,8 @@
         </Grid.RowDefinitions>
         
         <folderDetailsSection:FolderNameSection/>
+        <folderDetailsSection:FolderPropertiesSection
+            Grid.Row="1"
+            Margin="{DynamicResource Dimen.FolderDetails.Properties.OuterMargin}"/>
     </Grid>
 </UserControl>

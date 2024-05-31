@@ -41,7 +41,14 @@ public class FolderDetailsViewModel : BaseViewModel
         {
             _currentFolder = value;
             RaisePropertyChanged();
+            RaisePropertyChanged(nameof(FolderNavigationPosition));
         }
+    }
+
+    public int FolderNavigationPosition
+    {
+        get => _currentFolder?.NavigationIndex + 1 ?? 1;
+        set => UpdateFolderPosition(value - 1);
     }
 
     public bool OnEditMode
@@ -68,6 +75,15 @@ public class FolderDetailsViewModel : BaseViewModel
         await _foldersRepository.Update(_currentFolder);
         
         RaisePropertyChanged(nameof(CurrentFolder));
-        _eventAggregator.Publish(new FolderUpdatedEvent());
+        _eventAggregator.Publish(new FolderUpdatedEvent(_currentFolder.Id));
+    }
+
+    private void UpdateFolderPosition(int newIndex)
+    {
+        if (_currentFolder == null || _currentFolder.NavigationIndex == newIndex) return;
+
+        var oldIndex = _currentFolder.NavigationIndex;
+        
+        _eventAggregator.Publish(new FolderPositionUpdatedEvent(_currentFolder.Id, oldIndex, newIndex));
     }
 }
