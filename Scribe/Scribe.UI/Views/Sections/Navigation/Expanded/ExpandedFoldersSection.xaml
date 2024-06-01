@@ -26,7 +26,7 @@
                     <Path
                         Width="{DynamicResource Dimen.FolderItem.Icon.Size}"
                         Height="{DynamicResource Dimen.FolderItem.Icon.Size}"
-                        Data="{StaticResource Drawing.Folder}"
+                        Data="{StaticResource Drawing.Folder.Opened}"
                         Fill="White"
                         Stretch="Uniform"
                         VerticalAlignment="Center"/>
@@ -55,7 +55,7 @@
                     <Path
                         Width="{DynamicResource Dimen.FolderItem.Icon.Size}"
                         Height="{DynamicResource Dimen.FolderItem.Icon.Size}"
-                        Data="{StaticResource Drawing.Folder}"
+                        Data="{DynamicResource Drawing.Folder.Closed}"
                         Fill="{DynamicResource Brush.Text.Primary}"
                         Stretch="Uniform"
                         VerticalAlignment="Center"/>
@@ -107,14 +107,14 @@
         
         <Path
             Grid.Row="0"
-            Width="{DynamicResource Dimen.Nav.Expanded.NoFolder.Icon.Size}"
-            Data="{StaticResource Drawing.Folder}"
-            Fill="{DynamicResource Brush.Text.Secondary}"
-            Opacity="0.5"
+            Width="{DynamicResource Dimen.NoData.Icon.Size}"
+            Height="{DynamicResource Dimen.NoData.Icon.Size}"
+            Data="{StaticResource Drawing.Folder.Closed}"
+            Fill="{DynamicResource Brush.BackgroundIcon}"
             Stretch="Uniform"
             VerticalAlignment="Bottom"
             HorizontalAlignment="Center"
-            Margin="{DynamicResource Dimen.Nav.Expanded.NoFolder.Margin}">
+            Margin="{DynamicResource Dimen.NoData.Icon.Margin}">
             <Path.Style>
                 <Style TargetType="Path">
                     <Setter Property="Visibility" Value="Collapsed"/>

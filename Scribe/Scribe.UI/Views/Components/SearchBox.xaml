@@ -42,7 +42,7 @@
                 Grid.Column="1"
                 Text="{DynamicResource String.Component.SearchBox.Hint}"
                 Foreground="{DynamicResource Brush.Text.Secondary}"
-                Opacity="0.6"
+                Opacity="0.7"
                 VerticalAlignment="Center"
                 Margin="{DynamicResource Dimen.SearchBox.Text.Margin}">
                 <TextBlock.Style>

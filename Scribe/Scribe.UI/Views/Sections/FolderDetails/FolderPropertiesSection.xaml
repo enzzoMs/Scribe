@@ -32,7 +32,7 @@
         <TextBlock
             Grid.Row="0"
             Grid.Column="1"
-            Text="{DynamicResource String.Folder.Property.Position}"
+            Text="{DynamicResource String.Folders.Property.Position}"
             Foreground="{StaticResource Brush.Text.Secondary}"
             Margin="{DynamicResource Dimen.FolderDetails.Properties.InnerMargin}"
             VerticalAlignment="Center"/>

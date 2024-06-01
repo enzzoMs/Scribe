@@ -4,7 +4,8 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     
     <sys:String x:Key="String.AppTitle">Scribe</sys:String>
-    
+    <sys:String x:Key="String.Of.Infix">  de  </sys:String>
+
     <sys:String x:Key="String.Component.SearchBox.Hint">Pesquisar...</sys:String>
 
     <sys:String x:Key="String.Nav.Close">Fechar Navegação</sys:String>
@@ -12,11 +13,13 @@
 
     <sys:String x:Key="String.Folders">Pastas</sys:String>
     <sys:String x:Key="String.Folders.DefaultName">Nova Pasta</sys:String>
+    <sys:String x:Key="String.Folders.Property.Position">Posição</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.None">Nenhuma Pasta</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Search">Pesquisar Pasta</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Create">Criar Pasta</sys:String>
-
-    <sys:String x:Key="String.Folder.Property.Position">Posição</sys:String>
+    
+    <sys:String x:Key="String.Documents.Create">Novo Documento</sys:String>
+    <sys:String x:Key="String.Documents.Tooltip.None">Nenhum Documento</sys:String>
 
     <sys:String x:Key="String.Config.Theme">Tema</sys:String>
     <sys:String x:Key="String.Config.Theme.Light">Claro</sys:String>
@@ -34,4 +37,9 @@
     <sys:String x:Key="String.Button.Delete">Deletar</sys:String>
     
     <sys:String x:Key="String.Error.RequiredField">* Campo obrigatório</sys:String>
+    
+    <sys:String x:Key="String.PagedList.Button.NextPage">Próxima Página</sys:String>
+    <sys:String x:Key="String.PagedList.Button.PreviousPage">Página Anterior</sys:String>
+    <sys:String x:Key="String.PagedList.Button.SkipForward">Pular algumas páginas</sys:String>
+    <sys:String x:Key="String.PagedList.Button.SkipBackwards">Voltar algumas páginas</sys:String>
 </ResourceDictionary>

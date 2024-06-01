@@ -1,0 +1,131 @@
+﻿<UserControl 
+    x:Class="Scribe.UI.Views.Sections.FolderDetails.FolderDocumentsSection"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:folderDetailsSection="clr-namespace:Scribe.UI.Views.Sections.FolderDetails"
+    xmlns:components="clr-namespace:Scribe.UI.Views.Components"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance folderDetailsSection:FolderDetailsViewModel}"
+    d:DesignHeight="400">
+    
+    <UserControl.Resources>
+        <Style x:Key="DocumentIconStyle" TargetType="Path">
+            <Setter Property="Height" Value="{DynamicResource Dimen.FolderDetails.Documents.Icon.Size}"/>
+            <Setter Property="Width" Value="{DynamicResource Dimen.FolderDetails.Documents.Icon.Size}"/>
+            <Setter Property="Fill" Value="{DynamicResource Brush.Text.Primary}"/>
+            <Setter Property="Margin" Value="{DynamicResource Dimen.FolderDetails.Documents.Icon.Margin}"/>
+            <Setter Property="Stretch" Value="Uniform"/>
+        </Style>
+        
+        <ControlTemplate x:Key="DocumentItemTemplate">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Path
+                    Style="{StaticResource DocumentIconStyle}"
+                    Data="{StaticResource Drawing.Document}"
+                    VerticalAlignment="Center"/>
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Text="{Binding}"
+                    VerticalAlignment="Center"/>
+                <Rectangle
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource Style.Divider.Horizontal}"/>
+            </Grid>
+        </ControlTemplate>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="0.7*"/>
+            <RowDefinition Height="0.7*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Path
+            Grid.Row="0"
+            Grid.Column="0"
+            Style="{StaticResource DocumentIconStyle}"
+            Data="{StaticResource Drawing.Add}"
+            VerticalAlignment="Center"/>
+        <TextBlock
+            Grid.Row="0"
+            Grid.Column="1"
+            Text="{DynamicResource String.Documents.Create}"
+            VerticalAlignment="Center"/>
+        <Rectangle
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Style="{StaticResource Style.Divider.Horizontal}"/>
+        <components:PagedList
+            x:Name="DocumentsListView"
+            Grid.Row="2"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            PageSize="8"
+            ItemTemplate="{StaticResource DocumentItemTemplate}"/>
+        
+        <Path
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"            
+            Width="{DynamicResource Dimen.NoData.Icon.Size}"
+            Height="{DynamicResource Dimen.NoData.Icon.Size}"
+            Data="{StaticResource Drawing.Document}"
+            Fill="{DynamicResource Brush.BackgroundIcon}"
+            Stretch="Uniform"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Center"
+            Margin="{DynamicResource Dimen.NoData.Icon.Margin}">
+            <Path.Style>
+                <Style TargetType="Path">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Items.Count, ElementName=DocumentsListView}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Path.Style>
+        </Path>
+        <TextBlock
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"  
+            Text="{DynamicResource String.Documents.Tooltip.None}"
+            Foreground="{DynamicResource Brush.BackgroundText}"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Center">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Items.Count, ElementName=DocumentsListView}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+    </Grid>
+</UserControl>
