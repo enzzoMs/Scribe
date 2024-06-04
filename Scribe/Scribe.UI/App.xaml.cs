@@ -52,7 +52,8 @@ public partial class App : Application
         services.AddTransient<FolderDetailsViewModel>();
 
         services.AddTransient<IRepository<Folder>, FolderRepository>();
-        
+        services.AddTransient<IRepository<Document>, DocumentRepository>();
+
         services.AddTransient<IConfigurationsRepository, ConfigurationsRepository>();
         
         services.AddTransient<IResourceManager, ResourceManager>();

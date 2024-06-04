@@ -45,7 +45,7 @@
         </ControlTemplate>
     </UserControl.Resources>
     
-    <Grid DataContext="{Binding ElementName=Root}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -61,7 +61,6 @@
         <ListView
             Grid.ColumnSpan="5"
             Name="ItemList"
-            ItemsSource="{Binding Items}"
             BorderThickness="0"
             Background="Transparent"
             Margin="{DynamicResource Dimen.PagedList.List.Margin}"

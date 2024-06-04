@@ -1,9 +1,11 @@
 ﻿namespace Scribe.Data.Model;
 
-public class Folder(string name, int navigationIndex, int id = 0)
+public class Folder(
+    string name,
+    int navigationIndex)
 {
-    public int Id { get; init;  } = id;
+    public int Id { get; private set; }
     public string Name { get; set; } = name;
     public int NavigationIndex { get; set; } = navigationIndex;
-    public ICollection<Document> Documents { get; set; } = [];
+    public ICollection<Document> Documents { get; } = [];
 }

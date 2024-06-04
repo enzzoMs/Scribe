@@ -28,12 +28,14 @@ public class MainViewModelTests
         configurationsRepository.GetAllConfigurations().Returns(
             new AppConfigurations(ThemeConfiguration.Light, LanguageConfiguration.EnUs, 1.0)    
         );
+
+        var documentsRepository = Substitute.For<IRepository<Document>>();
         
         var resourcesManager = Substitute.For<IResourceManager>();
 
         var configurationsViewModel = new ConfigurationsViewModel(configurationsRepository, resourcesManager);
         var navigationViewModel = new NavigationViewModel(_eventAggregator, foldersRepository, configurationsViewModel);
-        var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, foldersRepository);
+        var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, foldersRepository, documentsRepository);
         var editorViewModel = new EditorViewModel(navigationViewModel, folderDetailsViewModel);
         
         _splashViewModel = new SplashViewModel(_eventAggregator, foldersRepository);

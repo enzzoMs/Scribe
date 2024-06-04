@@ -13,4 +13,19 @@ public class ScribeContext : DbContext
     {
         optionsBuilder.UseSqlite(@"Data Source=.\scribe_database.db");
     }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder
+            .Entity<Document>(d => d.HasKey("_id"))
+            .Entity<Tag>(t => t.HasKey("_id"));
+
+        modelBuilder.Entity<Folder>()
+            .HasMany<Document>(f => f.Documents)
+            .WithOne()
+            .HasForeignKey(e => e.FolderId)
+            .IsRequired();
+            
+        modelBuilder.Entity<Folder>().Navigation(e => e.Documents).AutoInclude();
+    }
 }

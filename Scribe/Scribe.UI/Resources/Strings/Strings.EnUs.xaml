@@ -18,7 +18,8 @@
     <sys:String x:Key="String.Folders.Tooltip.Search">Search Folder</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Create">Create Folder</sys:String>
 
-    <sys:String x:Key="String.Documents.Create">New Document</sys:String>
+    <sys:String x:Key="String.Documents.DefaultName">New Document</sys:String>
+    <sys:String x:Key="String.Documents.Create">Create Document</sys:String>
     <sys:String x:Key="String.Documents.Tooltip.None">No Document</sys:String>
 
     <sys:String x:Key="String.Config.Theme">Theme</sys:String>

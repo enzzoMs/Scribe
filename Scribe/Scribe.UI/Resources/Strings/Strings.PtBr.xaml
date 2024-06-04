@@ -18,7 +18,8 @@
     <sys:String x:Key="String.Folders.Tooltip.Search">Pesquisar Pasta</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Create">Criar Pasta</sys:String>
     
-    <sys:String x:Key="String.Documents.Create">Novo Documento</sys:String>
+    <sys:String x:Key="String.Documents.DefaultName">Novo Documento</sys:String>
+    <sys:String x:Key="String.Documents.Create">Criar Documento</sys:String>
     <sys:String x:Key="String.Documents.Tooltip.None">Nenhum Documento</sys:String>
 
     <sys:String x:Key="String.Config.Theme">Tema</sys:String>
