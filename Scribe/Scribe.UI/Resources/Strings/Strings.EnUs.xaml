@@ -20,6 +20,7 @@
 
     <sys:String x:Key="String.Documents.DefaultName">New Document</sys:String>
     <sys:String x:Key="String.Documents.Create">Create Document</sys:String>
+    <sys:String x:Key="String.Documents.Tooltip.Search">Search Document</sys:String>
     <sys:String x:Key="String.Documents.Tooltip.None">No Document</sys:String>
 
     <sys:String x:Key="String.Config.Theme">Theme</sys:String>

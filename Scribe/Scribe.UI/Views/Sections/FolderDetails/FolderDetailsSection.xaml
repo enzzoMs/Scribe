@@ -6,7 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:folderDetailsSection="clr-namespace:Scribe.UI.Views.Sections.FolderDetails"
     mc:Ignorable="d"
-    d:DataContext="{d:DesignInstance folderDetailsSection:FolderDetailsViewModel}">
+    d:DataContext="{d:DesignInstance folderDetailsSection:FolderDetailsViewModel}"
+    d:DesignHeight="600">
 
     <UserControl.Style>
         <Style TargetType="UserControl">
@@ -32,8 +33,7 @@
         <folderDetailsSection:FolderPropertiesSection
             Grid.Row="1"
             Margin="{DynamicResource Dimen.FolderDetails.Properties.OuterMargin}"/>
-        <folderDetailsSection:FolderDocumentsSection
-            Grid.Row="2"
-            Margin="0 12 0 0"/>
+        <folderDetailsSection:FolderDocumentsSection 
+            Grid.Row="2"/>
     </Grid>
 </UserControl>

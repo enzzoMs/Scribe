@@ -32,6 +32,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
+                
                 <Path
                     Style="{StaticResource DocumentIconStyle}"
                     Data="{StaticResource Drawing.Document}"
@@ -59,6 +60,25 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetName="NewDocumentDivider"
+                                    Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" 
+                                    From="{StaticResource Color.Divider}" To="{StaticResource Color.Text.Primary}" 
+                                    Duration="0:0:0.15"/>
+                                <ColorAnimation
+                                    Storyboard.TargetName="NewDocumentDivider"
+                                    Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" 
+                                    From="{StaticResource Color.Text.Primary}" To="{StaticResource Color.Divider}" 
+                                    BeginTime="0:0:0.3"
+                                    Duration="0:0:0.15"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Grid.Triggers>
                 
                 <Path
                     Grid.Row="0"
@@ -72,6 +92,7 @@
                     Text="{DynamicResource String.Documents.Create}"
                     VerticalAlignment="Center"/>
                 <Rectangle
+                    Name="NewDocumentDivider"
                     Grid.Row="1"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
@@ -83,6 +104,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="0.7*"/>
             <RowDefinition Height="0.7*"/>
             <RowDefinition Height="*"/>
@@ -91,7 +113,14 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
+        <components:SearchBox
+            Grid.Row="0"
+            Grid.Column="0"
+            SearchText="{Binding SearchDocumentsFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            ToolTip="{DynamicResource String.Documents.Tooltip.Search}"
+            Margin="{DynamicResource Dimen.FolderDetails.DocumentsSearchBox.Margin}"/>
         <Button
+            Grid.Row="1"
             Grid.ColumnSpan="2"
             Command="{Binding CreateDocumentCommand}"
             Cursor="Hand"
@@ -102,7 +131,7 @@
             Template="{StaticResource NewDocumentButtonTemplate}"/>
         <components:PagedList
             x:Name="DocumentsListView"
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.RowSpan="2"
             Grid.Column="0"
             ItemsSource="{Binding CurrentDocuments}"
@@ -110,7 +139,7 @@
             ItemTemplate="{StaticResource DocumentItemTemplate}"/>
         
         <Path
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="0"
             Width="{DynamicResource Dimen.NoData.Icon.Size}"
             Height="{DynamicResource Dimen.NoData.Icon.Size}"
@@ -132,7 +161,7 @@
             </Path.Style>
         </Path>
         <TextBlock
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="0"
             Text="{DynamicResource String.Documents.Tooltip.None}"
             Foreground="{DynamicResource Brush.BackgroundText}"

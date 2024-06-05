@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Scribe.Data.Model;
 using Scribe.Data.Repositories;
 using Scribe.UI.Command;
@@ -19,6 +20,10 @@ public class FolderDetailsViewModel : BaseViewModel
 
     private List<Document> _allDocuments = [];
     private ObservableCollection<Document> _currentDocuments = [];
+    
+    private readonly DispatcherTimer _searchTimer;
+    private string _searchDocumentsFilter = "";
+    private const int SearchDelayMs = 800;
 
     private bool _onEditMode;
     
@@ -31,6 +36,13 @@ public class FolderDetailsViewModel : BaseViewModel
         
         _onFolderSelected = eventData => CurrentFolder = eventData.Folder;
         _eventAggregator.Subscribe(_onFolderSelected);
+        
+        _searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(SearchDelayMs) };
+        _searchTimer.Tick += (_, _) =>
+        {
+            _searchTimer.Stop();
+            FilterDocuments();
+        };
 
         EnterEditModeCommand = new DelegateCommand(_ => OnEditMode = true);
         ExitCurrentModeCommand = new DelegateCommand(_ => OnEditMode = false);
@@ -55,6 +67,12 @@ public class FolderDetailsViewModel : BaseViewModel
             RaisePropertyChanged(nameof(FolderNavigationPosition));
         }
     }
+    
+    public int FolderNavigationPosition
+    {
+        get => _currentFolder?.NavigationIndex + 1 ?? 1;
+        set => UpdateFolderPosition(value - 1);
+    }
 
     public ObservableCollection<Document> CurrentDocuments
     {
@@ -65,11 +83,16 @@ public class FolderDetailsViewModel : BaseViewModel
             RaisePropertyChanged();
         }
     }
-
-    public int FolderNavigationPosition
+    
+    public string SearchDocumentsFilter
     {
-        get => _currentFolder?.NavigationIndex + 1 ?? 1;
-        set => UpdateFolderPosition(value - 1);
+        get => _searchDocumentsFilter;
+        set
+        {
+            _searchDocumentsFilter = value;
+            _searchTimer.Stop();
+            _searchTimer.Start();
+        }
     }
 
     public bool OnEditMode
@@ -90,6 +113,22 @@ public class FolderDetailsViewModel : BaseViewModel
 
     public ICommand CreateDocumentCommand { get; }
 
+    private void FilterDocuments()
+    {
+        var filterText = _searchDocumentsFilter.Trim();
+        var filteredDocuments = _allDocuments.Where(folder => folder.Name.Contains(
+            filterText, StringComparison.CurrentCultureIgnoreCase
+        ));
+        CurrentDocuments = new ObservableCollection<Document>(filteredDocuments);
+    }
+
+    private void ClearDocumentsFilter()
+    {
+        _searchDocumentsFilter = "";
+        RaisePropertyChanged(nameof(SearchDocumentsFilter));
+        FilterDocuments();
+    }
+    
     private async void UpdateFolderName(string newFolderName)
     {
         if (_currentFolder == null || _currentFolder.Name == newFolderName) return;
@@ -121,8 +160,8 @@ public class FolderDetailsViewModel : BaseViewModel
     private async void CreateDocument()
     {
         if (_currentFolder == null) return;
-        //TODO
-        //ClearFilter();
+
+        ClearDocumentsFilter();
         
         var documentName = (string) Application.Current.TryFindResource("String.Documents.DefaultName") ?? "New Folder";
 
@@ -135,6 +174,7 @@ public class FolderDetailsViewModel : BaseViewModel
             name: documentName
         ));
         
+        _currentFolder.Documents.Add(newDocumentDocument);
         _allDocuments.Add(newDocumentDocument);
         CurrentDocuments.Add(newDocumentDocument);
     }

@@ -54,6 +54,7 @@
 
     <sys:Double x:Key="Dimen.FolderDetails.Documents.Icon.Size">20</sys:Double>
     <Thickness x:Key="Dimen.FolderDetails.Documents.Icon.Margin" Top="6" Bottom="6" Right="8"/>
+    <Thickness x:Key="Dimen.FolderDetails.DocumentsSearchBox.Margin" Top="15" Bottom="15"/>
 
     <Thickness x:Key="Dimen.FolderItem.Padding" Left="12" Right="12" Top="6" Bottom="6"/>
     <CornerRadius x:Key="Dimen.FolderItem.Radius">8</CornerRadius>

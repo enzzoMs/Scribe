@@ -116,7 +116,7 @@ public class NavigationViewModel : BaseViewModel
         CurrentFolders = new ObservableCollection<Folder>(filteredFolders);
     }
 
-    private void ClearFilter()
+    private void ClearFoldersFilter()
     {
         _searchFoldersFilter = "";
         RaisePropertyChanged(nameof(SearchFoldersFilter));
@@ -125,7 +125,7 @@ public class NavigationViewModel : BaseViewModel
     
     private async void CreateFolder()
     {
-        ClearFilter();
+        ClearFoldersFilter();
         
         var folderName = (string) Application.Current.TryFindResource("String.Folders.DefaultName") ?? "New Folder";
         
@@ -159,7 +159,7 @@ public class NavigationViewModel : BaseViewModel
             (_allFolders[positionEvent.NewIndex], _allFolders[positionEvent.OldIndex]) = 
                 (_allFolders[positionEvent.OldIndex], _allFolders[positionEvent.NewIndex]);
             
-            ClearFilter();
+            ClearFoldersFilter();
         }
         
         if (folderEvent.UpdatedFolderId == _selectedFolder?.Id) 
