@@ -11,10 +11,11 @@
     <Thickness x:Key="Dimen.TextBox.Padding" Bottom="3"/>
     <sys:Double x:Key="Dimen.Divider.Size">2</sys:Double>
     <sys:Double x:Key="Dimen.ScrollBar.Thumb.Size">7</sys:Double>
-    <CornerRadius x:Key="Dimen.ScrollBar.Thumb.Radius">6</CornerRadius>
-    <sys:Double x:Key="Dimen.ScrollBar.Track.Size">5</sys:Double>
-    <CornerRadius x:Key="Dimen.ScrollBar.Track.Radius">3</CornerRadius>
-    
+    <CornerRadius x:Key="Dimen.ScrollBar.Vertical.Thumb.Radius">6</CornerRadius>
+    <sys:Double x:Key="Dimen.ScrollBar.Vertical.Track.Size">5</sys:Double>
+    <CornerRadius x:Key="Dimen.ScrollBar.Vertical.Track.Radius">3</CornerRadius>
+    <sys:Double x:Key="Dimen.ScrollBar.Horizontal.Size">8</sys:Double>
+
     <sys:Double x:Key="Dimen.NoData.Icon.Size">48</sys:Double>
     <Thickness x:Key="Dimen.NoData.Icon.Margin" Bottom="8"/>
     
@@ -85,4 +86,10 @@
     <Thickness x:Key="Dimen.PagedList.Buttons.Border.Thickness">2</Thickness>
     <CornerRadius x:Key="Dimen.PagedList.Buttons.Border.Radius">4</CornerRadius>
     <sys:Double x:Key="Dimen.PagedList.Buttons.Icon.Size">16</sys:Double>
+    
+    <Thickness x:Key="Dimen.ClosebleTabControl.Header.Margin" Left="14" Top="8" Right="8" Bottom="8"/>
+    <sys:Double x:Key="Dimen.ClosebleTabControl.TabIndicator.Size">3</sys:Double>
+    <sys:Double x:Key="Dimen.ClosebleTabControl.Icon.Size">30</sys:Double>
+    <sys:Double x:Key="Dimen.ClosebleTabControl.Icon.Padding">6</sys:Double>
+    <Thickness x:Key="Dimen.ClosebleTabControl.Icon.Margin" Right="12"/>
 </ResourceDictionary>

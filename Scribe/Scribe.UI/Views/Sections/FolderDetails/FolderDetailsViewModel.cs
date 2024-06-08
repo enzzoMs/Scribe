@@ -53,6 +53,11 @@ public class FolderDetailsViewModel : BaseViewModel
             UpdateFolderName(newFolderName);
         });
         CreateDocumentCommand = new DelegateCommand(_ => CreateDocument());
+        OpenDocumentCommand = new DelegateCommand(param =>
+        {
+            if (param is Document doc) 
+                _eventAggregator.Publish(new DocumentSelectedEvent(doc));
+        });
     }
     
     public Folder? CurrentFolder
@@ -112,6 +117,8 @@ public class FolderDetailsViewModel : BaseViewModel
     public ICommand ExitCurrentModeCommand { get; }
 
     public ICommand CreateDocumentCommand { get; }
+
+    public ICommand OpenDocumentCommand { get; }
 
     private void FilterDocuments()
     {

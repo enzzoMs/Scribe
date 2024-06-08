@@ -4,22 +4,23 @@ using Scribe.Data.Model;
 using Scribe.Data.Repositories;
 using Scribe.UI.Events;
 using Scribe.UI.Resources;
-using Scribe.UI.Views.Screens.Editor;
 using Scribe.UI.Views.Screens.Main;
 using Scribe.UI.Views.Screens.Splash;
+using Scribe.UI.Views.Screens.Window;
 using Scribe.UI.Views.Sections.Configurations;
+using Scribe.UI.Views.Sections.Editor;
 using Scribe.UI.Views.Sections.FolderDetails;
 using Scribe.UI.Views.Sections.Navigation;
 
 namespace Scribe.Tests.UI.Views;
 
-public class MainViewModelTests
+public class WindowViewModelTests
 {
     private readonly EventAggregator _eventAggregator = new();
     private readonly SplashViewModel _splashViewModel;
-    private readonly MainViewModel _mainViewModel;
+    private readonly WindowViewModel _windowViewModel;
 
-    public MainViewModelTests()
+    public WindowViewModelTests()
     {
         var foldersRepository = Substitute.For<IRepository<Folder>>();
         foldersRepository.GetAll().Returns([]);
@@ -36,14 +37,16 @@ public class MainViewModelTests
         var configurationsViewModel = new ConfigurationsViewModel(configurationsRepository, resourcesManager);
         var navigationViewModel = new NavigationViewModel(_eventAggregator, foldersRepository, configurationsViewModel);
         var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, foldersRepository, documentsRepository);
-        var editorViewModel = new EditorViewModel(navigationViewModel, folderDetailsViewModel);
+        var editorViewModel = new EditorViewModel(_eventAggregator);
+        
+        var mainViewModel = new MainViewModel(navigationViewModel, folderDetailsViewModel, editorViewModel);
         
         _splashViewModel = new SplashViewModel(_eventAggregator, foldersRepository);
-        _mainViewModel = new MainViewModel(_eventAggregator, _splashViewModel, editorViewModel);
+        _windowViewModel = new WindowViewModel(_eventAggregator, _splashViewModel, mainViewModel);
     }
     
     [Fact]
-    public void SplashIsFirstViewModel() => Assert.IsType<SplashViewModel>(_mainViewModel.CurrentViewModel);
+    public void SplashIsFirstViewModel() => Assert.IsType<SplashViewModel>(_windowViewModel.CurrentViewModel);
 
     [Fact]
     public async Task NavigatesToEditorWhenSplashFinishes()
@@ -52,6 +55,6 @@ public class MainViewModelTests
         _splashViewModel.FinishLogoAnimation();
         _splashViewModel.FinishSplash();
         
-        Assert.IsType<EditorViewModel>(_mainViewModel.CurrentViewModel);
+        Assert.IsType<MainViewModel>(_windowViewModel.CurrentViewModel);
     }
 }

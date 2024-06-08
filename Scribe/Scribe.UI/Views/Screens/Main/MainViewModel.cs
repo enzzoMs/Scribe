@@ -1,47 +1,20 @@
 ﻿using Scribe.Data.Model;
-using Scribe.UI.Events;
-using Scribe.UI.Views.Screens.Editor;
-using Scribe.UI.Views.Screens.Splash;
+using Scribe.UI.Views.Sections.Editor;
+using Scribe.UI.Views.Sections.FolderDetails;
+using Scribe.UI.Views.Sections.Navigation;
 
 namespace Scribe.UI.Views.Screens.Main;
 
-public class MainViewModel : BaseViewModel
+public class MainViewModel(
+    NavigationViewModel navigationViewModel,
+    FolderDetailsViewModel folderDetailsViewModel, 
+    EditorViewModel editorViewModel
+) : BaseViewModel
 {
-    private BaseViewModel _currentViewModel;
-    private readonly EditorViewModel _editorViewModel;
+    public NavigationViewModel NavigationViewModel { get; } = navigationViewModel;
+    public FolderDetailsViewModel FolderDetailsViewModel { get; } = folderDetailsViewModel;
+    
+    public EditorViewModel EditorViewModel { get; } = editorViewModel;
 
-    private readonly Action<FoldersLoadedEvent> _onFoldersLoaded;
-    
-    public MainViewModel(
-        IEventAggregator eventAggregator, SplashViewModel splashViewModel, EditorViewModel editorViewModel)
-    {
-        _currentViewModel = splashViewModel;
-        _editorViewModel = editorViewModel;
-        
-        _onFoldersLoaded = eventData =>
-        {
-            NavigateToEditorScreen(eventData.Folders);
-            eventAggregator.Unsubscribe(_onFoldersLoaded!);
-        };
-        
-        eventAggregator.Subscribe(_onFoldersLoaded);
-    }
-    
-    public BaseViewModel CurrentViewModel
-    {
-        get => _currentViewModel;
-        private set
-        {
-            _currentViewModel = value;
-            RaisePropertyChanged();
-        }
-    }
-    
-    public override Task Load() => _currentViewModel.Load();
-
-    private void NavigateToEditorScreen(IEnumerable<Folder> folders)
-    {
-        _editorViewModel.LoadFolders(folders);
-        CurrentViewModel = _editorViewModel;
-    }
+    public void LoadFolders(IEnumerable<Folder> folders) => NavigationViewModel.LoadFolders(folders);
 }

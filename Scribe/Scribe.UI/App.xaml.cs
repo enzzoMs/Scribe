@@ -5,21 +5,22 @@ using Scribe.Data.Model;
 using Scribe.Data.Repositories;
 using Scribe.UI.Events;
 using Scribe.UI.Resources;
-using Scribe.UI.Views.Screens.Editor;
 using Scribe.UI.Views.Screens.Main;
 using Scribe.UI.Views.Screens.Splash;
+using Scribe.UI.Views.Screens.Window;
 using Scribe.UI.Views.Sections.Configurations;
+using Scribe.UI.Views.Sections.Editor;
 using Scribe.UI.Views.Sections.FolderDetails;
 using Scribe.UI.Views.Sections.Navigation;
-using MainWindow = Scribe.UI.Views.Screens.Main.MainWindow;
+using Window = Scribe.UI.Views.Screens.Window.Window;
 
 namespace Scribe.UI;
 
 public partial class App : Application
 {
-    public const int ThemeDictionaryIndex = 4;
-    public const int DimensDictionaryIndex = 5;
-    public const int StringsDictionaryIndex = 6;
+    public const int ThemeDictionaryIndex = 5;
+    public const int DimensDictionaryIndex = 6;
+    public const int StringsDictionaryIndex = 7;
     
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -36,20 +37,21 @@ public partial class App : Application
         ConfigureServices(services);
 
         using var serviceProvider = services.BuildServiceProvider();
-        serviceProvider.GetService<MainWindow>()?.Show();
+        serviceProvider.GetService<Window>()?.Show();
     }
     
     private static void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IEventAggregator, EventAggregator>();
         
-        services.AddTransient<MainWindow>();
-        services.AddTransient<MainViewModel>();
+        services.AddTransient<Window>();
+        services.AddTransient<WindowViewModel>();
         services.AddTransient<SplashViewModel>();
-        services.AddTransient<EditorViewModel>();
+        services.AddTransient<MainViewModel>();
         services.AddTransient<NavigationViewModel>();
         services.AddTransient<ConfigurationsViewModel>();
         services.AddTransient<FolderDetailsViewModel>();
+        services.AddTransient<EditorViewModel>();
 
         services.AddTransient<IRepository<Folder>, FolderRepository>();
         services.AddTransient<IRepository<Document>, DocumentRepository>();

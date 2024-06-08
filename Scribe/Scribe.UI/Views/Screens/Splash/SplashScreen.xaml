@@ -5,7 +5,7 @@
      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
      xmlns:screenSplash="clr-namespace:Scribe.UI.Views.Screens.Splash"
      mc:Ignorable="d"
-     x:Class="Scribe.UI.Views.Screens.Splash.SplashControl"
+     x:Class="Scribe.UI.Views.Screens.Splash.SplashScreen"
      d:DesignHeight="800"
      d:DesignWidth="1000"
      d:DataContext="{d:DesignInstance screenSplash:SplashViewModel}">

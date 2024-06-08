@@ -1,0 +1,77 @@
+﻿<UserControl 
+    x:Class="Scribe.UI.Views.Components.ClosableTabControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:components="clr-namespace:Scribe.UI.Views.Components"
+    mc:Ignorable="d"
+    d:DesignWidth="800"
+    Name="Root">
+    
+    <UserControl.Resources>
+        <Style TargetType="TabItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Grid Background="Transparent">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <ContentControl
+                                Content="{Binding}"
+                                Margin="{DynamicResource Dimen.ClosebleTabControl.Header.Margin}"/>
+                            <components:IconButton
+                                x:Name="CloseTabButton"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Width="{DynamicResource Dimen.ClosebleTabControl.Icon.Size}"
+                                Height="{DynamicResource Dimen.ClosebleTabControl.Icon.Size}"
+                                Command="{Binding CloseTabCommand, ElementName=Root}"
+                                CommandParameter="{Binding}"
+                                IconGeometry="{StaticResource Drawing.Close}"
+                                IconBrush="{DynamicResource Brush.Text.Primary}"
+                                IconPadding="{DynamicResource Dimen.ClosebleTabControl.Icon.Padding}"
+                                Margin="{DynamicResource Dimen.ClosebleTabControl.Icon.Margin}"/>
+                            <Border
+                                Name="SelectedTabIndicator"
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Height="{DynamicResource Dimen.ClosebleTabControl.TabIndicator.Size}"
+                                Background="{StaticResource Brush.Primary}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter 
+                                    TargetName="SelectedTabIndicator"
+                                    Property="Background"
+                                    Value="{DynamicResource Brush.Divider}">
+                                </Setter>
+                                <Setter Property="Opacity" Value="0.75"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    
+    <TabControl
+        Name="MainTabControl"
+        SelectedItem="{Binding SelectedItem, ElementName=Root}"
+        SelectionChanged="MainTabControl_OnSelectionChanged"
+        BorderThickness="0">
+        <TabControl.ContentTemplate>
+            <DataTemplate>
+                <TextBlock Text="{Binding}"/>
+            </DataTemplate>
+        </TabControl.ContentTemplate>
+    </TabControl>
+</UserControl>

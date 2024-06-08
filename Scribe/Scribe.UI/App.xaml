@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="Resources/Drawings/Drawings.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Template.ScrollBar.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Template.TabControl.xaml"/>
 
                 <!-- These resources are only to assist at design time and will be removed before the app runs -->
                 <ResourceDictionary Source="Resources/Brushes/Brushes.Light.xaml"/>

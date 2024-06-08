@@ -2,9 +2,9 @@
 
 namespace Scribe.UI.Views.Screens.Splash;
 
-public partial class SplashControl : UserControl
+public partial class SplashScreen : UserControl
 {
-    public SplashControl() => InitializeComponent();
+    public SplashScreen() => InitializeComponent();
 
     private void LogoPopUpStoryboard_OnCompleted(object? sender, EventArgs e)
     {

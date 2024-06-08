@@ -3,24 +3,24 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:screenMain="clr-namespace:Scribe.UI.Views.Screens.Main"
-    xmlns:screenSplash="clr-namespace:Scribe.UI.Views.Screens.Splash"
-    xmlns:screenEditor="clr-namespace:Scribe.UI.Views.Screens.Editor"
+    xmlns:splashScreen="clr-namespace:Scribe.UI.Views.Screens.Splash"
+    xmlns:mainScreen="clr-namespace:Scribe.UI.Views.Screens.Main"
+    xmlns:window="clr-namespace:Scribe.UI.Views.Screens.Window"
     mc:Ignorable="d"
-    x:Class="Scribe.UI.Views.Screens.Main.MainWindow"
+    x:Class="Scribe.UI.Views.Screens.Window.Window"
     d:DesignWidth="1000"
     d:DesignHeight="800"
-    d:DataContext="{d:DesignInstance screenMain:MainViewModel}"
+    d:DataContext="{d:DesignInstance window:WindowViewModel}"
     Title="Scribe"
     Icon="../../../Resources/Images/scribe_logo.png"
     WindowState="Maximized">
     
     <Window.Resources>
-        <DataTemplate DataType="{x:Type screenSplash:SplashViewModel}">
-            <screenSplash:SplashControl/>
+        <DataTemplate DataType="{x:Type splashScreen:SplashViewModel}">
+            <splashScreen:SplashScreen/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type screenEditor:EditorViewModel}">
-            <screenEditor:EditorControl/>
+        <DataTemplate DataType="{x:Type mainScreen:MainViewModel}">
+            <mainScreen:MainScreen/>
         </DataTemplate>
     </Window.Resources>
     

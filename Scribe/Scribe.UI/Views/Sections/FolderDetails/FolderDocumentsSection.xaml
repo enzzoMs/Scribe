@@ -9,7 +9,8 @@
     xmlns:model="clr-namespace:Scribe.Data.Model;assembly=Scribe.Data"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance folderDetailsSection:FolderDetailsViewModel}"
-    d:DesignHeight="400">
+    d:DesignHeight="400"
+    Name="Root">
     
     <UserControl.Resources>
         <Style x:Key="DocumentIconStyle" TargetType="Path">
@@ -23,7 +24,7 @@
         <ControlTemplate 
             x:Key="DocumentItemTemplate"
             d:DataContext="{d:DesignInstance model:Document}">
-            <Grid>
+            <Grid Background="Transparent">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -32,6 +33,27 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetName="DocumentItemDivider"
+                                    Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" 
+                                    From="{StaticResource Color.Divider}"
+                                    To="{StaticResource Color.Text.Primary}" 
+                                    Duration="0:0:0.15"/>
+                                <ColorAnimation
+                                    Storyboard.TargetName="DocumentItemDivider"
+                                    Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" 
+                                    From="{StaticResource Color.Text.Primary}"
+                                    To="{StaticResource Color.Divider}" 
+                                    BeginTime="0:0:0.3"
+                                    Duration="0:0:0.15"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Grid.Triggers>
                 
                 <Path
                     Style="{StaticResource DocumentIconStyle}"
@@ -41,8 +63,10 @@
                     Grid.Row="0"
                     Grid.Column="1"
                     Text="{Binding Name}"
+                    TextTrimming="WordEllipsis"
                     VerticalAlignment="Center"/>
                 <Rectangle
+                    Name="DocumentItemDivider"
                     Grid.Row="1"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
@@ -67,12 +91,14 @@
                                 <ColorAnimation
                                     Storyboard.TargetName="NewDocumentDivider"
                                     Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" 
-                                    From="{StaticResource Color.Divider}" To="{StaticResource Color.Text.Primary}" 
+                                    From="{StaticResource Color.Divider}" 
+                                    To="{StaticResource Color.Text.Primary}" 
                                     Duration="0:0:0.15"/>
                                 <ColorAnimation
                                     Storyboard.TargetName="NewDocumentDivider"
                                     Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" 
-                                    From="{StaticResource Color.Text.Primary}" To="{StaticResource Color.Divider}" 
+                                    From="{StaticResource Color.Text.Primary}" 
+                                    To="{StaticResource Color.Divider}" 
                                     BeginTime="0:0:0.3"
                                     Duration="0:0:0.15"/>
                             </Storyboard>
@@ -135,8 +161,17 @@
             Grid.RowSpan="2"
             Grid.Column="0"
             ItemsSource="{Binding CurrentDocuments}"
-            PageSize="8"
-            ItemTemplate="{StaticResource DocumentItemTemplate}"/>
+            PageSize="7">
+            <components:PagedList.ItemTemplate>
+                <ControlTemplate d:DataContext="{d:DesignInstance model:Document}">
+                    <Button
+                        Cursor="Arrow"
+                        Command="{Binding DataContext.OpenDocumentCommand, ElementName=Root}"
+                        CommandParameter="{Binding}"
+                        Template="{StaticResource DocumentItemTemplate}"/>
+                </ControlTemplate>
+            </components:PagedList.ItemTemplate>
+        </components:PagedList>
         
         <Path
             Grid.Row="2"
