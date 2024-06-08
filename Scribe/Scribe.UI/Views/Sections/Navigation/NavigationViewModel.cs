@@ -24,8 +24,6 @@ public class NavigationViewModel : BaseViewModel
     private readonly DispatcherTimer _searchTimer;
     private string _searchFoldersFilter = "";
     private const int SearchDelayMs = 800;
-
-    private Action<FolderUpdatedEvent> _onFolderUpdated;
     
     public NavigationViewModel(
         IEventAggregator eventAggregator, 
@@ -42,8 +40,7 @@ public class NavigationViewModel : BaseViewModel
             FilterFolders();
         };
 
-        _onFolderUpdated = OnFolderUpdated;
-        _eventAggregator.Subscribe(_onFolderUpdated);
+        _eventAggregator.Subscribe<FolderUpdatedEvent>(this, OnFolderUpdated);
         
         ConfigurationsViewModel = configurationsViewModel;
 

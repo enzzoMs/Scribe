@@ -8,20 +8,17 @@ namespace Scribe.UI.Views.Sections.Editor;
 
 public class EditorViewModel : BaseViewModel
 {
-    private readonly Action<DocumentSelectedEvent> _onDocumentSelected;
     private Document? _selectedDocument;
     
     public EditorViewModel(IEventAggregator eventAggregator)
     {
-        _onDocumentSelected = docEvent =>
+        eventAggregator.Subscribe<DocumentSelectedEvent>(this, docEvent =>
         {
             if (!OpenDocuments.Contains(docEvent.Document))
                 OpenDocuments.Add(docEvent.Document);
 
             SelectedDocument = docEvent.Document;
-        };
-        
-        eventAggregator.Subscribe(_onDocumentSelected);
+        });
         
         CloseDocumentCommand = new DelegateCommand(param =>
         {

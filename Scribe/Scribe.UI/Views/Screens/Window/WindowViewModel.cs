@@ -9,8 +9,6 @@ public class WindowViewModel : BaseViewModel
 {
     private BaseViewModel _currentViewModel;
     private readonly MainViewModel _mainViewModel;
-
-    private readonly Action<FoldersLoadedEvent> _onFoldersLoaded;
     
     public WindowViewModel(
         IEventAggregator eventAggregator, SplashViewModel splashViewModel, MainViewModel mainViewModel)
@@ -18,13 +16,11 @@ public class WindowViewModel : BaseViewModel
         _currentViewModel = splashViewModel;
         _mainViewModel = mainViewModel;
         
-        _onFoldersLoaded = eventData =>
+        eventAggregator.Subscribe<FoldersLoadedEvent>(this, eventData =>
         {
             NavigateToEditorScreen(eventData.Folders);
-            eventAggregator.Unsubscribe(_onFoldersLoaded!);
-        };
-        
-        eventAggregator.Subscribe(_onFoldersLoaded);
+            eventAggregator.Unsubscribe<FoldersLoadedEvent>(this);
+        });
     }
     
     public BaseViewModel CurrentViewModel

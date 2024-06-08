@@ -14,7 +14,7 @@ public class EventAggregatorTests
     {
         var eventHandled = false;
         
-        _eventAggregator.Subscribe<TestEvent>(_ => eventHandled = true);
+        _eventAggregator.Subscribe<TestEvent>(this, _ => eventHandled = true);
         _eventAggregator.Publish(new TestEvent());
         
         Assert.True(eventHandled);
@@ -25,7 +25,7 @@ public class EventAggregatorTests
     {
         TestEvent? eventData = null;
         
-        _eventAggregator.Subscribe<TestEvent>(e => eventData = e);
+        _eventAggregator.Subscribe<TestEvent>(this, e => eventData = e);
         _eventAggregator.Publish(new TestEventSubclass());
         
         Assert.NotNull(eventData);
@@ -36,10 +36,9 @@ public class EventAggregatorTests
     public void AllowsToUnsubscribeFromEvent()
     {
         var eventHandled = false;
-        Action<TestEvent> handler = _ => eventHandled = true;
         
-        _eventAggregator.Subscribe(handler);
-        _eventAggregator.Unsubscribe(handler);
+        _eventAggregator.Subscribe<TestEvent>(this, _ => eventHandled = true);
+        _eventAggregator.Unsubscribe<TestEvent>(this);
         _eventAggregator.Publish(new TestEvent());
         
         Assert.False(eventHandled);
@@ -51,7 +50,7 @@ public class EventAggregatorTests
         TestEvent testEvent = new();
         IEvent? receivedEvent = null;
         
-        _eventAggregator.Subscribe<TestEvent>(e => receivedEvent = e);
+        _eventAggregator.Subscribe<TestEvent>(this, e => receivedEvent = e);
         _eventAggregator.Publish(testEvent);
 
         Assert.NotNull(receivedEvent);

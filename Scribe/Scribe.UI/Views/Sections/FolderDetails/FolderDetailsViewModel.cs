@@ -15,7 +15,6 @@ public class FolderDetailsViewModel : BaseViewModel
     private readonly IRepository<Folder> _foldersRepository;
     private readonly IRepository<Document> _documentsRepository;
 
-    private readonly Action<FolderSelectedEvent> _onFolderSelected;
     private Folder? _currentFolder;
 
     private List<Document> _allDocuments = [];
@@ -34,8 +33,7 @@ public class FolderDetailsViewModel : BaseViewModel
         _foldersRepository = foldersRepository;
         _documentsRepository = documentsRepository;
         
-        _onFolderSelected = eventData => CurrentFolder = eventData.Folder;
-        _eventAggregator.Subscribe(_onFolderSelected);
+        _eventAggregator.Subscribe<FolderSelectedEvent>(this, eventData => CurrentFolder = eventData.Folder);
         
         _searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(SearchDelayMs) };
         _searchTimer.Tick += (_, _) =>

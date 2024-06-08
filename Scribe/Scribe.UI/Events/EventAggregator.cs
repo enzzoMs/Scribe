@@ -1,49 +1,40 @@
-﻿namespace Scribe.UI.Events;
+﻿using System.Runtime.CompilerServices;
+
+namespace Scribe.UI.Events;
 
 public class EventAggregator : IEventAggregator
 {
-    private readonly Dictionary<Type, List<WeakReference>> _eventSubscribers = new();
+    private readonly ConditionalWeakTable<object, Dictionary<Type, Delegate>> _eventSubscribers = new();
     
     public void Publish<T>(T eventData) where T : IEvent
     {
-        var publishType = typeof(T);
+        var eventType = typeof(T);
 
-        var subscribersTypes = _eventSubscribers.Keys.Where(eventType => 
-            publishType == eventType || publishType.IsSubclassOf(eventType)
-        );
+        var eventHandlers = _eventSubscribers
+            .Select(subscriberEntry  => subscriberEntry.Value)
+            .SelectMany(subscriptions => subscriptions)
+            .Where(eventHandlerEntry => eventHandlerEntry.Key == eventType || eventType.IsSubclassOf(eventHandlerEntry.Key))
+            .Select(eventHandlerEntry  => eventHandlerEntry.Value);
 
-        foreach (var eventType in subscribersTypes)
+        foreach (var handler in eventHandlers)
         {
-            var eventCallbacks = _eventSubscribers[eventType].Where(onEvent => onEvent.IsAlive);
-            
-            foreach (var eventReference in eventCallbacks)
-            {
-                (eventReference.Target as Action<T>)?.Invoke(eventData);
-            }   
+            (handler as Action<T>)?.Invoke(eventData);
         }
     }
 
-    public void Subscribe<T>(Action<T> onEvent) where T : IEvent
+    public void Subscribe<T>(object subscriber, Action<T> onEvent) where T : IEvent
     {
-        var eventType = typeof(T);
-
-        if (!_eventSubscribers.ContainsKey(eventType))
-        {
-            _eventSubscribers[eventType] = []; 
-        }
-
-        _eventSubscribers[eventType].Add(new WeakReference(onEvent));
+        var subscriptions = _eventSubscribers.GetOrCreateValue(subscriber);
+        
+        subscriptions[typeof(T)] = onEvent;
     }
 
-    public void Unsubscribe<T>(Action<T> onEvent) where T : IEvent
+    public void Unsubscribe<T>(object subscriber) where T : IEvent
     {
         var eventType = typeof(T);
-
-        if (_eventSubscribers.TryGetValue(eventType, out var subscribers))
-        {
-            _eventSubscribers[eventType] = subscribers.Where(
-                subscription => !subscription.Target?.Equals(onEvent) ?? true
-            ).ToList();;
-        }
+        
+        var subscriptions = _eventSubscribers.GetOrCreateValue(subscriber);
+        
+        subscriptions.Remove(eventType);
     }
 }

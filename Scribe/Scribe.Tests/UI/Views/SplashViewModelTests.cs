@@ -21,7 +21,7 @@ public class SplashViewModelTests
         List<Folder>? receivedFolders = null;
         
         _foldersRepositoryMock.GetAll().Returns(expectedFolders);
-        _eventAggregator.Subscribe<FoldersLoadedEvent>(e => receivedFolders = e.Folders);
+        _eventAggregator.Subscribe<FoldersLoadedEvent>(this, e => receivedFolders = e.Folders);
 
         await _splashViewModel.Load();
         _splashViewModel.FinishLogoAnimation();
@@ -38,7 +38,7 @@ public class SplashViewModelTests
         List<Folder>? receivedFolders = null;
         
         _foldersRepositoryMock.GetAll().Returns(expectedFolders);
-        _eventAggregator.Subscribe<FoldersLoadedEvent>(e => receivedFolders = e.Folders);
+        _eventAggregator.Subscribe<FoldersLoadedEvent>(this, e => receivedFolders = e.Folders);
         
         await _splashViewModel.Load();
         _splashViewModel.FinishLogoAnimation();
@@ -59,7 +59,7 @@ public class SplashViewModelTests
         var publishedEvents = 0;
         
         _foldersRepositoryMock.GetAll().Returns([]);
-        _eventAggregator.Subscribe<FoldersLoadedEvent>(_ => publishedEvents++);
+        _eventAggregator.Subscribe<FoldersLoadedEvent>(this, _ => publishedEvents++);
         
         await _splashViewModel.Load();
         _splashViewModel.FinishLogoAnimation();
