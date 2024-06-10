@@ -1,8 +1,11 @@
-﻿namespace Scribe.Data.Repositories;
+﻿using Scribe.Data.Model;
+
+namespace Scribe.Data.Repositories;
 
 public interface IRepository<T>
 {
     Task<T> Add(T entity);
-    Task<T> Update(T entity);
+    Task Update(params T[] entities);
+    Task Delete(params T[] entities);
     Task<List<T>> GetAll();
 }

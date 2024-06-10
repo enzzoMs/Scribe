@@ -41,7 +41,8 @@ public class NavigationViewModel : BaseViewModel
         };
 
         _eventAggregator.Subscribe<FolderUpdatedEvent>(this, OnFolderUpdated);
-        
+        _eventAggregator.Subscribe<FolderDeletedEvent>(this, OnFolderDeleted);
+
         ConfigurationsViewModel = configurationsViewModel;
 
         CreateFolderCommand = new DelegateCommand(_ => CreateFolder());
@@ -135,6 +136,25 @@ public class NavigationViewModel : BaseViewModel
         CurrentFolders.Add(newFolder);
     }
 
+    private async void OnFolderDeleted(FolderDeletedEvent folderEvent)
+    {
+        var deletedFolder = folderEvent.DeletedFolder;
+        
+        _allFolders.Remove(deletedFolder);
+        CurrentFolders.Remove(deletedFolder);
+
+        var foldersAfterDeletedFolder = _allFolders.Where(f => f.NavigationIndex > deletedFolder.NavigationIndex).ToArray();
+        
+        foreach (var folder in foldersAfterDeletedFolder)
+        {
+            folder.NavigationIndex--;
+        }
+
+        await _foldersRepository.Update(foldersAfterDeletedFolder);
+        
+        ClearFoldersFilter();
+    }
+    
     private async void OnFolderUpdated(FolderUpdatedEvent folderEvent)
     {
         if (folderEvent is FolderPositionUpdatedEvent positionEvent)

@@ -42,14 +42,17 @@ public class FolderDetailsViewModel : BaseViewModel
             FilterDocuments();
         };
 
-        EnterEditModeCommand = new DelegateCommand(_ => OnEditMode = true);
-        ExitCurrentModeCommand = new DelegateCommand(_ => OnEditMode = false);
+        SetOnEditModeCommand = new DelegateCommand(param =>
+        {
+            if (param is bool onEditMode) OnEditMode = onEditMode;
+        });
         UpdateFolderNameCommand = new DelegateCommand(param =>
         {
             if (param is not string newFolderName) return;
             OnEditMode = false;
             UpdateFolderName(newFolderName);
         });
+        DeleteFolderCommand = new DelegateCommand(_ => DeleteFolder());
         CreateDocumentCommand = new DelegateCommand(_ => CreateDocument());
         OpenDocumentCommand = new DelegateCommand(param =>
         {
@@ -64,6 +67,7 @@ public class FolderDetailsViewModel : BaseViewModel
         set
         {
             _currentFolder = value;
+            OnEditMode = false;
             LoadDocuments();
             
             RaisePropertyChanged();
@@ -109,31 +113,15 @@ public class FolderDetailsViewModel : BaseViewModel
     }
 
     public ICommand UpdateFolderNameCommand { get; }
+
+    public ICommand DeleteFolderCommand { get; }
     
-    public ICommand EnterEditModeCommand { get; }
-
-    public ICommand ExitCurrentModeCommand { get; }
-
+    public ICommand SetOnEditModeCommand { get; }
+    
     public ICommand CreateDocumentCommand { get; }
 
     public ICommand OpenDocumentCommand { get; }
 
-    private void FilterDocuments()
-    {
-        var filterText = _searchDocumentsFilter.Trim();
-        var filteredDocuments = _allDocuments.Where(folder => folder.Name.Contains(
-            filterText, StringComparison.CurrentCultureIgnoreCase
-        ));
-        CurrentDocuments = new ObservableCollection<Document>(filteredDocuments);
-    }
-
-    private void ClearDocumentsFilter()
-    {
-        _searchDocumentsFilter = "";
-        RaisePropertyChanged(nameof(SearchDocumentsFilter));
-        FilterDocuments();
-    }
-    
     private async void UpdateFolderName(string newFolderName)
     {
         if (_currentFolder == null || _currentFolder.Name == newFolderName) return;
@@ -152,6 +140,31 @@ public class FolderDetailsViewModel : BaseViewModel
         var oldIndex = _currentFolder.NavigationIndex;
         
         _eventAggregator.Publish(new FolderPositionUpdatedEvent(_currentFolder.Id, oldIndex, newIndex));
+    }
+
+    private async void DeleteFolder()
+    {
+        if (_currentFolder == null) return;
+        
+        await _foldersRepository.Delete(_currentFolder);
+        
+        _eventAggregator.Publish(new FolderDeletedEvent(_currentFolder));
+    }
+    
+    private void FilterDocuments()
+    {
+        var filterText = _searchDocumentsFilter.Trim();
+        var filteredDocuments = _allDocuments.Where(folder => folder.Name.Contains(
+            filterText, StringComparison.CurrentCultureIgnoreCase
+        ));
+        CurrentDocuments = new ObservableCollection<Document>(filteredDocuments);
+    }
+
+    private void ClearDocumentsFilter()
+    {
+        _searchDocumentsFilter = "";
+        RaisePropertyChanged(nameof(SearchDocumentsFilter));
+        FilterDocuments();
     }
 
     private void LoadDocuments()

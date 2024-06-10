@@ -14,6 +14,9 @@
     <sys:String x:Key="String.Folders">Pastas</sys:String>
     <sys:String x:Key="String.Folders.DefaultName">Nova Pasta</sys:String>
     <sys:String x:Key="String.Folders.Property.Position">Posição</sys:String>
+    <sys:String x:Key="String.Folders.Delete">Deletar Pasta</sys:String>
+    <sys:String x:Key="String.Folders.Delete.Message">Deseja mesmo deletar a pasta &quot;{0}&quot;?</sys:String>
+    <sys:String x:Key="String.Folders.Delete.DocumentsWarning">Você perderá todos os ({0}) Documento(s)!</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.None">Nenhuma Pasta</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Search">Pesquisar Pasta</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Create">Criar Pasta</sys:String>
@@ -44,4 +47,7 @@
     <sys:String x:Key="String.PagedList.Button.PreviousPage">Página Anterior</sys:String>
     <sys:String x:Key="String.PagedList.Button.SkipForward">Pular algumas páginas</sys:String>
     <sys:String x:Key="String.PagedList.Button.SkipBackwards">Voltar algumas páginas</sys:String>
+    
+    <sys:String x:Key="String.MessageBox.Button.Confirm">Confirmar</sys:String>
+    <sys:String x:Key="String.MessageBox.Button.Cancel">Cancelar</sys:String>
 </ResourceDictionary>

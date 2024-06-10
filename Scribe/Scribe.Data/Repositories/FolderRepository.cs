@@ -16,15 +16,28 @@ public class FolderRepository : IRepository<Folder>
         return addedFolder.Entity;
     }
 
-    public async Task<Folder> Update(Folder folder)
+    public async Task Update(params Folder[] folders)
+    {
+        await using var context = new ScribeContext();
+        
+        foreach (var folder in folders)
+        {
+            context.Update(folder);
+        }        
+        
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Delete(Folder[] folders)
     {
         await using var context = new ScribeContext();
 
-        var updatedFolder = context.Update(folder);
-
+        foreach (var folder in folders)
+        {
+            context.Remove(folder);
+        }    
+        
         await context.SaveChangesAsync();
-
-        return updatedFolder.Entity;
     }
 
     public Task<List<Folder>> GetAll()

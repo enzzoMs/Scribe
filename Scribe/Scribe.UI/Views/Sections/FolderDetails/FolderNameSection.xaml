@@ -45,7 +45,8 @@
             <components:IconButton
                 IconGeometry="{StaticResource Drawing.Close}"
                 ToolTip="{DynamicResource String.Button.Cancel}"
-                Command="{Binding ExitCurrentModeCommand}"
+                Command="{Binding SetOnEditModeCommand}"
+                CommandParameter="{StaticResource False}"
                 VerticalAlignment="Center"/>
         </StackPanel>
         
@@ -53,10 +54,12 @@
             <components:IconButton
                 IconGeometry="{StaticResource Drawing.Edit}"
                 ToolTip="{DynamicResource String.Button.Edit}"
-                Command="{Binding EnterEditModeCommand}"
+                Command="{Binding SetOnEditModeCommand}"
+                CommandParameter="{StaticResource True}"
                 VerticalAlignment="Center"
                 Margin="{DynamicResource Dimen.FolderDetails.Header.Icon.Margin}"/>
             <components:IconButton
+                PreviewMouseLeftButtonDown="OnDeleteButtonClicked"
                 IconGeometry="{StaticResource Drawing.Delete}"
                 ToolTip="{DynamicResource String.Button.Delete}"
                 VerticalAlignment="Center"/>

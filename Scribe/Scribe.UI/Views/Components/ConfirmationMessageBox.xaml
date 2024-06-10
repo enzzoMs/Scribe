@@ -1,0 +1,116 @@
+﻿<Window 
+    x:Class="Scribe.UI.Views.Components.ConfirmationMessageBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d"
+    MinHeight="{StaticResource Dimen.MessageBox.MinHeight}" 
+    MinWidth="{StaticResource Dimen.MessageBox.MinHeight}"
+    SizeToContent="WidthAndHeight"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    Title="{Binding WindowTitle, ElementName=Root}"
+    Icon="../../Resources/Images/scribe_logo.png"
+    Name="Root">
+    
+    <Window.Resources>
+        <ControlTemplate x:Key="ButtonTemplate" TargetType="Button">
+            <Border 
+                Padding="{StaticResource Dimen.MessageBox.Button.Margin}"
+                Background="Transparent"
+                BorderBrush="{StaticResource Brush.Item.Selected.Background}"
+                BorderThickness="{StaticResource Dimen.MessageBox.Button.Border.Thickness}">
+                <TextBlock
+                    Text="{TemplateBinding Content}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"/>
+            </Border>
+        </ControlTemplate>
+        
+        <ControlTemplate x:Key="ButtonOnHoverTemplate" TargetType="Button">
+            <Border 
+                RenderOptions.EdgeMode="Aliased"
+                Padding="{StaticResource Dimen.MessageBox.Button.Margin}"
+                Background="{StaticResource Brush.Item.Selected.Background}"
+                BorderBrush="{StaticResource Brush.Item.Selected.Background}"
+                BorderThickness="{StaticResource Dimen.MessageBox.Button.Border.Thickness}">
+                <TextBlock
+                    Text="{TemplateBinding Content}"
+                    Foreground="{StaticResource Brush.Item.Selected.Foreground}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"/>
+            </Border>
+        </ControlTemplate>
+        
+        <Style TargetType="Button">
+            <Setter Property="Template" Value="{StaticResource ButtonTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Template" Value="{StaticResource ButtonOnHoverTemplate}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border
+            Grid.RowSpan="3"
+            Background="{StaticResource Brush.Surface.Dark}"/>
+        <Path
+            Grid.Row="0"
+            Grid.RowSpan="3"
+            Grid.Column="0"
+            Width="{StaticResource Dimen.MessageBox.Icon.Size}"
+            Height="{StaticResource Dimen.MessageBox.Icon.Size}"
+            Data="{StaticResource Drawing.QuestionMark}"
+            Fill="{StaticResource Brush.OnSurface.Dark}"
+            Stretch="Uniform"
+            Margin="{StaticResource Dimen.MessageBox.Icon.Margin}"/>
+        
+        <TextBlock
+            Grid.Row="0"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            Text="{Binding ConfirmationMessage, ElementName=Root}"
+            TextAlignment="Center"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Margin="{StaticResource Dimen.MessageBox.Message.Margin}"/>
+        <Rectangle
+            Grid.Row="1"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            Style="{StaticResource Style.Divider.Horizontal}"
+            Margin="{StaticResource Dimen.MessageBox.Divider.Margin}"/>
+        <Button
+            Grid.Row="2"
+            Grid.Column="1"
+            Content="{StaticResource String.MessageBox.Button.Confirm}"
+            Command="{Binding OnConfirm, ElementName=Root}"
+            Click="OnOptionButtonClicked"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"/>
+        <Button
+            Grid.Row="2"
+            Grid.Column="2"
+            Content="{StaticResource String.MessageBox.Button.Cancel}"
+            Click="OnOptionButtonClicked"
+            IsDefault="True"
+            IsCancel="True"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"/>
+    </Grid>
+</Window>

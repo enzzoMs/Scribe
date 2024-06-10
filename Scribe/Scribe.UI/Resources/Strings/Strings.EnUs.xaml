@@ -14,6 +14,9 @@
     <sys:String x:Key="String.Folders">Folders</sys:String>
     <sys:String x:Key="String.Folders.DefaultName">New Folder</sys:String>
     <sys:String x:Key="String.Folders.Property.Position">Position</sys:String>
+    <sys:String x:Key="String.Folders.Delete">Delete Folder</sys:String>
+    <sys:String x:Key="String.Folders.Delete.Message">Do you really want to delete the &quot;{0}&quot; folder?</sys:String>
+    <sys:String x:Key="String.Folders.Delete.DocumentsWarning">You will lose ({0}) Documents(s)!</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.None">No Folders</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Search">Search Folder</sys:String>
     <sys:String x:Key="String.Folders.Tooltip.Create">Create Folder</sys:String>
@@ -44,4 +47,7 @@
     <sys:String x:Key="String.PagedList.Button.PreviousPage">Previous Page</sys:String>
     <sys:String x:Key="String.PagedList.Button.SkipForward">Skip Forward</sys:String>
     <sys:String x:Key="String.PagedList.Button.SkipBackwards">Skip Backwards</sys:String>
+    
+    <sys:String x:Key="String.MessageBox.Button.Confirm">Confirm</sys:String>
+    <sys:String x:Key="String.MessageBox.Button.Cancel">Cancel</sys:String>
 </ResourceDictionary>

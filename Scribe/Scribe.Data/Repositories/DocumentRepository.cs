@@ -19,17 +19,35 @@ public class DocumentRepository : IRepository<Document>
         return addedDocument.Entity;
     }
     
-    public async Task<Document> Update(Document document)
+    public async Task Update(Document[] documents)
     {
         await using var context = new ScribeContext();
 
-        await context.Folders.FindAsync(document.FolderId);
+        var associatedFoldersId = documents.Select(d => d.FolderId).Distinct();
+
+        foreach (var folderId in associatedFoldersId)
+        {
+            await context.Folders.FindAsync(folderId);
+        }
         
-        var updatedDocument = context.Update(document);
+        foreach (var document in documents)
+        {
+            context.Update(document);
+        }
         
         await context.SaveChangesAsync();
+    }
+    
+    public async Task Delete(Document[] documents)
+    {
+        await using var context = new ScribeContext();
+
+        foreach (var document in documents)
+        {
+            context.Remove(document);
+        }
         
-        return updatedDocument.Entity;
+        await context.SaveChangesAsync();
     }
 
     public Task<List<Document>> GetAll()
