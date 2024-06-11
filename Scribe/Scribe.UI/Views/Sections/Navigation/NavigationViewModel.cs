@@ -80,8 +80,16 @@ public class NavigationViewModel : BaseViewModel
         set
         {
             _searchFoldersFilter = value;
-            _searchTimer.Stop();
-            _searchTimer.Start();
+
+            if (DelayFoldersSearch)
+            {
+                _searchTimer.Stop();
+                _searchTimer.Start();   
+            }
+            else
+            {
+                FilterFolders();
+            }
         }
     }
 
@@ -94,6 +102,8 @@ public class NavigationViewModel : BaseViewModel
             RaisePropertyChanged();
         }
     }
+
+    public bool DelayFoldersSearch { get; set; } = true;
     
     public ICommand CreateFolderCommand { get; private set; }
     
@@ -125,7 +135,7 @@ public class NavigationViewModel : BaseViewModel
     {
         ClearFoldersFilter();
         
-        var folderName = (string) Application.Current.TryFindResource("String.Folders.DefaultName") ?? "New Folder";
+        var folderName = Application.Current?.TryFindResource("String.Folders.DefaultName") as string ?? "New Folder";
         
         var newFolder = await _foldersRepository.Add(new Folder(
             name: folderName,
@@ -141,7 +151,6 @@ public class NavigationViewModel : BaseViewModel
         var deletedFolder = folderEvent.DeletedFolder;
         
         _allFolders.Remove(deletedFolder);
-        CurrentFolders.Remove(deletedFolder);
 
         var foldersAfterDeletedFolder = _allFolders.Where(f => f.NavigationIndex > deletedFolder.NavigationIndex).ToArray();
         
