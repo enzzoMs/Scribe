@@ -9,19 +9,19 @@ public partial class DropDownBox : UserControl
     public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
         name: nameof(Text),
         propertyType: typeof(string),
-        ownerType: typeof(UserControl)
+        ownerType: typeof(DropDownBox)
     );
 
     public static readonly DependencyProperty MenuItemsProperty = DependencyProperty.Register(
         name: nameof(MenuItems),
         propertyType: typeof(List<MenuItem>),
-        ownerType: typeof(UserControl)
+        ownerType: typeof(DropDownBox)
     );
 
     public static readonly DependencyProperty MenuItemsIconSourceProperty = DependencyProperty.Register(
         name: nameof(MenuItemsIconSource),
         propertyType: typeof(ImageSource),
-        ownerType: typeof(UserControl)
+        ownerType: typeof(DropDownBox)
     );
     
     public ImageSource MenuItemsIconSource

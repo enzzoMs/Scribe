@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     mc:Ignorable="d"
+    SizeChanged="OnHeightChanged"
     Name="Root">
     
     <UserControl.Resources>
@@ -60,7 +61,7 @@
             
         <ListView
             Grid.ColumnSpan="5"
-            Name="ItemList"
+            Name="ItemListView"
             BorderThickness="0"
             Background="Transparent"
             Margin="{DynamicResource Dimen.PagedList.List.Margin}"

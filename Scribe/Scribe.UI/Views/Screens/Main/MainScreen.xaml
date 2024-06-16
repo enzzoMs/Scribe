@@ -7,6 +7,7 @@
      xmlns:mainScreen="clr-namespace:Scribe.UI.Views.Screens.Main"
      xmlns:navSection="clr-namespace:Scribe.UI.Views.Sections.Navigation"
      xmlns:folderDetailsSection="clr-namespace:Scribe.UI.Views.Sections.FolderDetails"
+     xmlns:documentsSection="clr-namespace:Scribe.UI.Views.Sections.Documents"
      xmlns:editorSection="clr-namespace:Scribe.UI.Views.Sections.Editor"
      mc:Ignorable="d"
      d:DesignHeight="800"
@@ -29,6 +30,11 @@
             </EventTrigger>
         </Grid.Triggers>
         
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="0.7*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
@@ -37,16 +43,30 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <navSection:NavSection 
+        <navSection:NavSection
+            Grid.RowSpan="3"
             DataContext="{Binding NavigationViewModel}"/>
         <Rectangle
+            Grid.Row="0"
+            Grid.RowSpan="3"
             Grid.Column="1"
             Style="{StaticResource Style.Divider.Vertical}"/>
         <folderDetailsSection:FolderDetailsSection
             x:Name="FolderDetailsSection"
+            Grid.Row="0"
             Grid.Column="2"
-            DataContext="{Binding FolderDetailsViewModel}"/>
+            Width="{DynamicResource Dimen.FolderSection.Size}"
+            DataContext="{Binding FolderDetailsViewModel}"
+            Margin="{DynamicResource Dimen.FolderDetails.Margin}"/>
+        <documentsSection:DocumentsSection
+            Grid.Row="1"
+            Grid.Column="2"
+            Width="{DynamicResource Dimen.FolderSection.Size}"
+            DataContext="{Binding DocumentsViewModel}"
+            Margin="{DynamicResource Dimen.Documents.Margin}"/>
         <Rectangle
+            Grid.Row="0"
+            Grid.RowSpan="3"
             Grid.Column="3">
             <Rectangle.Style>
                 <Style TargetType="Rectangle" BasedOn="{StaticResource Style.Divider.Vertical}">
@@ -62,6 +82,8 @@
             </Rectangle.Style>
         </Rectangle>
         <editorSection:EditorSection
+            Grid.Row="0"
+            Grid.RowSpan="3"
             Grid.Column="4"
             DataContext="{Binding EditorViewModel}"/>
     </Grid>

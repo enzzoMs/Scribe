@@ -11,22 +11,51 @@
     d:DataContext="{d:DesignInstance editorSection:EditorViewModel}"
     d:DesignHeight="800" 
     d:DesignWidth="800">
-    
-    <UserControl.Resources>
-        <DataTemplate DataType="{x:Type models:Document}">
-            <TextBlock Text="{Binding Name}"/>
-        </DataTemplate>
-    </UserControl.Resources>
-    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        
-        <components:ClosableTabControl
-            TabItems="{Binding OpenDocuments}"
-            SelectedItem="{Binding SelectedDocument, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            CloseTabCommand="{Binding CloseDocumentCommand}"/>
-    </Grid>
+
+    <components:ClosableTabControl
+        TabItems="{Binding OpenDocuments}"
+        SelectedItem="{Binding SelectedDocument, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+        CloseTabCommand="{Binding CloseDocumentCommand}">
+        <components:ClosableTabControl.TabContentTemplate>
+            <DataTemplate DataType="{x:Type models:Document}">
+                <Grid 
+                    DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=TabControl}}"
+                    d:DataContext="{d:DesignInstance editorSection:EditorViewModel}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <editorSection:EditorToolbarSection
+                        Grid.Row="0"
+                        Grid.ColumnSpan="3"
+                        Margin="0 0 0 10"/>
+                    <Path
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Width="26"
+                        Height="26"
+                        Data="{StaticResource Drawing.Document}"
+                        Fill="{DynamicResource Brush.Text.Primary}"
+                        Stretch="Uniform"
+                        Margin="20 6 8 6"
+                        VerticalAlignment="Center"/>
+                    <components:EditableTextBlock
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Text="{Binding SelectedDocument.Name, FallbackValue=#}"
+                        OnEditMode="{Binding OnEditMode, Mode=TwoWay}"
+                        VerticalAlignment="Center"
+                        ConfirmChangesCommand="{Binding UpdateDocumentNameCommand}"
+                        Margin="0 0 20 0"/>
+                </Grid>
+            </DataTemplate>
+        </components:ClosableTabControl.TabContentTemplate>
+    </components:ClosableTabControl>
 </UserControl>

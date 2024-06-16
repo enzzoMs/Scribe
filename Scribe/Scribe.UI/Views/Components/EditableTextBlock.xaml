@@ -1,0 +1,126 @@
+﻿<UserControl 
+    x:Class="Scribe.UI.Views.Components.EditableTextBlock"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:components="clr-namespace:Scribe.UI.Views.Components"
+    mc:Ignorable="d"
+    d:DesignHeight="300" 
+    d:DesignWidth="300"
+    Name="Root">
+    
+    <UserControl.Resources>
+        <Style TargetType="components:IconButton">
+            <Setter Property="Width" Value="{DynamicResource Dimen.EditableTextBlock.Icon.Size}"/>
+            <Setter Property="Height" Value="{DynamicResource Dimen.EditableTextBlock.Icon.Size}"/>
+            <Setter Property="IconBrush" Value="{DynamicResource Brush.Text.Primary}"/>
+            <Setter Property="IconPadding" Value="{DynamicResource Dimen.EditableTextBlock.Icon.Padding}"/>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock
+            Grid.Column="0"
+            Text="{Binding Text, ElementName=Root}"
+            FontSize="{DynamicResource Dimen.TextSize.Normal2}"
+            TextTrimming="WordEllipsis"
+            VerticalAlignment="Center">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding OnEditMode, ElementName=Root}" Value="True">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <TextBlock
+            Name="TextErrorField"
+            Grid.Column="0"
+            Text="{DynamicResource String.Error.RequiredField}"
+            Foreground="{DynamicResource Brush.Warming}"
+            Opacity="0.7"
+            Margin="{DynamicResource Dimen.EditableTextBlock.Error.Margin}"
+            VerticalAlignment="Center">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding OnEditMode, ElementName=Root}" Value="True"/>
+                                <Condition Binding="{Binding Text, ElementName=TextEditBox}" Value=""/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <TextBox
+            Name="TextEditBox"
+            Grid.Column="0"
+            Foreground="{DynamicResource Brush.Text.Primary}"
+            FontSize="{DynamicResource Dimen.TextSize.Normal2}"
+            Background="Transparent"
+            VerticalAlignment="Center"
+            Visibility="{Binding OnEditMode, ElementName=Root, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBox.Style>
+                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding OnEditMode, ElementName=Root}" Value="True">
+                            <Setter Property="Text" Value="{Binding Text, ElementName=Root, Mode=OneWay}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
+                            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Warming}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        
+        <components:IconButton
+            Grid.Column="1"
+            IconGeometry="{StaticResource Drawing.Confirm}"
+            Command="{Binding ConfirmChangesCommand, ElementName=Root}"
+            ToolTip="{DynamicResource String.Button.Confirm}"
+            Visibility="{Binding OnEditMode, ElementName=Root, Converter={StaticResource BooleanToVisibilityConverter}}"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.EditableTextBlock.Icon.Margin}">
+            <components:IconButton.Style>
+                <Style TargetType="components:IconButton" BasedOn="{StaticResource {x:Type components:IconButton}}">
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Visibility, ElementName=TextErrorField}" Value="Collapsed"/>
+                                <Condition Binding="{Binding OnEditMode, ElementName=Root}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Command" Value="{Binding ConfirmChangesCommand, ElementName=Root}"/>
+                                <Setter Property="CommandParameter" Value="{Binding Text, ElementName=TextEditBox}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </components:IconButton.Style>
+        </components:IconButton>
+        <components:IconButton
+            Grid.Column="2"
+            PreviewMouseLeftButtonDown="OnCancelEditClicked"
+            IconGeometry="{StaticResource Drawing.Close}"
+            ToolTip="{DynamicResource String.Button.Cancel}"
+            Visibility="{Binding OnEditMode, ElementName=Root, Converter={StaticResource BooleanToVisibilityConverter}}"
+            VerticalAlignment="Center"/>
+    </Grid>
+</UserControl>

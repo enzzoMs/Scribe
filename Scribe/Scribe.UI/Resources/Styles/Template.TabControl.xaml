@@ -33,8 +33,32 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabControl">
-                    <StackPanel>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <Rectangle
+                            Grid.Row="0"
+                            Height="{DynamicResource Dimen.Divider.Size}"
+                            VerticalAlignment="Bottom">
+                            <Rectangle.Style>
+                                <Style BasedOn="{StaticResource Style.Divider.Horizontal}" TargetType="Rectangle">
+                                    <Style.Triggers>
+                                        <DataTrigger 
+                                            Binding="{Binding
+                                                Path=HasItems, 
+                                                RelativeSource={RelativeSource AncestorType=TabControl}}" 
+                                            Value="False">
+                                            <Setter Property="Visibility" Value="Hidden"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Rectangle.Style>
+                        </Rectangle>
                         <ScrollViewer 
+                            Grid.Row="0"
                             Name="TabScrollViewer"
                             Style="{StaticResource HorizontalTopScrollViewer}"
                             HorizontalScrollBarVisibility="Auto" 
@@ -46,11 +70,12 @@
                                 IsItemsHost="true"/>
                         </ScrollViewer>
                         <ContentPresenter 
+                            Grid.Row="1"
                             x:Name="PART_SelectedContentHost"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                             Margin="{TemplateBinding Padding}"
                             ContentSource="SelectedContent"/>
-                    </StackPanel>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

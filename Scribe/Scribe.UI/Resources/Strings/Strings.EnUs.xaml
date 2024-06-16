@@ -23,6 +23,8 @@
 
     <sys:String x:Key="String.Documents.DefaultName">New Document</sys:String>
     <sys:String x:Key="String.Documents.Create">Create Document</sys:String>
+    <sys:String x:Key="String.Documents.Delete">Delete Document</sys:String>
+    <sys:String x:Key="String.Documents.Delete.Message">Do you really want to delete the &quot;{0}&quot; document?</sys:String>
     <sys:String x:Key="String.Documents.Tooltip.Search">Search Document</sys:String>
     <sys:String x:Key="String.Documents.Tooltip.None">No Document</sys:String>
 
@@ -41,7 +43,7 @@
     <sys:String x:Key="String.Button.Edit">Edit</sys:String>
     <sys:String x:Key="String.Button.Delete">Delete</sys:String>
     
-    <sys:String x:Key="String.Error.RequiredField">* Required Field</sys:String>
+    <sys:String x:Key="String.Error.RequiredField">* Required</sys:String>
     
     <sys:String x:Key="String.PagedList.Button.NextPage">Next Page</sys:String>
     <sys:String x:Key="String.PagedList.Button.PreviousPage">Previous Page</sys:String>

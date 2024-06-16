@@ -5,35 +5,119 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:folderDetailsSection="clr-namespace:Scribe.UI.Views.Sections.FolderDetails"
+    xmlns:components="clr-namespace:Scribe.UI.Views.Components"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance folderDetailsSection:FolderDetailsViewModel}"
     d:DesignHeight="600">
-
+    
     <UserControl.Style>
         <Style TargetType="UserControl">
             <Setter Property="Visibility" Value="Visible"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding CurrentFolder}" Value="{x:Null}">
+                <DataTrigger Binding="{Binding Folder}" Value="{x:Null}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
     </UserControl.Style>
     
-    <Grid
-        Width="{DynamicResource Dimen.FolderDetails.Size}"
-        Margin="{DynamicResource Dimen.FolderDetails.InnerMargin}">
+    <UserControl.Resources>
+        <Style TargetType="components:IconButton">
+            <Setter Property="Width" Value="{DynamicResource Dimen.EditableTextBlock.Icon.Size}"/>
+            <Setter Property="Height" Value="{DynamicResource Dimen.EditableTextBlock.Icon.Size}"/>
+            <Setter Property="IconBrush" Value="{DynamicResource Brush.Text.Primary}"/>
+            <Setter Property="IconPadding" Value="{DynamicResource Dimen.EditableTextBlock.Icon.Padding}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding OnEditMode}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid Width="{DynamicResource Dimen.FolderSection.Size}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
         
-        <folderDetailsSection:FolderNameSection/>
-        <folderDetailsSection:FolderPropertiesSection
+        <Path
+            Grid.Row="0"
+            Grid.Column="0"
+            Width="{DynamicResource Dimen.FolderDetails.FolderIcon.Size}"
+            Height="{DynamicResource Dimen.FolderDetails.FolderIcon.Size}"
+            Data="{StaticResource Drawing.Folder.Closed}"
+            Fill="{DynamicResource Brush.Text.Primary}"
+            Stretch="Uniform"
+            VerticalAlignment="Center"/>
+        <components:EditableTextBlock
+            Grid.Row="0"
+            Grid.Column="1"
+            Text="{Binding Folder.Name, FallbackValue=#}"
+            OnEditMode="{Binding OnEditMode, Mode=TwoWay}"
+            ConfirmChangesCommand="{Binding UpdateFolderNameCommand}"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.FolderDetails.Name.Margin}">
+            <components:EditableTextBlock.Style>
+                <Style TargetType="components:EditableTextBlock">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding OnEditMode}" Value="True">
+                            <Setter Property="Grid.ColumnSpan" Value="3"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </components:EditableTextBlock.Style>
+        </components:EditableTextBlock>
+        
+        <components:IconButton
+            Grid.Row="0"
+            Grid.Column="2"
+            IconGeometry="{StaticResource Drawing.Edit}"
+            ToolTip="{DynamicResource String.Button.Edit}"
+            Command="{Binding EnterEditMode}"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.EditableTextBlock.Icon.Margin}"/>
+        <components:IconButton
+            Grid.Row="0"
+            Grid.Column="3"
+            PreviewMouseLeftButtonDown="OnDeleteFolderClicked"
+            IconGeometry="{StaticResource Drawing.Delete}"
+            ToolTip="{DynamicResource String.Button.Delete}"
+            VerticalAlignment="Center"/>
+        
+        <Path
             Grid.Row="1"
-            Margin="{DynamicResource Dimen.FolderDetails.Properties.OuterMargin}"/>
-        <folderDetailsSection:FolderDocumentsSection 
-            Grid.Row="2"/>
+            Grid.Column="0"
+            Width="{DynamicResource Dimen.FolderDetails.Position.Icon.Size}"
+            Height="{DynamicResource Dimen.FolderDetails.Position.Icon.Size}"
+            Data="{StaticResource Drawing.Star}"
+            Fill="{DynamicResource Brush.Text.Secondary}"
+            Stretch="Uniform"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.FolderDetails.Position.Margin}"/>
+        <TextBlock
+            Grid.Row="1"
+            Grid.Column="1"
+            Text="{DynamicResource String.Folders.Property.Position}"
+            Foreground="{StaticResource Brush.Text.Secondary}"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.FolderDetails.Position.Margin}"/>
+        <components:IncrementalNumberBox
+            Grid.Row="1"
+            Grid.Column="2"
+            Grid.ColumnSpan="2"
+            TextSize="{DynamicResource Dimen.TextSize.Normal1}"
+            CurrentValue="{Binding FolderNavigationPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            MinValue="1"
+            IncrementStep="1"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.FolderDetails.Position.Margin}"/>
     </Grid>
 </UserControl>

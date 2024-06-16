@@ -25,6 +25,7 @@
                             </Grid.ColumnDefinitions>
                             
                             <ContentControl
+                                Name="TabHeader"
                                 Content="{Binding}"
                                 Margin="{DynamicResource Dimen.ClosebleTabControl.Header.Margin}"/>
                             <components:IconButton
@@ -49,11 +50,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="False">
-                                <Setter 
-                                    TargetName="SelectedTabIndicator"
-                                    Property="Background"
-                                    Value="{DynamicResource Brush.Divider}">
-                                </Setter>
+                                <Setter TargetName="SelectedTabIndicator" Property="Background" Value="Transparent"/>
                                 <Setter Property="Opacity" Value="0.75"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -67,11 +64,7 @@
         Name="MainTabControl"
         SelectedItem="{Binding SelectedItem, ElementName=Root}"
         SelectionChanged="MainTabControl_OnSelectionChanged"
-        BorderThickness="0">
-        <TabControl.ContentTemplate>
-            <DataTemplate>
-                <TextBlock Text="{Binding}"/>
-            </DataTemplate>
-        </TabControl.ContentTemplate>
-    </TabControl>
+        ContentTemplate="{Binding TabContentTemplate, ElementName=Root}"
+        BorderThickness="0"
+        Padding="0"/>
 </UserControl>

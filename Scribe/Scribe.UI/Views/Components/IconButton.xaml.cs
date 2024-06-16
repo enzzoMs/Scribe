@@ -10,31 +10,31 @@ public partial class IconButton : UserControl
     public static readonly DependencyProperty IconGeometryProperty = DependencyProperty.Register(
         name: nameof(IconGeometry),
         propertyType: typeof(Geometry),
-        ownerType: typeof(UserControl)
+        ownerType: typeof(IconButton)
     );
     
     public static readonly DependencyProperty IconPaddingProperty = DependencyProperty.Register(
         name: nameof(IconPadding),
         propertyType: typeof(double),
-        ownerType: typeof(UserControl)
+        ownerType: typeof(IconButton)
     );
     
     public static readonly DependencyProperty IconBrushProperty = DependencyProperty.Register(
         name: nameof(IconBrush),
         propertyType: typeof(Brush),
-        ownerType: typeof(UserControl)
+        ownerType: typeof(IconButton)
     );
 
     public static readonly DependencyProperty CommandProperty = DependencyProperty.Register(
         name: nameof(Command),
         propertyType: typeof(ICommand),
-        ownerType: typeof(UserControl)
+        ownerType: typeof(IconButton)
     );
     
     public static readonly DependencyProperty CommandParameterProperty = DependencyProperty.Register(
         name: nameof(CommandParameter),
         propertyType: typeof(object),
-        ownerType: typeof(UserControl)
+        ownerType: typeof(IconButton)
     );
     
     public Geometry? IconGeometry

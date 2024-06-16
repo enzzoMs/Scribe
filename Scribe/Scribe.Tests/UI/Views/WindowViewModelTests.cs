@@ -8,6 +8,7 @@ using Scribe.UI.Views.Screens.Main;
 using Scribe.UI.Views.Screens.Splash;
 using Scribe.UI.Views.Screens.Window;
 using Scribe.UI.Views.Sections.Configurations;
+using Scribe.UI.Views.Sections.Documents;
 using Scribe.UI.Views.Sections.Editor;
 using Scribe.UI.Views.Sections.FolderDetails;
 using Scribe.UI.Views.Sections.Navigation;
@@ -36,10 +37,11 @@ public class WindowViewModelTests
 
         var configurationsViewModel = new ConfigurationsViewModel(configurationsRepository, resourcesManager);
         var navigationViewModel = new NavigationViewModel(_eventAggregator, foldersRepository, configurationsViewModel);
-        var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, foldersRepository, documentsRepository);
-        var editorViewModel = new EditorViewModel(_eventAggregator);
+        var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, foldersRepository);
+        var editorViewModel = new EditorViewModel(_eventAggregator, documentsRepository);
+        var documentsViewModel = new DocumentsViewModel(_eventAggregator, documentsRepository);
         
-        var mainViewModel = new MainViewModel(navigationViewModel, folderDetailsViewModel, editorViewModel);
+        var mainViewModel = new MainViewModel(navigationViewModel, folderDetailsViewModel, documentsViewModel, editorViewModel);
         
         _splashViewModel = new SplashViewModel(_eventAggregator, foldersRepository);
         _windowViewModel = new WindowViewModel(_eventAggregator, _splashViewModel, mainViewModel);

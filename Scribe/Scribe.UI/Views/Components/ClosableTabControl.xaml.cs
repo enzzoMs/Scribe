@@ -11,20 +11,26 @@ public partial class ClosableTabControl : UserControl
     public static readonly DependencyProperty TabItemsProperty = DependencyProperty.Register(
         name: nameof(TabItems),
         propertyType: typeof(IEnumerable),
-        ownerType: typeof(UserControl),
+        ownerType: typeof(ClosableTabControl),
         typeMetadata: new FrameworkPropertyMetadata(propertyChangedCallback: OnTabItemsChanged)
     );
     
     public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register(
         name: nameof(SelectedItem),
         propertyType: typeof(object),
-        ownerType: typeof(UserControl)
+        ownerType: typeof(ClosableTabControl)
+    );
+    
+    public static readonly DependencyProperty TabContentTemplateProperty = DependencyProperty.Register(
+        name: nameof(TabContentTemplate),
+        propertyType: typeof(DataTemplate),
+        ownerType: typeof(ClosableTabControl)
     );
     
     public static readonly DependencyProperty CloseTabCommandProperty = DependencyProperty.Register(
         name: nameof(CloseTabCommand),
         propertyType: typeof(ICommand),
-        ownerType: typeof(UserControl)
+        ownerType: typeof(ClosableTabControl)
     );
 
     public IEnumerable TabItems
@@ -37,6 +43,12 @@ public partial class ClosableTabControl : UserControl
     {
         get => GetValue(SelectedItemProperty);
         set => SetValue(SelectedItemProperty, value);
+    }
+    
+    public DataTemplate TabContentTemplate
+    {
+        get => (DataTemplate) GetValue(TabContentTemplateProperty);
+        set => SetValue(TabContentTemplateProperty, value);
     }
     
     public ICommand CloseTabCommand
@@ -55,7 +67,7 @@ public partial class ClosableTabControl : UserControl
         NotifyCollectionChangedEventHandler onItemChanged = (_, collectionEventArgs) =>
         {
             if (collectionEventArgs.NewItems != null)
-                AddTabs(closableTabControl.MainTabControl, collectionEventArgs.NewItems);
+                AddTabs(closableTabControl.MainTabControl, collectionEventArgs.NewItems, closableTabControl);
             else if (collectionEventArgs.OldItems != null)
                 CloseTabs(closableTabControl.MainTabControl, collectionEventArgs.OldItems);
         };
@@ -70,14 +82,17 @@ public partial class ClosableTabControl : UserControl
             oldObservableCollection.CollectionChanged -= onItemChanged;
         }
         
-        AddTabs(closableTabControl.MainTabControl, closableTabControl.TabItems);
+        AddTabs(closableTabControl.MainTabControl, closableTabControl.TabItems, closableTabControl);
     }
 
-    private static void AddTabs(TabControl tabControl, IEnumerable tabItems)
+    private static void AddTabs(TabControl tabControl, IEnumerable tabItems, ClosableTabControl tc)
     {
+        var i = tc.TabItems.Cast<object>().ToList();
+
         foreach (var item in tabItems)
         {
-            tabControl.Items.Add(item);
+            var t = i.IndexOf(item);
+            tabControl.Items.Insert(t, item);
         }
     }
     
@@ -98,6 +113,11 @@ public partial class ClosableTabControl : UserControl
         var selectedItem = e.AddedItems[0]!;
         
         var selectedTabItem = (TabItem) tabControl.ItemContainerGenerator.ContainerFromItem(selectedItem);
+        
+        if (selectedTabItem.Template.FindName("TabHeader", selectedTabItem) is ContentControl tabTemplate)
+        {
+            tabTemplate.Content = selectedTabItem.DataContext.ToString();
+        }
         selectedTabItem.Focus();
     }
 }

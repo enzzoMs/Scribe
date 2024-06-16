@@ -8,7 +8,7 @@ public partial class SearchBox : UserControl
     public static readonly DependencyProperty SearchTextProperty = DependencyProperty.Register(
         name: nameof(SearchText),
         propertyType: typeof(string),
-        ownerType: typeof(UserControl)
+        ownerType: typeof(SearchBox)
     );
 
     public string SearchText

@@ -9,6 +9,7 @@ using Scribe.UI.Views.Screens.Main;
 using Scribe.UI.Views.Screens.Splash;
 using Scribe.UI.Views.Screens.Window;
 using Scribe.UI.Views.Sections.Configurations;
+using Scribe.UI.Views.Sections.Documents;
 using Scribe.UI.Views.Sections.Editor;
 using Scribe.UI.Views.Sections.FolderDetails;
 using Scribe.UI.Views.Sections.Navigation;
@@ -51,6 +52,7 @@ public partial class App : Application
         services.AddTransient<NavigationViewModel>();
         services.AddTransient<ConfigurationsViewModel>();
         services.AddTransient<FolderDetailsViewModel>();
+        services.AddTransient<DocumentsViewModel>();
         services.AddTransient<EditorViewModel>();
 
         services.AddTransient<IRepository<Folder>, FolderRepository>();

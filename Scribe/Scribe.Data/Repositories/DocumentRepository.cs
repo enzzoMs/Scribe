@@ -22,13 +22,6 @@ public class DocumentRepository : IRepository<Document>
     public async Task Update(Document[] documents)
     {
         await using var context = new ScribeContext();
-
-        var associatedFoldersId = documents.Select(d => d.FolderId).Distinct();
-
-        foreach (var folderId in associatedFoldersId)
-        {
-            await context.Folders.FindAsync(folderId);
-        }
         
         foreach (var document in documents)
         {

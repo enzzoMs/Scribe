@@ -124,17 +124,15 @@ public class NavigationViewModel : BaseViewModel
         CurrentFolders = new ObservableCollection<Folder>(filteredFolders);
     }
 
-    private void ClearFoldersFilter()
+    private void ShowAllFolders()
     {
         _searchFoldersFilter = "";
         RaisePropertyChanged(nameof(SearchFoldersFilter));
-        FilterFolders();
+        CurrentFolders = new ObservableCollection<Folder>(_allFolders);
     }
     
     private async void CreateFolder()
     {
-        ClearFoldersFilter();
-        
         var folderName = Application.Current?.TryFindResource("String.Folders.DefaultName") as string ?? "New Folder";
         
         var newFolder = await _foldersRepository.Add(new Folder(
@@ -143,7 +141,7 @@ public class NavigationViewModel : BaseViewModel
         ));
         
         _allFolders.Add(newFolder);
-        CurrentFolders.Add(newFolder);
+        ShowAllFolders();
     }
 
     private async void OnFolderDeleted(FolderDeletedEvent folderEvent)
@@ -161,7 +159,7 @@ public class NavigationViewModel : BaseViewModel
 
         await _foldersRepository.Update(foldersAfterDeletedFolder);
         
-        ClearFoldersFilter();
+        ShowAllFolders();
     }
     
     private async void OnFolderUpdated(FolderUpdatedEvent folderEvent)
@@ -184,11 +182,11 @@ public class NavigationViewModel : BaseViewModel
 
             (_allFolders[positionEvent.NewIndex], _allFolders[positionEvent.OldIndex]) = 
                 (_allFolders[positionEvent.OldIndex], _allFolders[positionEvent.NewIndex]);
-            
-            ClearFoldersFilter();
         }
         
         if (folderEvent.UpdatedFolderId == _selectedFolder?.Id) 
             RaisePropertyChanged(nameof(SelectedFolder));
+        
+        ShowAllFolders();
     }
 }

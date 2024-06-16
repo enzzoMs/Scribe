@@ -9,25 +9,20 @@ public partial class PagedList : UserControl
 {
     private int _currentPageIndex;
     private int _maxPageIndex;
+    private int _itemsPerPage = 1;
     private const int SkipSizeInPages = 5;
 
     public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
         name: nameof(ItemsSource),
         propertyType: typeof(IEnumerable),
-        ownerType: typeof(UserControl),
+        ownerType: typeof(PagedList),
         typeMetadata: new FrameworkPropertyMetadata(propertyChangedCallback: OnItemsSourceChanged)    
     );
 
     public static readonly DependencyProperty ItemTemplateProperty = DependencyProperty.Register(
         name: nameof(ItemTemplate),
         propertyType: typeof(ControlTemplate),
-        ownerType: typeof(UserControl)
-    );
-    
-    public static readonly DependencyProperty PageSizeProperty = DependencyProperty.Register(
-        name: nameof(PageSize),
-        propertyType: typeof(int),
-        ownerType: typeof(UserControl)
+        ownerType: typeof(PagedList)
     );
     
     public IEnumerable ItemsSource
@@ -42,18 +37,25 @@ public partial class PagedList : UserControl
         set => SetValue(ItemTemplateProperty, value);
     }
     
-    public int PageSize
-    {
-        get => (int) GetValue(PageSizeProperty);
-        set => SetValue(PageSizeProperty, value);
-    }
-    
     public PagedList() => InitializeComponent();
 
     private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var pagedList = (PagedList) d;
-        NotifyCollectionChangedEventHandler onItemChanged = (_, _) => InitializePagedList(pagedList);
+        
+        NotifyCollectionChangedEventHandler onItemChanged = (_, collectionEventArgs) =>
+        {
+            var maxPageIndex = pagedList.RecalculateMaxPageIndex();
+            
+            // If an item was added
+            if (collectionEventArgs.NewItems != null)
+                pagedList._currentPageIndex = maxPageIndex;
+            // If an item was deleted
+            else if (collectionEventArgs.OldItems != null && pagedList._currentPageIndex > maxPageIndex)
+                pagedList._currentPageIndex = maxPageIndex;
+            
+            UpdatePageItems(pagedList);
+        };
 
         if (e.NewValue is INotifyCollectionChanged newObservableCollection)
         {
@@ -65,39 +67,46 @@ public partial class PagedList : UserControl
             oldObservableCollection.CollectionChanged -= onItemChanged;
         }
         
-        InitializePagedList(pagedList);
+        UpdatePageItems(pagedList);
     }
 
-    private static void InitializePagedList(PagedList pagedList)
+    private static void UpdatePageItems(PagedList pagedList)
     {
-        var itemsSource = pagedList.ItemsSource.Cast<object>().ToList();
-        
-        pagedList.ItemList.ItemsSource = itemsSource.Take(pagedList.PageSize);
-        
-        pagedList.CurrentPageText.Text = (pagedList._currentPageIndex + 1).ToString();
-        
-        pagedList._maxPageIndex = 
-            pagedList.PageSize == 0 || itemsSource.Count == 0 ? 
-                0 : (int) Math.Ceiling((double) itemsSource.Count / pagedList.PageSize) - 1;
+        var itemsSource = pagedList.ItemsSource.Cast<object>();
 
-        pagedList.MaxPagesText.Text = (pagedList._maxPageIndex + 1).ToString();
+        pagedList.CurrentPageText.Text = (pagedList._currentPageIndex + 1).ToString();
+        pagedList.MaxPagesText.Text = (pagedList.RecalculateMaxPageIndex() + 1).ToString();
+
+        pagedList.ItemListView.ItemsSource = itemsSource.Skip(
+            pagedList._itemsPerPage * pagedList._currentPageIndex
+        ).Take(pagedList._itemsPerPage);
     }
 
+    private int RecalculateMaxPageIndex()
+    {
+        var itemsSource = ItemsSource.Cast<object>().ToList();
+
+        _maxPageIndex = _itemsPerPage == 0 || itemsSource.Count == 0 ? 
+            0 : (int) Math.Ceiling((double) itemsSource.Count / _itemsPerPage) - 1;
+
+        return _maxPageIndex;
+    }
+    
     private void OnPreviousPageClicked(object sender, RoutedEventArgs e)
     {
         if (_currentPageIndex == 0) return;
     
         _currentPageIndex--;
-        UpdatePageItems();
+        UpdatePageItems(this);
     }
 
     private void OnNextPageClicked(object sender, RoutedEventArgs e)
     {
         var itemsSource = ItemsSource.Cast<object>();
-        if ((_currentPageIndex + 1) * PageSize >= itemsSource.Count()) return;
+        if ((_currentPageIndex + 1) * _itemsPerPage >= itemsSource.Count()) return;
         
         _currentPageIndex++;
-        UpdatePageItems();
+        UpdatePageItems(this);
     }
 
     private void OnSkipBackwardsClicked(object sender, RoutedEventArgs e)
@@ -105,7 +114,7 @@ public partial class PagedList : UserControl
         var skipSize = _currentPageIndex - SkipSizeInPages < 0 ? _currentPageIndex : SkipSizeInPages; 
 
         _currentPageIndex -= skipSize;
-        UpdatePageItems();
+        UpdatePageItems(this);
     }
     
     private void OnSkipForwardClicked(object sender, RoutedEventArgs e)
@@ -114,14 +123,20 @@ public partial class PagedList : UserControl
             _maxPageIndex - _currentPageIndex : SkipSizeInPages; 
         
         _currentPageIndex += skipSize;
-        UpdatePageItems();
+        UpdatePageItems(this);
     }
 
-    private void UpdatePageItems()
+    private void OnHeightChanged(object sender, SizeChangedEventArgs e)
     {
-        var itemsSource = ItemsSource.Cast<object>();
+        var pageList = (PagedList) sender;
+        var itemListView = pageList.ItemListView;
 
-        CurrentPageText.Text = (_currentPageIndex + 1).ToString();
-        ItemList.ItemsSource = itemsSource.Skip(PageSize * _currentPageIndex).Take(PageSize);
+        if (itemListView.Items.Count == 0) return;
+
+        var sampleItem = (ListViewItem) itemListView.ItemContainerGenerator.ContainerFromItem(itemListView.Items[0]);
+        var itemHeight = sampleItem.ActualHeight;
+        
+        _itemsPerPage = (int) Math.Floor(itemListView.ActualHeight / itemHeight);
+        UpdatePageItems(pageList);
     }
 }

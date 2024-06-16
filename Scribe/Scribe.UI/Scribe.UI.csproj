@@ -24,4 +24,12 @@
         
         <Resource Include="Resources\Fonts\*.ttf"/>
     </ItemGroup>
+    
+    <ItemGroup>
+      <Page Update="Views\Sections\Documents\DocumentsSection.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+    </ItemGroup>
 </Project>

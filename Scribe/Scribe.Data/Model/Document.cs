@@ -16,4 +16,6 @@ public class Document(
     public DateTime CreatedTimestamp { get; init; } = createdTimestamp;
     public IEnumerable<Tag> Tags { get; } = [];
     public int FolderId { get; } = folderId;
+
+    public override string ToString() => Name;
 }
