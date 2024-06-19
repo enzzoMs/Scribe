@@ -21,9 +21,7 @@
             <Setter Property="Stretch" Value="Uniform"/>
         </Style>
         
-        <ControlTemplate 
-            x:Key="DocumentItemTemplate"
-            d:DataContext="{d:DesignInstance model:Document}">
+        <ControlTemplate x:Key="DocumentItemTemplate" d:DataContext="{d:DesignInstance model:Document}">
             <Grid Background="Transparent">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -32,6 +30,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Grid.Triggers>
                     <EventTrigger RoutedEvent="MouseLeftButtonDown">
@@ -65,11 +64,27 @@
                     Text="{Binding Name}"
                     TextTrimming="WordEllipsis"
                     VerticalAlignment="Center"/>
+                <Path
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Data="{StaticResource Drawing.Pin.Filled}"
+                    Fill="{StaticResource Brush.Icon}"
+                    VerticalAlignment="Center">
+                    <Path.Style>
+                        <Style TargetType="Path" BasedOn="{StaticResource DocumentIconStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPinned}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Path.Style>
+                </Path>
                 <Rectangle
                     Name="DocumentItemDivider"
                     Grid.Row="1"
                     Grid.Column="0"
-                    Grid.ColumnSpan="2"
+                    Grid.ColumnSpan="3"
                     Style="{StaticResource Style.Divider.Horizontal}"/>
             </Grid>
         </ControlTemplate>

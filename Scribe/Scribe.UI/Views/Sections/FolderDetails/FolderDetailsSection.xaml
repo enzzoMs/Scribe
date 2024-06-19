@@ -96,7 +96,7 @@
             Grid.Column="0"
             Width="{DynamicResource Dimen.FolderDetails.Position.Icon.Size}"
             Height="{DynamicResource Dimen.FolderDetails.Position.Icon.Size}"
-            Data="{StaticResource Drawing.Star}"
+            Data="{StaticResource Drawing.Asterisk}"
             Fill="{DynamicResource Brush.Text.Secondary}"
             Stretch="Uniform"
             VerticalAlignment="Center"

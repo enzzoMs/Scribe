@@ -10,8 +10,7 @@ public class Document(
     
     public string Name { get; set; } = name;
     public string Content { get; set; } = "";
-    public bool IsFavorite { get; set; }
-    public bool IsArchived { get; set; }
+    public bool IsPinned { get; set; }
     public DateTime LastModifiedTimestamp { get; set; } = lastModifiedTimestamp;
     public DateTime CreatedTimestamp { get; init; } = createdTimestamp;
     public IEnumerable<Tag> Tags { get; } = [];

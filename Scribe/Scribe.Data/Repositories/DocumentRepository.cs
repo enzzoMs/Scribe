@@ -12,7 +12,7 @@ public class DocumentRepository : IRepository<Document>
 
         await context.Folders.FindAsync(document.FolderId);
         
-        var addedDocument = await context.AddAsync(document);
+        var addedDocument = context.Add(document);
         
         await context.SaveChangesAsync();
         
@@ -23,10 +23,7 @@ public class DocumentRepository : IRepository<Document>
     {
         await using var context = new ScribeContext();
         
-        foreach (var document in documents)
-        {
-            context.Update(document);
-        }
+        context.UpdateRange(documents.AsReadOnly());
         
         await context.SaveChangesAsync();
     }
@@ -34,11 +31,8 @@ public class DocumentRepository : IRepository<Document>
     public async Task Delete(Document[] documents)
     {
         await using var context = new ScribeContext();
-
-        foreach (var document in documents)
-        {
-            context.Remove(document);
-        }
+        
+        context.RemoveRange(documents.AsReadOnly());
         
         await context.SaveChangesAsync();
     }

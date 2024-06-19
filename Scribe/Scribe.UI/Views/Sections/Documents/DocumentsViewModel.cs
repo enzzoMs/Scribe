@@ -11,7 +11,6 @@ namespace Scribe.UI.Views.Sections.Documents;
 
 public class DocumentsViewModel : BaseViewModel
 {
-    private readonly IEventAggregator _eventAggregator;
     private readonly IRepository<Document> _documentsRepository;
     
     private List<Document> _allDocuments = [];
@@ -25,21 +24,11 @@ public class DocumentsViewModel : BaseViewModel
 
     public DocumentsViewModel(IEventAggregator eventAggregator, IRepository<Document> documentsRepository)
     {
-        _eventAggregator = eventAggregator;
+        eventAggregator.Subscribe<FolderSelectedEvent>(this, OnFolderSelected);
+        eventAggregator.Subscribe<DocumentDeletedEvent>(this, OnDocumentDeleted);
+        eventAggregator.Subscribe<DocumentUpdatedEvent>(this, OnDocumentUpdated);
+        
         _documentsRepository = documentsRepository;
-        
-        _eventAggregator.Subscribe<FolderSelectedEvent>(this, folderEvent =>
-        {
-            AssociatedFolder = folderEvent.Folder;
-
-            if (_associatedFolder == null) return;
-            
-            _allDocuments = _associatedFolder.Documents.ToList();
-            CurrentDocuments = new ObservableCollection<Document>(_allDocuments);
-        });
-        
-        _eventAggregator.Subscribe<DocumentDeletedEvent>(this, OnDocumentDeleted);
-        _eventAggregator.Subscribe<DocumentUpdatedEvent>(this, OnDocumentUpdated);
         
         _searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(SearchDelayMs) };
         _searchTimer.Tick += (_, _) =>
@@ -52,7 +41,7 @@ public class DocumentsViewModel : BaseViewModel
         OpenDocumentCommand = new DelegateCommand(param =>
         {
             if (param is Document doc) 
-                _eventAggregator.Publish(new DocumentSelectedEvent(doc));
+                eventAggregator.Publish(new DocumentSelectedEvent(doc));
         });
     }
     
@@ -94,9 +83,10 @@ public class DocumentsViewModel : BaseViewModel
     private void FilterDocuments()
     {
         var filterText = _searchDocumentsFilter.Trim();
-        var filteredDocuments = _allDocuments.Where(folder => folder.Name.Contains(
-            filterText, StringComparison.CurrentCultureIgnoreCase
-        ));
+        var filteredDocuments = _allDocuments
+            .Where(folder => folder.Name.Contains(filterText, StringComparison.CurrentCultureIgnoreCase))
+            .OrderByDescending(d => d.IsPinned);
+        
         CurrentDocuments = new ObservableCollection<Document>(filteredDocuments);
     }
 
@@ -104,7 +94,7 @@ public class DocumentsViewModel : BaseViewModel
     {
         _searchDocumentsFilter = "";
         RaisePropertyChanged(nameof(SearchDocumentsFilter));
-        CurrentDocuments = new ObservableCollection<Document>(_allDocuments);
+        CurrentDocuments = new ObservableCollection<Document>(_allDocuments.OrderByDescending(d => d.IsPinned));
     }
 
     private async void CreateDocument()
@@ -122,17 +112,30 @@ public class DocumentsViewModel : BaseViewModel
             name: documentName
         ));
         
+        ShowAllDocuments();
+
         _associatedFolder.Documents.Add(newDocumentDocument);
         _allDocuments.Add(newDocumentDocument);
+        CurrentDocuments.Add(newDocumentDocument);
+    }
+
+    private void OnFolderSelected(FolderSelectedEvent folderEvent)
+    {
+        AssociatedFolder = folderEvent.Folder;
+
+        if (_associatedFolder == null) return;
+            
+        _allDocuments = _associatedFolder.Documents.ToList();
         ShowAllDocuments();
     }
 
     private void OnDocumentDeleted(DocumentDeletedEvent documentEvent)
     {
+        ShowAllDocuments();
+
         _associatedFolder?.Documents.Remove(documentEvent.DeletedDocument);
         _allDocuments.Remove(documentEvent.DeletedDocument);
-        
-        ShowAllDocuments();
+        CurrentDocuments.Remove(documentEvent.DeletedDocument);
     }
 
     private void OnDocumentUpdated(DocumentUpdatedEvent documentEvent) => ShowAllDocuments();

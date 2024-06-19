@@ -47,7 +47,7 @@
             Name="TextErrorField"
             Grid.Column="0"
             Text="{DynamicResource String.Error.RequiredField}"
-            Foreground="{DynamicResource Brush.Warming}"
+            Foreground="{DynamicResource Brush.Warning}"
             Opacity="0.7"
             Margin="{DynamicResource Dimen.EditableTextBlock.Error.Margin}"
             VerticalAlignment="Center">
@@ -83,7 +83,7 @@
                             <Setter Property="Text" Value="{Binding Text, ElementName=Root, Mode=OneWay}"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
-                            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Warming}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Warning}"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

@@ -1,6 +1,6 @@
 ﻿namespace Scribe.Data.Model;
 
-public record AppConfigurations(
+public record struct AppConfigurations(
     ThemeConfiguration Theme, 
     LanguageConfiguration Language,
     double Scale

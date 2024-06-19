@@ -64,7 +64,6 @@
     <sys:Double x:Key="Dimen.Toolbar.Icon.Size">26</sys:Double>
     <sys:Double x:Key="Dimen.Toolbar.Icon.Padding">3</sys:Double>
     <Thickness x:Key="Dimen.Toolbar.Icon.Margin">5</Thickness>
-    <Thickness x:Key="Dimen.Toolbar.EndIcon.Margin" Top="5" Bottom="5" Left="5" Right="8"/>
     <Thickness x:Key="Dimen.Toolbar.Divider.Margin" Left="5" Right="5" Top="6" Bottom="6"/>
 
     

@@ -18,16 +18,11 @@ public class EditorViewModel : BaseViewModel
     
     public EditorViewModel(IEventAggregator eventAggregator, IRepository<Document> documentsRepository)
     {
-        _eventAggregator = eventAggregator;
         _documentsRepository = documentsRepository;
+        _eventAggregator = eventAggregator;
         
-        eventAggregator.Subscribe<DocumentSelectedEvent>(this, docEvent =>
-        {
-            if (!OpenDocuments.Contains(docEvent.Document))
-                OpenDocuments.Add(docEvent.Document);
-
-            SelectedDocument = docEvent.Document;
-        });
+        _eventAggregator.Subscribe<DocumentSelectedEvent>(this, OnDocumentSelected);
+        _eventAggregator.Subscribe<FolderDeletedEvent>(this, OnFolderDeleted);
         
         CloseDocumentCommand = new DelegateCommand(param =>
         {
@@ -37,9 +32,11 @@ public class EditorViewModel : BaseViewModel
         EnterEditModeCommand = new DelegateCommand(_ => OnEditMode = true);
         UpdateDocumentNameCommand = new DelegateCommand(param =>
         {
-            if (param is string newDocumentName) UpdateDocumentName(newDocumentName);
+            if (param is not string newDocumentName) return;
+            UpdateSelectedDocumentName(newDocumentName);
             OnEditMode = false;
         });
+        ToggleDocumentPinnedStatusCommand = new DelegateCommand(_ => ToggleDocumentPinnedStatus());
     }
     
     public ObservableCollection<Document> OpenDocuments { get; } = [];
@@ -71,6 +68,8 @@ public class EditorViewModel : BaseViewModel
     public ICommand EnterEditModeCommand { get; }
 
     public ICommand UpdateDocumentNameCommand { get; }
+
+    public ICommand ToggleDocumentPinnedStatusCommand { get; }
     
     private void CloseDocument(Document document)
     {
@@ -102,7 +101,7 @@ public class EditorViewModel : BaseViewModel
         CloseDocument(_selectedDocument);
     }
     
-    private async void UpdateDocumentName(string newDocumentName)
+    private async void UpdateSelectedDocumentName(string newDocumentName)
     {
         if (_selectedDocument == null || _selectedDocument.Name == newDocumentName) return;
 
@@ -115,5 +114,36 @@ public class EditorViewModel : BaseViewModel
         SelectedDocument = doc;
         
         _eventAggregator.Publish(new DocumentUpdatedEvent());
+    }
+
+    private async void ToggleDocumentPinnedStatus()
+    {
+        if (_selectedDocument == null) return;
+
+        _selectedDocument.IsPinned = !_selectedDocument.IsPinned;
+
+        await _documentsRepository.Update(_selectedDocument);
+        
+        RaisePropertyChanged(nameof(SelectedDocument));
+        _eventAggregator.Publish(new DocumentUpdatedEvent());
+    }
+
+    private void OnDocumentSelected(DocumentSelectedEvent docEvent)
+    {
+        if (!OpenDocuments.Contains(docEvent.Document))
+            OpenDocuments.Add(docEvent.Document);
+
+        SelectedDocument = docEvent.Document;
+    }
+
+    private void OnFolderDeleted(FolderDeletedEvent folderEvent)
+    {
+        var deletedFolderId = folderEvent.DeletedFolder.Id;
+        var deletedDocuments = OpenDocuments.Where(d => d.FolderId == deletedFolderId).ToList();
+
+        foreach (var document in deletedDocuments)
+        {
+            CloseDocument(document);
+        }
     }
 }

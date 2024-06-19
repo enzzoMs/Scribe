@@ -61,7 +61,7 @@
             
         <ListView
             Grid.ColumnSpan="5"
-            Name="ItemListView"
+            Name="ItemsListView"
             BorderThickness="0"
             Background="Transparent"
             Margin="{DynamicResource Dimen.PagedList.List.Margin}"

@@ -10,7 +10,7 @@ public class FolderRepository : IRepository<Folder>
     {
         await using var context = new ScribeContext();
         
-        var addedFolder = await context.AddAsync(folder);
+        var addedFolder = context.Add(folder);
         await context.SaveChangesAsync();
         
         return addedFolder.Entity;
@@ -20,10 +20,7 @@ public class FolderRepository : IRepository<Folder>
     {
         await using var context = new ScribeContext();
         
-        foreach (var folder in folders)
-        {
-            context.Update(folder);
-        }        
+        context.UpdateRange(folders.AsReadOnly());
         
         await context.SaveChangesAsync();
     }
@@ -31,11 +28,8 @@ public class FolderRepository : IRepository<Folder>
     public async Task Delete(Folder[] folders)
     {
         await using var context = new ScribeContext();
-
-        foreach (var folder in folders)
-        {
-            context.Remove(folder);
-        }    
+        
+        context.RemoveRange(folders.AsReadOnly());
         
         await context.SaveChangesAsync();
     }

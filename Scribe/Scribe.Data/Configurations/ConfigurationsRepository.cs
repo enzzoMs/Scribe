@@ -14,7 +14,7 @@ public class ConfigurationsRepository : IConfigurationsRepository
     
     public AppConfigurations GetAllConfigurations() => JsonSerializer.Deserialize<AppConfigurations>(
         File.ReadAllText(ConfigFilePath), options: SerializerOptions
-    )!;
+    );
     
     /// <returns>The updated app configuration.</returns>
     public AppConfigurations SaveConfiguration(LanguageConfiguration config)
