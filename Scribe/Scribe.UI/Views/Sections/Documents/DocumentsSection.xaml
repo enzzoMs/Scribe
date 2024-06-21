@@ -176,7 +176,6 @@
             HorizontalContentAlignment="Stretch"
             Template="{StaticResource NewDocumentButtonTemplate}"/>
         <components:PagedList
-            x:Name="DocumentsListView"
             Grid.Row="2"
             Grid.RowSpan="2"
             ItemsSource="{Binding CurrentDocuments}">
@@ -191,21 +190,14 @@
             </components:PagedList.ItemTemplate>
         </components:PagedList>
         
-        <Path
+        <Path 
             Grid.Row="2"
-            Width="{DynamicResource Dimen.NoData.Icon.Size}"
-            Height="{DynamicResource Dimen.NoData.Icon.Size}"
-            Data="{StaticResource Drawing.Document}"
-            Fill="{DynamicResource Brush.BackgroundIcon}"
-            Stretch="Uniform"
-            VerticalAlignment="Bottom"
-            HorizontalAlignment="Center"
-            Margin="{DynamicResource Dimen.NoData.Icon.Margin}">
+            Data="{StaticResource Drawing.Document}">
             <Path.Style>
-                <Style TargetType="Path">
+                <Style TargetType="Path" BasedOn="{StaticResource Style.NoData.Icon}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding ItemsSource.Count, ElementName=DocumentsListView}" Value="0">
+                        <DataTrigger Binding="{Binding CurrentDocuments.Count}" Value="0">
                             <Setter Property="Visibility" Value="Visible"/>
                         </DataTrigger>
                     </Style.Triggers>
@@ -214,15 +206,12 @@
         </Path>
         <TextBlock
             Grid.Row="3"
-            Text="{DynamicResource String.Documents.Tooltip.None}"
-            Foreground="{DynamicResource Brush.BackgroundText}"
-            VerticalAlignment="Top"
-            HorizontalAlignment="Center">
+            Text="{DynamicResource String.Documents.Tooltip.None}">
             <TextBlock.Style>
-                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                <Style TargetType="TextBlock" BasedOn="{StaticResource Style.NoData.Text}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding ItemsSource.Count, ElementName=DocumentsListView}" Value="0">
+                        <DataTrigger Binding="{Binding CurrentDocuments.Count}" Value="0">
                             <Setter Property="Visibility" Value="Visible"/>
                         </DataTrigger>
                     </Style.Triggers>

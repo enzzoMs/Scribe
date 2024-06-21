@@ -13,20 +13,23 @@ public class NavigationViewModelTests
 {
     private readonly NavigationViewModel _navigationViewModel;
     private readonly EventAggregator _eventAggregator = new();
-    private readonly IRepository<Folder> _folderRepository = Substitute.For<IRepository<Folder>>();
-    
+    private readonly IRepository<Folder> _folderRepositoryMock = Substitute.For<IRepository<Folder>>();
+    private readonly IRepository<Tag> _tagRepositoryMock = Substitute.For<IRepository<Tag>>();
+
     public NavigationViewModelTests()
     {
-        var configurationsRepository = Substitute.For<IConfigurationsRepository>();
-        configurationsRepository.GetAllConfigurations().Returns(new AppConfigurations(
+        var configurationsRepositoryMock = Substitute.For<IConfigurationsRepository>();
+        configurationsRepositoryMock.GetAllConfigurations().Returns(new AppConfigurations(
             ThemeConfiguration.Light, LanguageConfiguration.EnUs, 1.0
         ));
+
+        var resourceManagerMock = Substitute.For<IResourceManager>();
         
-        var resourceManager = Substitute.For<IResourceManager>();
+        var configurationsViewModel = new ConfigurationsViewModel(configurationsRepositoryMock, resourceManagerMock);
 
-        var configurationsViewModel = new ConfigurationsViewModel(configurationsRepository, resourceManager);
-
-        _navigationViewModel = new NavigationViewModel(_eventAggregator, _folderRepository, configurationsViewModel);
+        _navigationViewModel = new NavigationViewModel(
+            _eventAggregator, _folderRepositoryMock, _tagRepositoryMock, configurationsViewModel
+        );
     }
 
     [Fact]
@@ -97,11 +100,11 @@ public class NavigationViewModelTests
     {
         var newFolder = new Folder("NewFolder", 0);
 
-        _folderRepository.Add(Arg.Any<Folder>()).Returns(newFolder);
+        _folderRepositoryMock.Add(Arg.Any<Folder>()).Returns(newFolder);
         
         _navigationViewModel.CreateFolderCommand.Execute(null);
 
-        _folderRepository.Received(1);
+        _folderRepositoryMock.Received(1);
         Assert.Single(_navigationViewModel.CurrentFolders);
         Assert.Equal(newFolder, _navigationViewModel.CurrentFolders[0]);
     }
@@ -134,7 +137,7 @@ public class NavigationViewModelTests
         
         _eventAggregator.Publish(new FolderDeletedEvent(deletedFolder));
 
-        _folderRepository.Received(1);
+        _folderRepositoryMock.Received(1);
         Assert.Equal(0, _navigationViewModel.CurrentFolders[0].NavigationIndex);
         Assert.Equal(1, _navigationViewModel.CurrentFolders[1].NavigationIndex);
     }
@@ -158,7 +161,7 @@ public class NavigationViewModelTests
         Assert.Equal(newIndex, folderA.NavigationIndex);
         Assert.Equal(oldIndex, folderB.NavigationIndex);
         
-        _folderRepository.Received(2);
+        _folderRepositoryMock.Received(2);
     }
     
     [Fact]
@@ -175,5 +178,92 @@ public class NavigationViewModelTests
         _eventAggregator.Publish(new FolderUpdatedEvent(folder.Id));
         
         Assert.True(eventRaised);
+    }
+
+    [Fact]
+    public void TagAddedEvent_UpdatesRelatedFolder()
+    {
+        var folder = new Folder("", navigationIndex: 0);
+        var newTag = new Tag("", folderId: 0);
+        
+        _navigationViewModel.LoadFolders([folder]);
+        _eventAggregator.Publish(new TagAddedEvent(newTag));
+
+        Assert.Single(folder.Tags);
+        Assert.Equivalent(newTag, folder.Tags.First());
+    }
+
+    [Fact]
+    public void TagAddedEvent_AddsTagToRepository()
+    {
+        var folder = new Folder("", navigationIndex: 0);
+        var newTag = new Tag("", folderId: 0);
+        
+        _navigationViewModel.LoadFolders([folder]);
+        _eventAggregator.Publish(new TagAddedEvent(newTag));
+
+        _tagRepositoryMock.Received(1);
+    }
+    
+    [Fact]
+    public void TagAddedEvent_IgnoresFolder_IfTagAlreadyExists()
+    {
+        var folder = new Folder("", navigationIndex: 0);
+        folder.Tags.Add(new Tag("", folderId: 0));
+        
+        var newTag = new Tag("", folderId: 0);
+        
+        _navigationViewModel.LoadFolders([folder]);
+        _eventAggregator.Publish(new TagAddedEvent(newTag));
+
+        _tagRepositoryMock.Received(0);
+        Assert.Single(folder.Tags);
+        Assert.Equivalent(newTag, folder.Tags.First());
+    }
+    
+    [Fact]
+    public void TagRemovedEvent_UpdatesRelatedFolder()
+    {
+        var folder = new Folder("", navigationIndex: 0);
+        var tag = new Tag("", folderId: 0);
+        folder.Tags.Add(tag);
+
+        _navigationViewModel.LoadFolders([folder]);
+        _eventAggregator.Publish(new TagRemovedEvent(tag));
+
+        Assert.Empty(folder.Tags);
+    }
+
+    [Fact]
+    public void TagRemovedEvent_RemovesTagInRepository()
+    {
+        var folder = new Folder("", navigationIndex: 0);
+        var tag = new Tag("", folderId: 0);
+        folder.Tags.Add(tag);
+        
+        _navigationViewModel.LoadFolders([folder]);
+        _eventAggregator.Publish(new TagRemovedEvent(tag));
+
+        _tagRepositoryMock.Received(1);
+    }
+    
+    [Fact]
+    public void TagRemovedEvent_IgnoresFolder_IfTagIsStillUsed()
+    {
+        var tag = new Tag("", folderId: 0);
+
+        var document = new Document(0, DateTime.Now, DateTime.Now);
+        document.Tags.Add(tag);
+        
+        var folder = new Folder("", navigationIndex: 0);
+        folder.Documents.Add(document);
+        folder.Tags.Add(tag);
+        
+        _navigationViewModel.LoadFolders([folder]);
+        _eventAggregator.Publish(new TagRemovedEvent(tag));
+
+        _tagRepositoryMock.Received(0);
+        Assert.Single(folder.Tags);
+        Assert.Equivalent(tag, folder.Tags.First());
     }
 }

@@ -6,14 +6,13 @@ public class Document(
     DateTime lastModifiedTimestamp,
     string name = "")
 {
-    private int _id;
-    
+    public int _id { get; private set; }    
     public string Name { get; set; } = name;
     public string Content { get; set; } = "";
     public bool IsPinned { get; set; }
     public DateTime LastModifiedTimestamp { get; set; } = lastModifiedTimestamp;
     public DateTime CreatedTimestamp { get; init; } = createdTimestamp;
-    public IEnumerable<Tag> Tags { get; } = [];
+    public ICollection<Tag> Tags { get; } = [];
     public int FolderId { get; } = folderId;
 
     public override string ToString() => Name;

@@ -12,6 +12,7 @@ using Scribe.UI.Views.Sections.Documents;
 using Scribe.UI.Views.Sections.Editor;
 using Scribe.UI.Views.Sections.FolderDetails;
 using Scribe.UI.Views.Sections.Navigation;
+using Scribe.UI.Views.Sections.Tags;
 
 namespace Scribe.Tests.UI.Views;
 
@@ -23,27 +24,29 @@ public class WindowViewModelTests
 
     public WindowViewModelTests()
     {
-        var foldersRepository = Substitute.For<IRepository<Folder>>();
-        foldersRepository.GetAll().Returns([]);
+        var foldersRepositoryMock = Substitute.For<IRepository<Folder>>();
+        foldersRepositoryMock.GetAll().Returns([]);
 
-        var configurationsRepository = Substitute.For<IConfigurationsRepository>();
-        configurationsRepository.GetAllConfigurations().Returns(
+        var configurationsRepositoryMock = Substitute.For<IConfigurationsRepository>();
+        configurationsRepositoryMock.GetAllConfigurations().Returns(
             new AppConfigurations(ThemeConfiguration.Light, LanguageConfiguration.EnUs, 1.0)    
         );
 
-        var documentsRepository = Substitute.For<IRepository<Document>>();
-        
-        var resourcesManager = Substitute.For<IResourceManager>();
+        var documentsRepositoryMock = Substitute.For<IRepository<Document>>();
+        var tagsRepositoryMock = Substitute.For<IRepository<Tag>>();
+        var resourcesManagerMock = Substitute.For<IResourceManager>();
 
-        var configurationsViewModel = new ConfigurationsViewModel(configurationsRepository, resourcesManager);
-        var navigationViewModel = new NavigationViewModel(_eventAggregator, foldersRepository, configurationsViewModel);
-        var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, foldersRepository);
-        var editorViewModel = new EditorViewModel(_eventAggregator, documentsRepository);
-        var documentsViewModel = new DocumentsViewModel(_eventAggregator, documentsRepository);
+        var tagsViewModel = new TagsViewModel(_eventAggregator);
+        var configurationsViewModel = new ConfigurationsViewModel(configurationsRepositoryMock, resourcesManagerMock);
+        var navigationViewModel = new NavigationViewModel(_eventAggregator, foldersRepositoryMock, tagsRepositoryMock, configurationsViewModel);
+        var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, foldersRepositoryMock);
+        var editorViewModel = new EditorViewModel(_eventAggregator, documentsRepositoryMock);
+        var documentsViewModel = new DocumentsViewModel(_eventAggregator, documentsRepositoryMock);
+        var mainViewModel = new MainViewModel(
+            navigationViewModel, folderDetailsViewModel, documentsViewModel, tagsViewModel, editorViewModel
+        );
         
-        var mainViewModel = new MainViewModel(navigationViewModel, folderDetailsViewModel, documentsViewModel, editorViewModel);
-        
-        _splashViewModel = new SplashViewModel(_eventAggregator, foldersRepository);
+        _splashViewModel = new SplashViewModel(_eventAggregator, foldersRepositoryMock);
         _windowViewModel = new WindowViewModel(_eventAggregator, _splashViewModel, mainViewModel);
     }
     

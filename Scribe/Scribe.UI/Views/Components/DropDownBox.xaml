@@ -1,4 +1,4 @@
-﻿<UserControl 
+﻿<Button 
     x:Class="Scribe.UI.Views.Components.DropDownBox"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,36 +7,35 @@
     mc:Ignorable="d"
     d:DesignHeight="60" 
     d:DesignWidth="80"
+    Background="Transparent"
+    BorderThickness="0"
+    Cursor="Hand"
+    Click="OnDropdownButtonClicked"
     Name="Root">
     
-    <Button 
-        Name="DropDownButton"
-        DataContext="{Binding ElementName=Root}"
-        Background="Transparent"
-        BorderThickness="0"
-        Cursor="Hand"
-        Click="ButtonBase_OnClick">
-        <Button.ContextMenu>
-            <ContextMenu Opened="ContextMenu_OnOpened"/>
-        </Button.ContextMenu>
-        <Button.Template>
-            <ControlTemplate>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock 
-                        Name="DropDownLabel"
-                        Text="{Binding Text}"
-                        Foreground="{DynamicResource Brush.Text.Secondary}"
-                        VerticalAlignment="Center"/>
-                    <Path
-                        Data="{StaticResource Drawing.DownArrow}"
-                        Width="{DynamicResource Dimen.DropDownBox.Button.Size}"
-                        Height="{DynamicResource Dimen.DropDownBox.Button.Size}"
-                        Fill="{DynamicResource Brush.Text.Secondary}"
-                        Stretch="Uniform"
-                        VerticalAlignment="Center"
-                        Margin="{DynamicResource Dimen.DropDownBox.Button.Margin}"/>
-                </StackPanel>
-            </ControlTemplate>
-        </Button.Template>
-    </Button>
-</UserControl>
+    <Button.ContextMenu>
+        <ContextMenu Opened="ContextMenu_OnOpened"/>
+    </Button.ContextMenu>
+    
+    <Button.Template>
+        <ControlTemplate>
+            <StackPanel 
+                Orientation="Horizontal"    
+                DataContext="{Binding ElementName=Root}">
+                <TextBlock 
+                    Name="DropDownLabel"
+                    Text="{Binding Text}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
+                    VerticalAlignment="Center"/>
+                <Path
+                    Data="{StaticResource Drawing.DownArrow}"
+                    Width="{DynamicResource Dimen.DropDownBox.Button.Size}"
+                    Height="{DynamicResource Dimen.DropDownBox.Button.Size}"
+                    Fill="{DynamicResource Brush.Text.Secondary}"
+                    Stretch="Uniform"
+                    VerticalAlignment="Center"
+                    Margin="{DynamicResource Dimen.DropDownBox.Button.Margin}"/>
+            </StackPanel>
+        </ControlTemplate>
+    </Button.Template>
+</Button>

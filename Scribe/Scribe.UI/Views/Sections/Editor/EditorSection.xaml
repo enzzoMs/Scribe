@@ -10,10 +10,93 @@
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance editorSection:EditorViewModel}"
     d:DesignHeight="800" 
-    d:DesignWidth="800">
+    d:DesignWidth="800"
+    Name="Root">
+    
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="TagsDataProvider" Source="{Binding DocumentTags}"/>
+        
+        <DataTemplate DataType="{x:Type models:Tag}">
+            <Border
+                CornerRadius="10"
+                Padding="14 5"
+                Background="#FFEAEAEA"
+                Margin="0 4 8 4">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        Text="{Binding Name}"
+                        FontSize="12"
+                        VerticalAlignment="Center"/>
+                    <components:IconButton
+                        Width="14"
+                        Height="14"
+                        IconGeometry="{StaticResource Drawing.Close}"
+                        IconBrush="{DynamicResource Brush.Text.Primary}"
+                        Command="{Binding DataContext.RemoveTagCommand,ElementName=Root}"
+                        CommandParameter="{Binding}"
+                        Margin="4 0 0 0"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+        
+        <Style TargetType="MenuItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <StackPanel 
+                            Orientation="Horizontal"
+                            Background="White">
+                            <TextBox 
+                                Name="TagNameBox"
+                                Margin="16 12 12 12"
+                                FontSize="13"
+                                MinWidth="125"
+                                VerticalAlignment="Center">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                        <Style.Triggers>
+                                            <DataTrigger 
+                                                Binding="{Binding Visibility, RelativeSource={RelativeSource Self}}"
+                                                Value="Visible">
+                                                <Setter Property="Text" Value="Nova Tag"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <components:IconButton
+                                Width="20"
+                                Height="20"
+                                Click="OnConfirmTagNameClicked"
+                                IconGeometry="{StaticResource Drawing.Confirm}"
+                                IconBrush="{DynamicResource Brush.Icon}"
+                                VerticalAlignment="Center"
+                                Command="{Binding AddTagCommand}"
+                                CommandParameter="{Binding Text, ElementName=TagNameBox}"
+                                Margin="0 0 16 0"/>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <ControlTemplate x:Key="AddTagButtonTemplate">
+            <Border Background="Transparent">
+                <Path
+                    Width="20"
+                    Height="20"
+                    Data="{StaticResource Drawing.Add}"
+                    Fill="{DynamicResource Brush.Text.Secondary}"
+                    Stretch="Uniform"
+                    VerticalAlignment="Center"
+                    Margin="0 4"/>
+            </Border>
+        </ControlTemplate>
+    </UserControl.Resources>
     
     <components:ClosableTabControl
-        TabItems="{Binding OpenDocuments}"
+        ItemsSource="{Binding OpenDocuments}"
         SelectedItem="{Binding SelectedDocument, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
         CloseTabCommand="{Binding CloseDocumentCommand}">
         <components:ClosableTabControl.TabContentTemplate>
@@ -24,36 +107,80 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     
                     <editorSection:EditorToolbarSection
                         Grid.Row="0"
-                        Grid.ColumnSpan="3"
-                        Margin="0 0 0 10"/>
+                        Grid.ColumnSpan="2"
+                        Margin="0 0 0 20"/>
                     <Path
                         Grid.Row="1"
+                        Grid.Column="0"
+                        Width="20"
+                        Height="20"
+                        Data="{StaticResource Drawing.Tag}"
+                        Fill="{DynamicResource Brush.Text.Secondary}"
+                        Stretch="Uniform"
+                        Margin="15 7 0 7"
+                        VerticalAlignment="Center"/>
+                    <ItemsControl
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        BorderThickness="0"
+                        VerticalAlignment="Center">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemsSource>
+                            <CompositeCollection>
+                                <CollectionContainer 
+                                    Collection="{Binding Source={StaticResource TagsDataProvider}}"/>
+                                <Button
+                                    Cursor="Hand"
+                                    Click="OnAddTagButtonClicked"
+                                    Template="{StaticResource AddTagButtonTemplate}">
+                                    <Button.ContextMenu>
+                                        <ContextMenu Padding="0">
+                                            <MenuItem StaysOpenOnClick="True"/>
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
+                                </Button>
+                            </CompositeCollection>
+                        </ItemsControl.ItemsSource>
+                    </ItemsControl>
+                    <Path
+                        Grid.Row="2"
                         Grid.Column="0"
                         Width="26"
                         Height="26"
                         Data="{StaticResource Drawing.Document}"
                         Fill="{DynamicResource Brush.Text.Primary}"
                         Stretch="Uniform"
-                        Margin="20 6 8 6"
+                        Margin="20 11 8 6"
                         VerticalAlignment="Center"/>
                     <components:EditableTextBlock
-                        Grid.Row="1"
+                        Grid.Row="2"
                         Grid.Column="1"
                         Text="{Binding SelectedDocument.Name, FallbackValue=#}"
                         OnEditMode="{Binding OnEditMode, Mode=TwoWay}"
                         VerticalAlignment="Center"
                         ConfirmChangesCommand="{Binding UpdateDocumentNameCommand}"
-                        Margin="0 0 20 0"/>
+                        Margin="0 5 20 0"/>
+                    <Rectangle
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Style="{StaticResource Style.Divider.Horizontal}"
+                        Margin="20 6 20 8"/>
                 </Grid>
             </DataTemplate>
         </components:ClosableTabControl.TabContentTemplate>

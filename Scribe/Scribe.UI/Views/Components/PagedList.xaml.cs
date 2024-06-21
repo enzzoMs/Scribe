@@ -13,31 +13,6 @@ public partial class PagedList : UserControl
     private int _itemsPerPage = 1;
     private const int SkipSizeInPages = 5;
 
-    public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
-        name: nameof(ItemsSource),
-        propertyType: typeof(IEnumerable),
-        ownerType: typeof(PagedList),
-        typeMetadata: new FrameworkPropertyMetadata(propertyChangedCallback: OnItemsSourceChanged)    
-    );
-
-    public static readonly DependencyProperty ItemTemplateProperty = DependencyProperty.Register(
-        name: nameof(ItemTemplate),
-        propertyType: typeof(ControlTemplate),
-        ownerType: typeof(PagedList)
-    );
-    
-    public IEnumerable ItemsSource
-    {
-        get => (IEnumerable) GetValue(ItemsSourceProperty);
-        set => SetValue(ItemsSourceProperty, value);
-    }
-    
-    public ControlTemplate ItemTemplate
-    {
-        get => (ControlTemplate) GetValue(ItemTemplateProperty);
-        set => SetValue(ItemTemplateProperty, value);
-    }
-    
     public PagedList()
     {
         InitializeComponent();
@@ -67,6 +42,31 @@ public partial class PagedList : UserControl
             }
         };
     }
+    
+    public IEnumerable ItemsSource
+    {
+        get => (IEnumerable) GetValue(ItemsSourceProperty);
+        set => SetValue(ItemsSourceProperty, value);
+    }
+    
+    public ControlTemplate ItemTemplate
+    {
+        get => (ControlTemplate) GetValue(ItemTemplateProperty);
+        set => SetValue(ItemTemplateProperty, value);
+    }
+    
+    public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
+        name: nameof(ItemsSource),
+        propertyType: typeof(IEnumerable),
+        ownerType: typeof(PagedList),
+        typeMetadata: new FrameworkPropertyMetadata(propertyChangedCallback: OnItemsSourceChanged)    
+    );
+
+    public static readonly DependencyProperty ItemTemplateProperty = DependencyProperty.Register(
+        name: nameof(ItemTemplate),
+        propertyType: typeof(ControlTemplate),
+        ownerType: typeof(PagedList)
+    );
 
     private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {

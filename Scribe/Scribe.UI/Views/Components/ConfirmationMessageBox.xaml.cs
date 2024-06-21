@@ -5,23 +5,7 @@ namespace Scribe.UI.Views.Components;
 
 public partial class ConfirmationMessageBox : Window
 {
-    public static readonly DependencyProperty WindowTitleProperty = DependencyProperty.Register(
-        name: nameof(WindowTitle),
-        propertyType: typeof(string),
-        ownerType: typeof(ConfirmationMessageBox)
-    );
-    
-    public static readonly DependencyProperty ConfirmationMessageProperty = DependencyProperty.Register(
-        name: nameof(ConfirmationMessage),
-        propertyType: typeof(string),
-        ownerType: typeof(ConfirmationMessageBox)
-    );
-    
-    public static readonly DependencyProperty OnConfirmProperty = DependencyProperty.Register(
-        name: nameof(OnConfirm),
-        propertyType: typeof(ICommand),
-        ownerType: typeof(ConfirmationMessageBox)
-    );
+    public ConfirmationMessageBox() => InitializeComponent();
 
     public string WindowTitle
     {
@@ -41,7 +25,23 @@ public partial class ConfirmationMessageBox : Window
         set => SetValue(OnConfirmProperty, value);
     }
     
-    public ConfirmationMessageBox() => InitializeComponent();
-
+    public static readonly DependencyProperty WindowTitleProperty = DependencyProperty.Register(
+        name: nameof(WindowTitle),
+        propertyType: typeof(string),
+        ownerType: typeof(ConfirmationMessageBox)
+    );
+    
+    public static readonly DependencyProperty ConfirmationMessageProperty = DependencyProperty.Register(
+        name: nameof(ConfirmationMessage),
+        propertyType: typeof(string),
+        ownerType: typeof(ConfirmationMessageBox)
+    );
+    
+    public static readonly DependencyProperty OnConfirmProperty = DependencyProperty.Register(
+        name: nameof(OnConfirm),
+        propertyType: typeof(ICommand),
+        ownerType: typeof(ConfirmationMessageBox)
+    );
+    
     private void OnOptionButtonClicked(object sender, RoutedEventArgs e) => DialogResult = false;
 }

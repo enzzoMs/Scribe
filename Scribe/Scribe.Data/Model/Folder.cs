@@ -8,4 +8,5 @@ public class Folder(
     public string Name { get; set; } = name;
     public int NavigationIndex { get; set; } = navigationIndex;
     public ICollection<Document> Documents { get; } = [];
+    public ICollection<Tag> Tags { get; } = [];
 }

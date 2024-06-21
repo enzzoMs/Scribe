@@ -23,7 +23,28 @@ public class DocumentRepository : IRepository<Document>
     {
         await using var context = new ScribeContext();
         
-        context.UpdateRange(documents.AsReadOnly());
+        foreach (var document in documents)
+        {
+            var documentEntity = await context.Documents.FindAsync(document._id);
+            
+            if (documentEntity == null) continue;
+            
+            // A workaround to prevent EF from trying to insert already existing records in the join table 'DocumentTag'.
+            // We use the existing document entity and only track the required tags.
+            
+            documentEntity.Tags.Clear();
+
+            foreach (var tag in document.Tags)
+            {
+                var tagEntity = await context.Tags.FindAsync(tag.Name, tag.FolderId);
+
+                if (tagEntity != null)
+                {
+                    documentEntity.Tags.Add(tagEntity);
+                }
+            }
+            context.Documents.Update(documentEntity);   
+        }
         
         await context.SaveChangesAsync();
     }

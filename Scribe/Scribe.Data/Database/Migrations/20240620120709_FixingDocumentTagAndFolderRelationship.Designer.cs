@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Scribe.Data.Database;
 
@@ -10,9 +11,11 @@ using Scribe.Data.Database;
 namespace Scribe.Data.Database.Migrations
 {
     [DbContext(typeof(ScribeContext))]
-    partial class ScribeContextModelSnapshot : ModelSnapshot
+    [Migration("20240620120709_FixingDocumentTagAndFolderRelationship")]
+    partial class FixingDocumentTagAndFolderRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");

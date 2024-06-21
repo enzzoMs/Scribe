@@ -105,7 +105,7 @@ public class DocumentsViewModel : BaseViewModel
 
         var createdTimestamp = DateTime.Now;
 
-        var newDocumentDocument = await _documentsRepository.Add(new Document(
+        var newDocument = await _documentsRepository.Add(new Document(
             folderId: _associatedFolder.Id,
             createdTimestamp: createdTimestamp,
             lastModifiedTimestamp: createdTimestamp,
@@ -114,9 +114,9 @@ public class DocumentsViewModel : BaseViewModel
         
         ShowAllDocuments();
 
-        _associatedFolder.Documents.Add(newDocumentDocument);
-        _allDocuments.Add(newDocumentDocument);
-        CurrentDocuments.Add(newDocumentDocument);
+        _associatedFolder.Documents.Add(newDocument);
+        _allDocuments.Add(newDocument);
+        CurrentDocuments.Add(newDocument);
     }
 
     private void OnFolderSelected(FolderSelectedEvent folderEvent)

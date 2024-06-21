@@ -36,6 +36,7 @@
         <components:IconButton
             Grid.Row="0"
             Grid.Column="0"
+            ToolTip="{DynamicResource String.Button.Pin}"
             Command="{Binding ToggleDocumentPinnedStatusCommand}">
             <components:IconButton.Style>
                 <Style TargetType="components:IconButton" BasedOn="{StaticResource {x:Type components:IconButton}}">
@@ -64,10 +65,12 @@
             Grid.Row="0"
             Grid.Column="4"
             IconGeometry="{StaticResource Drawing.Edit}"
+            ToolTip="{DynamicResource String.Button.Edit}"
             Command="{Binding EnterEditModeCommand}"/>
         <components:IconButton
             Grid.Row="0"
             Grid.Column="5"
+            ToolTip="{DynamicResource String.Button.Delete}"
             PreviewMouseLeftButtonDown="OnDeleteButtonClicked"
             IconGeometry="{StaticResource Drawing.Delete}"/>
             

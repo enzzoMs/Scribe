@@ -1,6 +1,4 @@
-﻿using Scribe.Data.Model;
-
-namespace Scribe.Data.Repositories;
+﻿namespace Scribe.Data.Repositories;
 
 public interface IRepository<T>
 {

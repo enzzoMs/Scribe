@@ -13,7 +13,8 @@ public class EditorViewModel : BaseViewModel
     private readonly IRepository<Document> _documentsRepository;
     
     private Document? _selectedDocument;
-
+    private ObservableCollection<Tag>? _documentTags;
+    
     private bool _onEditMode;
     
     public EditorViewModel(IEventAggregator eventAggregator, IRepository<Document> documentsRepository)
@@ -26,7 +27,10 @@ public class EditorViewModel : BaseViewModel
         
         CloseDocumentCommand = new DelegateCommand(param =>
         {
-            if (param is Document doc) CloseDocument(doc);
+            if (param is Document doc)
+            {
+                CloseDocument(doc);
+            }
         });
         DeleteDocumentCommand = new DelegateCommand(_ => DeleteSelectedDocument());
         EnterEditModeCommand = new DelegateCommand(_ => OnEditMode = true);
@@ -37,6 +41,20 @@ public class EditorViewModel : BaseViewModel
             OnEditMode = false;
         });
         ToggleDocumentPinnedStatusCommand = new DelegateCommand(_ => ToggleDocumentPinnedStatus());
+        AddTagCommand = new DelegateCommand(param =>
+        {
+            if (param is string tagName)
+            {
+                AddTag(tagName.Trim());
+            }
+        });
+        RemoveTagCommand = new DelegateCommand(param =>
+        {
+            if (param is Tag tag)
+            {
+                RemoveTag(tag);
+            }
+        });
     }
     
     public ObservableCollection<Document> OpenDocuments { get; } = [];
@@ -46,7 +64,23 @@ public class EditorViewModel : BaseViewModel
         set
         {
             _selectedDocument = value;
+            
+            if (_selectedDocument != null)
+            {
+                DocumentTags = new ObservableCollection<Tag>(_selectedDocument.Tags);   
+            }
             OnEditMode = false;
+
+            RaisePropertyChanged();
+        }
+    }
+
+    public ObservableCollection<Tag>? DocumentTags
+    {
+        get => _documentTags;
+        private set
+        {
+            _documentTags = value;
             RaisePropertyChanged();
         }
     }
@@ -70,6 +104,10 @@ public class EditorViewModel : BaseViewModel
     public ICommand UpdateDocumentNameCommand { get; }
 
     public ICommand ToggleDocumentPinnedStatusCommand { get; }
+
+    public ICommand AddTagCommand { get; }
+
+    public ICommand RemoveTagCommand { get; }
     
     private void CloseDocument(Document document)
     {
@@ -126,6 +164,32 @@ public class EditorViewModel : BaseViewModel
         
         RaisePropertyChanged(nameof(SelectedDocument));
         _eventAggregator.Publish(new DocumentUpdatedEvent());
+    }
+
+    private async void AddTag(string tagName)
+    {
+        if (_selectedDocument == null || tagName == "" || _documentTags!.Any(tag => tag.Name == tagName)) return;
+
+        var newTag = new Tag(tagName, _selectedDocument.FolderId);
+        
+        _selectedDocument.Tags.Add(newTag);
+        _documentTags!.Add(newTag);
+        
+        _eventAggregator.Publish(new TagAddedEvent(newTag));
+        
+        await _documentsRepository.Update(_selectedDocument);
+    }
+
+    private async void RemoveTag(Tag tag)
+    {
+        if (_selectedDocument == null) return;
+        
+        _selectedDocument.Tags.Remove(tag);
+        _documentTags!.Remove(tag);
+
+        await _documentsRepository.Update(_selectedDocument);
+
+        _eventAggregator.Publish(new TagRemovedEvent(tag));
     }
 
     private void OnDocumentSelected(DocumentSelectedEvent docEvent)

@@ -6,35 +6,12 @@ namespace Scribe.UI.Views.Components;
 
 public partial class IncrementalNumberBox : UserControl
 {
-    public static readonly DependencyProperty CurrentValueProperty = DependencyProperty.Register(
-        name: nameof(CurrentValue),
-        propertyType: typeof(double),
-        ownerType: typeof(IncrementalNumberBox)
-    );
-    
-    public static readonly DependencyProperty IncrementStepProperty = DependencyProperty.Register(
-        name: nameof(IncrementStep),
-        propertyType: typeof(double),
-        ownerType: typeof(IncrementalNumberBox)
-    );
-    
-    public static readonly DependencyProperty MinValueProperty = DependencyProperty.Register(
-        name: nameof(MinValue),
-        propertyType: typeof(double),
-        ownerType: typeof(IncrementalNumberBox)
-    );
-    
-    public static readonly DependencyProperty TextSizeProperty = DependencyProperty.Register(
-        name: nameof(TextSize),
-        propertyType: typeof(double),
-        ownerType: typeof(IncrementalNumberBox)
-    );
-        
-    public static readonly DependencyProperty ShowDecimalPlacesProperty = DependencyProperty.Register(
-        name: nameof(ShowDecimalPlaces),
-        propertyType: typeof(bool),
-        ownerType: typeof(IncrementalNumberBox)
-    );
+    public IncrementalNumberBox()
+    {
+        InitializeComponent();
+        IncreaseButton.Command = new DelegateCommand(_ => IncreaseValue());
+        DecreaseButton.Command = new DelegateCommand(_ => DecreaseValue());
+    }
 
     public double CurrentValue
     {
@@ -66,12 +43,35 @@ public partial class IncrementalNumberBox : UserControl
         set => SetValue(TextSizeProperty, value);
     }
     
-    public IncrementalNumberBox()
-    {
-        InitializeComponent();
-        IncreaseButton.Command = new DelegateCommand(_ => IncreaseValue());
-        DecreaseButton.Command = new DelegateCommand(_ => DecreaseValue());
-    }
+    public static readonly DependencyProperty CurrentValueProperty = DependencyProperty.Register(
+        name: nameof(CurrentValue),
+        propertyType: typeof(double),
+        ownerType: typeof(IncrementalNumberBox)
+    );
+    
+    public static readonly DependencyProperty IncrementStepProperty = DependencyProperty.Register(
+        name: nameof(IncrementStep),
+        propertyType: typeof(double),
+        ownerType: typeof(IncrementalNumberBox)
+    );
+    
+    public static readonly DependencyProperty MinValueProperty = DependencyProperty.Register(
+        name: nameof(MinValue),
+        propertyType: typeof(double),
+        ownerType: typeof(IncrementalNumberBox)
+    );
+    
+    public static readonly DependencyProperty TextSizeProperty = DependencyProperty.Register(
+        name: nameof(TextSize),
+        propertyType: typeof(double),
+        ownerType: typeof(IncrementalNumberBox)
+    );
+        
+    public static readonly DependencyProperty ShowDecimalPlacesProperty = DependencyProperty.Register(
+        name: nameof(ShowDecimalPlaces),
+        propertyType: typeof(bool),
+        ownerType: typeof(IncrementalNumberBox)
+    );
 
     private void IncreaseValue() => CurrentValue += IncrementStep;
     

@@ -24,11 +24,17 @@ public class ConfigurationsViewModel : BaseViewModel
 
         SelectLanguageCommand = new DelegateCommand(parameter =>
         {
-            if (parameter is LanguageConfiguration langConfig) SelectLanguage(langConfig);
+            if (parameter is LanguageConfiguration langConfig)
+            {
+                SelectLanguage(langConfig);
+            }
         });
         SelectThemeCommand = new DelegateCommand(parameter =>
         {
-            if (parameter is ThemeConfiguration themeConfig) SelectTheme(themeConfig);
+            if (parameter is ThemeConfiguration themeConfig)
+            {
+                SelectTheme(themeConfig);
+            }
         });
     }
     

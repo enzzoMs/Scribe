@@ -102,18 +102,11 @@
             </ListView.ItemContainerStyle>
         </ListView>
         
-        <Path
+        <Path 
             Grid.Row="0"
-            Width="{DynamicResource Dimen.NoData.Icon.Size}"
-            Height="{DynamicResource Dimen.NoData.Icon.Size}"
-            Data="{StaticResource Drawing.Folder.Closed}"
-            Fill="{DynamicResource Brush.BackgroundIcon}"
-            Stretch="Uniform"
-            VerticalAlignment="Bottom"
-            HorizontalAlignment="Center"
-            Margin="{DynamicResource Dimen.NoData.Icon.Margin}">
+            Data="{StaticResource Drawing.Folder.Closed}">
             <Path.Style>
-                <Style TargetType="Path">
+                <Style TargetType="Path" BasedOn="{StaticResource Style.NoData.Icon}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Items.Count, ElementName=FoldersListView}" Value="0">
@@ -125,13 +118,9 @@
         </Path>
         <TextBlock
             Grid.Row="1"
-            Text="{DynamicResource String.Folders.Tooltip.None}"
-            Foreground="{DynamicResource Brush.Text.Secondary}"
-            Opacity="0.8"
-            VerticalAlignment="Top"
-            HorizontalAlignment="Center">
+            Text="{DynamicResource String.Folders.Tooltip.None}">
             <TextBlock.Style>
-                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                <Style TargetType="TextBlock" BasedOn="{StaticResource Style.NoData.Text}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Items.Count, ElementName=FoldersListView}" Value="0">

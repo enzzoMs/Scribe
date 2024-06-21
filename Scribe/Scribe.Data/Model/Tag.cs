@@ -1,8 +1,7 @@
 ﻿namespace Scribe.Data.Model;
 
-public class Tag
+public class Tag(string name, int folderId)
 {
-    private int _id;
-    
-    public string Name { get; set; }
+    public string Name { get; set; } = name;
+    public int FolderId { get; } = folderId;
 }

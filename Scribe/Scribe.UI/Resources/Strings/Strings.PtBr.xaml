@@ -42,7 +42,8 @@
     <sys:String x:Key="String.Button.Cancel">Cancelar</sys:String>
     <sys:String x:Key="String.Button.Edit">Editar</sys:String>
     <sys:String x:Key="String.Button.Delete">Deletar</sys:String>
-    
+    <sys:String x:Key="String.Button.Pin">Fixar Documento</sys:String>
+
     <sys:String x:Key="String.Error.RequiredField">* Obrigatório</sys:String>
     
     <sys:String x:Key="String.PagedList.Button.NextPage">Próxima Página</sys:String>

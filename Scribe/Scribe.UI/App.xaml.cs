@@ -13,6 +13,7 @@ using Scribe.UI.Views.Sections.Documents;
 using Scribe.UI.Views.Sections.Editor;
 using Scribe.UI.Views.Sections.FolderDetails;
 using Scribe.UI.Views.Sections.Navigation;
+using Scribe.UI.Views.Sections.Tags;
 using Window = Scribe.UI.Views.Screens.Window.Window;
 
 namespace Scribe.UI;
@@ -53,10 +54,12 @@ public partial class App : Application
         services.AddTransient<ConfigurationsViewModel>();
         services.AddTransient<FolderDetailsViewModel>();
         services.AddTransient<DocumentsViewModel>();
+        services.AddTransient<TagsViewModel>();
         services.AddTransient<EditorViewModel>();
 
         services.AddTransient<IRepository<Folder>, FolderRepository>();
         services.AddTransient<IRepository<Document>, DocumentRepository>();
+        services.AddTransient<IRepository<Tag>, TagRepository>();
 
         services.AddTransient<IConfigurationsRepository, ConfigurationsRepository>();
         

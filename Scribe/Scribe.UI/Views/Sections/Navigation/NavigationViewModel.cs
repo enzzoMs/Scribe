@@ -14,6 +14,7 @@ public class NavigationViewModel : BaseViewModel
 {
     private readonly IEventAggregator _eventAggregator;
     private readonly IRepository<Folder> _foldersRepository;
+    private readonly IRepository<Tag> _tagsRepository;
     
     private List<Folder> _allFolders = [];
     private ObservableCollection<Folder> _currentFolders = [];
@@ -28,10 +29,12 @@ public class NavigationViewModel : BaseViewModel
     public NavigationViewModel(
         IEventAggregator eventAggregator, 
         IRepository<Folder> foldersRepository,
+        IRepository<Tag> tagsRepository,
         ConfigurationsViewModel configurationsViewModel)
     {
         _eventAggregator = eventAggregator;
         _foldersRepository = foldersRepository;
+        _tagsRepository = tagsRepository;
         
         _searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(SearchDelayMs) };
         _searchTimer.Tick += (_, _) =>
@@ -42,6 +45,8 @@ public class NavigationViewModel : BaseViewModel
 
         _eventAggregator.Subscribe<FolderUpdatedEvent>(this, OnFolderUpdated);
         _eventAggregator.Subscribe<FolderDeletedEvent>(this, OnFolderDeleted);
+        _eventAggregator.Subscribe<TagAddedEvent>(this, OnTagAdded);
+        _eventAggregator.Subscribe<TagRemovedEvent>(this, OnTagRemoved);
 
         ConfigurationsViewModel = configurationsViewModel;
 
@@ -183,10 +188,40 @@ public class NavigationViewModel : BaseViewModel
             (_allFolders[positionEvent.NewIndex], _allFolders[positionEvent.OldIndex]) = 
                 (_allFolders[positionEvent.OldIndex], _allFolders[positionEvent.NewIndex]);
         }
-        
-        if (folderEvent.UpdatedFolderId == _selectedFolder?.Id) 
+
+        if (folderEvent.UpdatedFolderId == _selectedFolder?.Id)
+        {
             RaisePropertyChanged(nameof(SelectedFolder));
+        }
         
         ShowAllFolders();
+    }
+
+    private async void OnTagAdded(TagAddedEvent tagEvent)
+    {
+        var createdTag = tagEvent.CreatedTag;
+        
+        var associatedFolder = _allFolders.Find(f => f.Id == createdTag.FolderId);
+
+        if (associatedFolder == null || associatedFolder.Tags.Any(tag => tag.Name == createdTag.Name)) return;
+
+        associatedFolder.Tags.Add(createdTag);
+        await _tagsRepository.Add(createdTag);
+    }
+    
+    private async void OnTagRemoved(TagRemovedEvent tagEvent)
+    {
+        var removedTag = tagEvent.RemovedTag;
+        
+        var associatedFolder = _allFolders.Find(f => f.Id == removedTag.FolderId);
+
+        if (associatedFolder == null) return;
+
+        var tagIsStillUsed = associatedFolder.Documents.Any(doc => doc.Tags.Any(tag => tag.Name == removedTag.Name));
+
+        if (tagIsStillUsed) return;
+        
+        associatedFolder.Tags.Remove(associatedFolder.Tags.First(tag => tag.Name == removedTag.Name));
+        await _tagsRepository.Delete(removedTag);
     }
 }

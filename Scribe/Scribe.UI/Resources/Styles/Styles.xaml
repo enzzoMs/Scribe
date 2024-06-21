@@ -16,12 +16,28 @@
         </Style.Setters>
     </Style>
     
+    <Style x:Key="Style.NoData.Icon" TargetType="Path">
+        <Setter Property="Width" Value="{DynamicResource Dimen.NoData.Icon.Size}"/>
+        <Setter Property="Height" Value="{DynamicResource Dimen.NoData.Icon.Size}"/>
+        <Setter Property="Fill" Value="{DynamicResource Brush.BackgroundIcon}"/>
+        <Setter Property="Stretch" Value="Uniform"/>
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="{DynamicResource Dimen.NoData.Icon.Margin}"/>
+    </Style>
+    
     <Style TargetType="TextBlock">
         <Style.Setters>
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
             <Setter Property="FontFamily" Value="{StaticResource Text.Medium}"/>
             <Setter Property="FontSize" Value="{DynamicResource Dimen.TextSize.Normal1}"/>
         </Style.Setters>
+    </Style>
+    
+    <Style x:Key="Style.NoData.Text" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.BackgroundText}"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
     
     <Style TargetType="Label">
