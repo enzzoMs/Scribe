@@ -136,6 +136,11 @@ public class EditorViewModel : BaseViewModel
 
         _eventAggregator.Publish(new DocumentDeletedEvent(_selectedDocument));
         
+        foreach (var tag in _selectedDocument.Tags)
+        {
+            _eventAggregator.Publish(new TagRemovedEvent(tag));
+        }
+        
         CloseDocument(_selectedDocument);
     }
     

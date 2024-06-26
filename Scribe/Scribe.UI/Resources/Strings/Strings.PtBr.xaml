@@ -28,6 +28,9 @@
     <sys:String x:Key="String.Documents.Tooltip.Search">Pesquisar Documento</sys:String>
     <sys:String x:Key="String.Documents.Tooltip.None">Nenhum Documento</sys:String>
 
+    <sys:String x:Key="String.Tags">Tags</sys:String>
+    <sys:String x:Key="String.Tags.Tooltip.None">Nenhuma Tags</sys:String>
+
     <sys:String x:Key="String.Config.Theme">Tema</sys:String>
     <sys:String x:Key="String.Config.Theme.Light">Claro</sys:String>
     <sys:String x:Key="String.Config.Theme.Dark">Escuro</sys:String>

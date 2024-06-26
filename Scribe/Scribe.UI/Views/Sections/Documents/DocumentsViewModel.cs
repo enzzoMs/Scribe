@@ -16,6 +16,8 @@ public class DocumentsViewModel : BaseViewModel
     private List<Document> _allDocuments = [];
     private ObservableCollection<Document> _currentDocuments = [];
 
+    private readonly SortedSet<string> _selectedTagNames = [];
+    
     private Folder? _associatedFolder;
     
     private string _searchDocumentsFilter = "";
@@ -27,7 +29,10 @@ public class DocumentsViewModel : BaseViewModel
         eventAggregator.Subscribe<FolderSelectedEvent>(this, OnFolderSelected);
         eventAggregator.Subscribe<DocumentDeletedEvent>(this, OnDocumentDeleted);
         eventAggregator.Subscribe<DocumentUpdatedEvent>(this, OnDocumentUpdated);
-        
+        eventAggregator.Subscribe<TagSelectionChangedEvent>(this, OnTagSelectionChanged);
+        eventAggregator.Subscribe<TagAddedEvent>(this, e => OnTagAddedOrRemoved(e.CreatedTag.Name));
+        eventAggregator.Subscribe<TagRemovedEvent>(this, e => OnTagAddedOrRemoved(e.RemovedTag.Name));
+
         _documentsRepository = documentsRepository;
         
         _searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(SearchDelayMs) };
@@ -84,7 +89,8 @@ public class DocumentsViewModel : BaseViewModel
     {
         var filterText = _searchDocumentsFilter.Trim();
         var filteredDocuments = _allDocuments
-            .Where(folder => folder.Name.Contains(filterText, StringComparison.CurrentCultureIgnoreCase))
+            .Where(doc => _selectedTagNames.IsSubsetOf(doc.Tags.Select(tag => tag.Name)))
+            .Where(doc => doc.Name.Contains(filterText, StringComparison.CurrentCultureIgnoreCase))
             .OrderByDescending(d => d.IsPinned);
         
         CurrentDocuments = new ObservableCollection<Document>(filteredDocuments);
@@ -94,7 +100,11 @@ public class DocumentsViewModel : BaseViewModel
     {
         _searchDocumentsFilter = "";
         RaisePropertyChanged(nameof(SearchDocumentsFilter));
-        CurrentDocuments = new ObservableCollection<Document>(_allDocuments.OrderByDescending(d => d.IsPinned));
+        CurrentDocuments = new ObservableCollection<Document>(
+            _allDocuments
+                .Where(doc => _selectedTagNames.IsSubsetOf(doc.Tags.Select(tag => tag.Name)))
+                .OrderByDescending(d => d.IsPinned)
+        );
     }
 
     private async void CreateDocument()
@@ -116,7 +126,11 @@ public class DocumentsViewModel : BaseViewModel
 
         _associatedFolder.Documents.Add(newDocument);
         _allDocuments.Add(newDocument);
-        CurrentDocuments.Add(newDocument);
+
+        if (_selectedTagNames.Count == 0)
+        {
+            CurrentDocuments.Add(newDocument);
+        }
     }
 
     private void OnFolderSelected(FolderSelectedEvent folderEvent)
@@ -125,7 +139,9 @@ public class DocumentsViewModel : BaseViewModel
 
         if (_associatedFolder == null) return;
             
+        _selectedTagNames.Clear();
         _allDocuments = _associatedFolder.Documents.ToList();
+        
         ShowAllDocuments();
     }
 
@@ -139,4 +155,26 @@ public class DocumentsViewModel : BaseViewModel
     }
 
     private void OnDocumentUpdated(DocumentUpdatedEvent documentEvent) => ShowAllDocuments();
+
+    private void OnTagAddedOrRemoved(string tagName)
+    {
+        if (_selectedTagNames.Contains(tagName))
+        {
+            FilterDocuments();
+        }
+    }
+    
+    private void OnTagSelectionChanged(TagSelectionChangedEvent tagEvent)
+    {
+        if (tagEvent.IsSelected)
+        {
+            _selectedTagNames.Add(tagEvent.TagName);
+        }
+        else
+        {
+            _selectedTagNames.Remove(tagEvent.TagName);
+        }
+        
+        FilterDocuments();
+    }
 }

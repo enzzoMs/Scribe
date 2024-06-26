@@ -10,11 +10,10 @@
     <Thickness x:Key="Dimen.TextBox.Border" Bottom="2"/>
     <Thickness x:Key="Dimen.TextBox.Padding" Bottom="3"/>
     <sys:Double x:Key="Dimen.Divider.Size">2</sys:Double>
-    <sys:Double x:Key="Dimen.ScrollBar.Thumb.Size">7</sys:Double>
-    <CornerRadius x:Key="Dimen.ScrollBar.Vertical.Thumb.Radius">6</CornerRadius>
-    <sys:Double x:Key="Dimen.ScrollBar.Vertical.Track.Size">5</sys:Double>
-    <CornerRadius x:Key="Dimen.ScrollBar.Vertical.Track.Radius">3</CornerRadius>
+    
     <sys:Double x:Key="Dimen.ScrollBar.Horizontal.Size">8</sys:Double>
+    <sys:Double x:Key="Dimen.ScrollBar.Vertical.Size">18</sys:Double>
+    <Thickness x:Key="Dimen.ScrollBar.Vertical.Margin" Top="8" Bottom="8"/>
 
     <sys:Double x:Key="Dimen.NoData.Icon.Size">48</sys:Double>
     <Thickness x:Key="Dimen.NoData.Icon.Margin" Bottom="8"/>
@@ -30,7 +29,8 @@
     <Thickness x:Key="Dimen.Nav.Expanded.Subtitle.Margin" Top="20" Bottom="10"/>
     <sys:Double x:Key="Dimen.Nav.Expanded.NewFolderIcon.Size">26</sys:Double>
     <sys:Double x:Key="Dimen.Nav.Expanded.NewFolderIcon.Padding">2</sys:Double>
-    <Thickness x:Key="Dimen.Nav.Expanded.FolderSearchBox.Margin" Top="20" Bottom="15"/>
+    <Thickness x:Key="Dimen.Nav.Expanded.FolderSearchBox.Margin" Top="20" Bottom="7"/>
+    <Thickness x:Key="Dimen.Nav.Expanded.Folders.Margin" Top="8" Bottom="8"/>
 
     <sys:Double x:Key="Dimen.Nav.Collapsed.Size">40</sys:Double>
     <Thickness x:Key="Dimen.Nav.Collapsed.InnerMargin" Top="29" Bottom="27" Left="17" Right="17"/>
@@ -56,10 +56,20 @@
     <Thickness x:Key="Dimen.FolderDetails.Position.Margin" Top="6"/>
     <sys:Double x:Key="Dimen.FolderDetails.Position.Icon.Size">14</sys:Double>
 
-    <Thickness x:Key="Dimen.Documents.Margin" Left="20" Right="20" Bottom="35"/>
+    <Thickness x:Key="Dimen.Documents.Margin" Left="20" Right="20" Bottom="28"/>
     <Thickness x:Key="Dimen.Documents.SearchBox.Margin" Top="15" Bottom="15"/>
     <sys:Double x:Key="Dimen.DocumentItem.Icon.Size">20</sys:Double>
     <Thickness x:Key="Dimen.DocumentItem.Icon.Margin" Top="6" Bottom="6" Right="8"/>
+    
+    <Thickness x:Key="Dimen.Tags.Margin" Top="8" Bottom="8"/>
+    <sys:Double x:Key="Dimen.Tags.Icon.Size">18</sys:Double>
+    <Thickness x:Key="Dimen.Tags.Text.Margin" Left="8"/>
+    <Thickness x:Key="Dimen.Tags.Divider.Margin" Top="8" Bottom="8"/>
+
+    <Thickness x:Key="Dimen.TagItem.Margin" Top="4" Bottom="4" Right="8"/>
+    <Thickness x:Key="Dimen.TagItem.Padding" Top="5" Bottom="5" Right="14" Left="14"/>
+    <CornerRadius x:Key="Dimen.TagItem.CornerRadius">10</CornerRadius>
+    <sys:Double x:Key="Dimen.TagItem.TextSize">12</sys:Double>
 
     <sys:Double x:Key="Dimen.Toolbar.Icon.Size">26</sys:Double>
     <sys:Double x:Key="Dimen.Toolbar.Icon.Padding">3</sys:Double>

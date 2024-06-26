@@ -50,7 +50,7 @@
                                 Grid.Column="0"
                                 Grid.ColumnSpan="2"
                                 Height="{DynamicResource Dimen.ClosebleTabControl.TabIndicator.Size}"
-                                Background="{StaticResource Brush.Primary}"/>
+                                Background="{DynamicResource Brush.Primary}"/>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="False">

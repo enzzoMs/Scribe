@@ -40,12 +40,12 @@
                                     Storyboard.TargetName="DocumentItemDivider"
                                     Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" 
                                     From="{StaticResource Color.Divider}"
-                                    To="{StaticResource Color.Text.Primary}" 
+                                    To="{StaticResource Color.Primary}" 
                                     Duration="0:0:0.15"/>
                                 <ColorAnimation
                                     Storyboard.TargetName="DocumentItemDivider"
                                     Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" 
-                                    From="{StaticResource Color.Text.Primary}"
+                                    From="{StaticResource Color.Primary}"
                                     To="{StaticResource Color.Divider}" 
                                     BeginTime="0:0:0.3"
                                     Duration="0:0:0.15"/>
@@ -62,7 +62,7 @@
                     Grid.Row="0"
                     Grid.Column="1"
                     Text="{Binding Name}"
-                    TextTrimming="WordEllipsis"
+                    TextTrimming="CharacterEllipsis"
                     VerticalAlignment="Center"/>
                 <Path
                     Grid.Row="0"
@@ -107,12 +107,12 @@
                                     Storyboard.TargetName="NewDocumentDivider"
                                     Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" 
                                     From="{StaticResource Color.Divider}" 
-                                    To="{StaticResource Color.Text.Primary}" 
+                                    To="{StaticResource Color.Primary}" 
                                     Duration="0:0:0.15"/>
                                 <ColorAnimation
                                     Storyboard.TargetName="NewDocumentDivider"
                                     Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" 
-                                    From="{StaticResource Color.Text.Primary}" 
+                                    From="{StaticResource Color.Primary}" 
                                     To="{StaticResource Color.Divider}" 
                                     BeginTime="0:0:0.3"
                                     Duration="0:0:0.15"/>

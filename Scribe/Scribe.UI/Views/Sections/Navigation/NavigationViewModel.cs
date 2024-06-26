@@ -213,7 +213,7 @@ public class NavigationViewModel : BaseViewModel
     {
         var removedTag = tagEvent.RemovedTag;
         
-        var associatedFolder = _allFolders.Find(f => f.Id == removedTag.FolderId);
+        var associatedFolder = _allFolders.Find(folder => folder.Id == removedTag.FolderId);
 
         if (associatedFolder == null) return;
 

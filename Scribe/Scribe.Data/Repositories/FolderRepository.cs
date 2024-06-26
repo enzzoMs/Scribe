@@ -20,7 +20,28 @@ public class FolderRepository : IRepository<Folder>
     {
         await using var context = new ScribeContext();
         
-        context.UpdateRange(folders.AsReadOnly());
+        foreach (var folder in folders)
+        {
+            var folderEntity = await context.Folders.FindAsync(folder.Id);
+            
+            if (folderEntity == null) continue;
+            
+            // A workaround to prevent EF from trying to insert already existing records in the join table 'DocumentTag'.
+            // We use the existing folder entity and track the required tags.
+            
+            folderEntity.Tags.Clear();
+
+            folderEntity.Name = folder.Name;
+            folderEntity.NavigationIndex = folder.NavigationIndex;
+            
+            var tagNames = folder.Tags.Select(tag => tag.Name);
+            
+            folderEntity.Tags = await context.Tags.Where(
+                tag => tag.FolderId == folder.Id && tagNames.Contains(tag.Name)
+            ).ToListAsync();
+        }
+        
+        context.ChangeTracker.DetectChanges();
         
         await context.SaveChangesAsync();
     }

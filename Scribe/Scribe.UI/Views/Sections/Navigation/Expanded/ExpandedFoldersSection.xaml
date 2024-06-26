@@ -8,16 +8,14 @@
     mc:Ignorable="d"
     d:DesignHeight="800" 
     d:DesignWidth="300"
-    d:DataContext="{d:DesignInstance navSection:NavigationViewModel}"
-    Name="Root">
+    d:DataContext="{d:DesignInstance navSection:NavigationViewModel}">
     
     <UserControl.Resources>
         <ControlTemplate x:Key="SelectedItemTemplate">
             <Border 
-                DataContext="{Binding DataContext, ElementName=Root}"
                 Padding="{DynamicResource Dimen.FolderItem.Padding}" 
                 CornerRadius="{DynamicResource Dimen.FolderItem.Radius}" 
-                Background="#232323">
+                Background="{DynamicResource Brush.Primary}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -32,7 +30,7 @@
                         VerticalAlignment="Center"/>
                     <TextBlock
                         Grid.Column="1"
-                        Text="{Binding SelectedFolder.Name, FallbackValue=#}"
+                        Text="{Binding Name}"
                         TextTrimming="WordEllipsis"
                         Foreground="White"
                         FontWeight="SemiBold"
@@ -69,7 +67,7 @@
                 </Grid>
             </Border>
         </ControlTemplate>
-    </UserControl.Resources>    
+    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -86,6 +84,11 @@
             BorderThickness="0"
             HorizontalContentAlignment="Stretch"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical" Margin="{DynamicResource Dimen.Nav.Expanded.Folders.Margin}"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="Template" Value="{StaticResource UnselectedItemTemplate}"/>

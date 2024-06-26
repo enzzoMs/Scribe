@@ -47,6 +47,7 @@
             FontSize="{DynamicResource Dimen.TextSize.AppTitle}"
             FontWeight="Bold"
             FontFamily="{StaticResource Text.ExtraBold}"
+            Foreground="{DynamicResource Brush.Primary}"
             VerticalAlignment="Center"
             Margin="{DynamicResource Dimen.Nav.Expanded.AppTitle.Margin}"/>
         <components:IconButton

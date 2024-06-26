@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Scribe.Data.Model;
 
 namespace Scribe.Data.Database;
@@ -31,10 +30,6 @@ public class ScribeContext : DbContext
         modelBuilder.Entity<Document>()
             .HasMany<Tag>(f => f.Tags)
             .WithMany();
-        
-        modelBuilder
-            .Entity<Document>()
-            .HasKey("_id");
 
         modelBuilder.Entity<Tag>()
             .HasKey(t => new { t.Name, t.FolderId });

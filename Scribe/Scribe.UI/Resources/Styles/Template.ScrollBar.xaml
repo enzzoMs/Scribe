@@ -10,62 +10,50 @@
     </Style>
     
     <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
-        <Border 
-            CornerRadius="{DynamicResource Dimen.ScrollBar.Vertical.Thumb.Radius}" 
-            Margin="14 0 0 0">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                
-                <Border
-                    CornerRadius="{DynamicResource Dimen.ScrollBar.Vertical.Track.Radius}" 
-                    Background="#DDDDDD"
-                    Width="{DynamicResource Dimen.ScrollBar.Vertical.Track.Size}"
-                    HorizontalAlignment="Center"/>
-                <Track 
-                    x:Name="PART_Track" 
-                    IsDirectionReversed="true"
-                    Width="{DynamicResource Dimen.ScrollBar.Thumb.Size}"
-                    HorizontalAlignment="Center">
-                    <Track.Thumb>
-                        <Thumb>
-                            <Thumb.Style>
-                                <Style TargetType="Thumb" BasedOn="{StaticResource ScrollBarThumb}">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate>
-                                                <Border CornerRadius="6" Background="#232323"/>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Thumb.Style>
-                            <Thumb.BorderBrush>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                    <LinearGradientBrush.GradientStops>
-                                        <GradientStopCollection>
-                                            <GradientStop Color="{DynamicResource BorderLightColor}" Offset="0.0" />
-                                            <GradientStop Color="{DynamicResource BorderDarkColor}" Offset="1.0" />
-                                        </GradientStopCollection>
-                                    </LinearGradientBrush.GradientStops>
-                                </LinearGradientBrush>
-                            </Thumb.BorderBrush>
-                            <Thumb.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                    <LinearGradientBrush.GradientStops>
-                                        <GradientStopCollection>
-                                            <GradientStop Color="{DynamicResource ControlLightColor}" Offset="0.0" />
-                                            <GradientStop Color="{DynamicResource ControlMediumColor}" Offset="1.0" />
-                                        </GradientStopCollection>
-                                    </LinearGradientBrush.GradientStops>
-                                </LinearGradientBrush>
-                            </Thumb.Background>
-                        </Thumb>
-                    </Track.Thumb>
-                </Track>
-            </Grid>
-        </Border>
+        <Grid Margin="10 0 0 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                <Track.Thumb>
+                    <Thumb>
+                        <Thumb.Style>
+                            <Style TargetType="Thumb" BasedOn="{StaticResource ScrollBarThumb}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Border 
+                                                Background="#e0e0e0" 
+                                                Margin="{DynamicResource Dimen.ScrollBar.Vertical.Margin}"/>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Thumb.Style>
+                        <Thumb.BorderBrush>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <LinearGradientBrush.GradientStops>
+                                <GradientStopCollection>
+                                    <GradientStop Color="{DynamicResource BorderLightColor}" Offset="0.0" />
+                                    <GradientStop Color="{DynamicResource BorderDarkColor}" Offset="1.0" />
+                                </GradientStopCollection>
+                            </LinearGradientBrush.GradientStops>
+                            </LinearGradientBrush>
+                        </Thumb.BorderBrush>
+                        <Thumb.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStopCollection>
+                                        <GradientStop Color="{DynamicResource ControlLightColor}" Offset="0.0" />
+                                        <GradientStop Color="{DynamicResource ControlMediumColor}" Offset="1.0" />
+                                    </GradientStopCollection>
+                                </LinearGradientBrush.GradientStops>
+                            </LinearGradientBrush>
+                        </Thumb.Background>
+                    </Thumb>
+                </Track.Thumb>
+            </Track>
+        </Grid>
     </ControlTemplate>
 
     <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
@@ -73,7 +61,6 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Border Background="#f0f0f0"/>
             <Track x:Name="PART_Track" IsDirectionReversed="False">
                 <Track.Thumb>
                     <Thumb>
@@ -82,7 +69,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate>
-                                            <Border Background="#cdcdcd"/>
+                                            <Border Background="#e0e0e0"/>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
@@ -124,7 +111,8 @@
                 <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
             </Trigger>
             <Trigger Property="Orientation" Value="Vertical">
-                <Setter Property="Height" Value="Auto" />
+                <Setter Property="Height" Value="Auto"/>
+                <Setter Property="Width" Value="{DynamicResource Dimen.ScrollBar.Vertical.Size}" />
                 <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
             </Trigger>
         </Style.Triggers>

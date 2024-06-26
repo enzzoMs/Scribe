@@ -14,17 +14,51 @@
         <Style TargetType="UserControl">
             <Setter Property="Visibility" Value="Visible"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding TagsInfo}" Value="{x:Null}">
+                <DataTrigger Binding="{Binding TagItems}" Value="{x:Null}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
     </UserControl.Style>
     
+    <UserControl.Resources>
+        <ControlTemplate x:Key="SelectedTagTemplate" d:DataContext="{d:DesignInstance tagsSection:TagItem}">
+            <Border
+                PreviewMouseLeftButtonDown="OnTagItemClicked"
+                Background="{DynamicResource Brush.Item.Selected.Background}"
+                CornerRadius="{DynamicResource Dimen.TagItem.CornerRadius}"
+                Padding="{DynamicResource Dimen.TagItem.Padding}"
+                Margin="{DynamicResource Dimen.TagItem.Margin}">
+                <TextBlock
+                    Name="TagBorder"
+                    Text="{Binding Name}"
+                    Foreground="{DynamicResource Brush.Item.Selected.Foreground}"
+                    FontSize="{DynamicResource Dimen.TagItem.TextSize}"
+                    VerticalAlignment="Center"/>
+            </Border>
+        </ControlTemplate>
+        
+        <ControlTemplate x:Key="UnselectedTagTemplate" d:DataContext="{d:DesignInstance tagsSection:TagItem}">
+            <Border
+                PreviewMouseLeftButtonDown="OnTagItemClicked"
+                Background="{DynamicResource Brush.Item.Unselected.Background}"
+                CornerRadius="{DynamicResource Dimen.TagItem.CornerRadius}"
+                Padding="{DynamicResource Dimen.TagItem.Padding}"
+                Margin="{DynamicResource Dimen.TagItem.Margin}">
+                <TextBlock
+                    Name="TagBorder"
+                    Text="{Binding Name}"
+                    FontSize="{DynamicResource Dimen.TagItem.TextSize}"
+                    VerticalAlignment="Center"/>
+            </Border>
+        </ControlTemplate>
+    </UserControl.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -33,8 +67,8 @@
         </Grid.ColumnDefinitions>
         
         <Path
-            Width="18"
-            Height="18"
+            Width="{DynamicResource Dimen.Tags.Icon.Size}"
+            Height="{DynamicResource Dimen.Tags.Icon.Size}"
             Data="{StaticResource Drawing.Tag}"
             Fill="{DynamicResource Brush.Icon}"
             Stretch="Uniform"
@@ -42,44 +76,72 @@
         <TextBlock
             Grid.Row="0"
             Grid.Column="1"
-            Text="Tags"
+            Text="{DynamicResource String.Tags}"
             VerticalAlignment="Center"
-            Margin="8 0"/>
+            Margin="{DynamicResource Dimen.Tags.Text.Margin}"/>
         <Rectangle
             Grid.Row="1"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Style="{StaticResource Style.Divider.Horizontal}"
-            Margin="0 8"/>
+            Margin="{DynamicResource Dimen.Tags.Divider.Margin}"/>
         <ListView
+            Grid.Row="2"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            ItemsSource="{Binding TagItems}"
+            SelectionMode="Multiple"
+            BorderThickness="0"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" Margin="{DynamicResource Dimen.Tags.Margin}"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Template" Value="{StaticResource UnselectedTagTemplate}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <Setter Property="Template" Value="{StaticResource SelectedTagTemplate}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+        
+        <Path
             Grid.Row="2"
             Grid.Column="0"
             Grid.ColumnSpan="2"
-            ItemsSource="{Binding TagsInfo}"
-            BorderThickness="0">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <Path
-                            Width="16"
-                            Height="16"
-                            Data="{StaticResource Drawing.HashTag}"
-                            Fill="{DynamicResource Brush.Icon}"
-                            Stretch="Uniform"
-                            VerticalAlignment="Center"/>
-                        <TextBlock
-                            Text="{Binding Name}"
-                            VerticalAlignment="Center"
-                            Margin="4 0 0 0"/>
-                        <TextBlock
-                            Text="{Binding UsageCount}"
-                            FontSize="13"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
-                            VerticalAlignment="Bottom"
-                            Margin="20 0 0 0"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            Data="{StaticResource Drawing.HashTag}">
+            <Path.Style>
+                <Style TargetType="Path" BasedOn="{StaticResource Style.NoData.Icon}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding TagItems.Count, FallbackValue=0}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Path.Style>
+        </Path>
+        <TextBlock
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Text="{DynamicResource String.Tags.Tooltip.None}">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource Style.NoData.Text}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding TagItems.Count, FallbackValue=0}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
     </Grid>
 </UserControl>
