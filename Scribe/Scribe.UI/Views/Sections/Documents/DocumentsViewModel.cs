@@ -11,6 +11,7 @@ namespace Scribe.UI.Views.Sections.Documents;
 
 public class DocumentsViewModel : BaseViewModel
 {
+    private readonly IEventAggregator _eventAggregator;
     private readonly IRepository<Document> _documentsRepository;
     
     private List<Document> _allDocuments = [];
@@ -26,12 +27,17 @@ public class DocumentsViewModel : BaseViewModel
 
     public DocumentsViewModel(IEventAggregator eventAggregator, IRepository<Document> documentsRepository)
     {
+        _eventAggregator = eventAggregator;
         eventAggregator.Subscribe<FolderSelectedEvent>(this, OnFolderSelected);
         eventAggregator.Subscribe<DocumentDeletedEvent>(this, OnDocumentDeleted);
         eventAggregator.Subscribe<DocumentUpdatedEvent>(this, OnDocumentUpdated);
-        eventAggregator.Subscribe<TagSelectionChangedEvent>(this, OnTagSelectionChanged);
         eventAggregator.Subscribe<TagAddedEvent>(this, e => OnTagAddedOrRemoved(e.CreatedTag.Name));
         eventAggregator.Subscribe<TagRemovedEvent>(this, e => OnTagAddedOrRemoved(e.RemovedTag.Name));
+        eventAggregator.Subscribe<TagSelectionChangedEvent>(this, e =>
+        {
+            OnTagSelectionChanged(e);
+            FilterDocuments();
+        });
 
         _documentsRepository = documentsRepository;
         
@@ -76,10 +82,20 @@ public class DocumentsViewModel : BaseViewModel
         set
         {
             _searchDocumentsFilter = value;
-            _searchTimer.Stop();
-            _searchTimer.Start();
+
+            if (DelayDocumentsSearch)
+            {
+                _searchTimer.Stop();
+                _searchTimer.Start();
+            }
+            else
+            {
+                FilterDocuments();
+            }
         }
     }
+
+    public bool DelayDocumentsSearch { get; set; }
     
     public ICommand CreateDocumentCommand { get; }
 
@@ -110,8 +126,8 @@ public class DocumentsViewModel : BaseViewModel
     private async void CreateDocument()
     {
         if (_associatedFolder == null) return;
-        
-        var documentName = (string) Application.Current.TryFindResource("String.Documents.DefaultName") ?? "New Folder";
+
+        var documentName = Application.Current?.TryFindResource("String.Documents.DefaultName") as string ?? "New Document";
 
         var createdTimestamp = DateTime.Now;
 
@@ -121,6 +137,11 @@ public class DocumentsViewModel : BaseViewModel
             lastModifiedTimestamp: createdTimestamp,
             name: documentName
         ));
+
+        foreach (var tagName in _selectedTagNames.ToList())
+        {
+            _eventAggregator.Publish(new TagSelectionChangedEvent(tagName, IsSelected: false));
+        }
         
         ShowAllDocuments();
 
@@ -174,7 +195,5 @@ public class DocumentsViewModel : BaseViewModel
         {
             _selectedTagNames.Remove(tagEvent.TagName);
         }
-        
-        FilterDocuments();
     }
 }

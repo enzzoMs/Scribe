@@ -22,6 +22,7 @@ public class TagsViewModel : BaseViewModel
         eventAggregator.Subscribe<FolderSelectedEvent>(this, OnFolderSelected);
         eventAggregator.Subscribe<TagAddedEvent>(this, OnTagAdded);
         eventAggregator.Subscribe<TagRemovedEvent>(this, OnTagRemoved);
+        eventAggregator.Subscribe<TagSelectionChangedEvent>(this, OnTagSelectionChanged);
 
         ToggleTagSelectionCommand = new DelegateCommand(param =>
         {
@@ -89,5 +90,15 @@ public class TagsViewModel : BaseViewModel
             }
             _tagItems.Remove(associatedTagItem);
         }
+    }
+
+    private void OnTagSelectionChanged(TagSelectionChangedEvent tagEvent)
+    {
+        var tagItem = _tagItems?.FirstOrDefault(item => item.Name == tagEvent.TagName);
+
+        if (tagItem == null) return;
+
+        var itemIndex = _tagItems!.IndexOf(tagItem);
+        _tagItems[itemIndex] = tagItem with { IsSelected = tagEvent.IsSelected };
     }
 }

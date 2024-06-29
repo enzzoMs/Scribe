@@ -80,7 +80,7 @@
             Grid.Column="2"
             IconGeometry="{StaticResource Drawing.Edit}"
             ToolTip="{DynamicResource String.Button.Edit}"
-            Command="{Binding EnterEditMode}"
+            Command="{Binding EnterEditModeCommand}"
             VerticalAlignment="Center"
             Margin="{DynamicResource Dimen.EditableTextBlock.Icon.Margin}"/>
         <components:IconButton

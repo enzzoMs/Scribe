@@ -20,9 +20,9 @@ public class FolderDetailsViewModel : BaseViewModel
         _eventAggregator = eventAggregator;
         _foldersRepository = foldersRepository;
         
-        _eventAggregator.Subscribe<FolderSelectedEvent>(this, eventData => Folder = eventData.Folder);
+        _eventAggregator.Subscribe<FolderSelectedEvent>(this, OnFolderSelected);
 
-        EnterEditMode = new DelegateCommand( _ => OnEditMode = true);
+        EnterEditModeCommand = new DelegateCommand( _ => OnEditMode = true);
         UpdateFolderNameCommand = new DelegateCommand(param =>
         {
             if (param is not string newFolderName) return;
@@ -65,7 +65,7 @@ public class FolderDetailsViewModel : BaseViewModel
 
     public ICommand DeleteFolderCommand { get; }
     
-    public ICommand EnterEditMode { get; }
+    public ICommand EnterEditModeCommand { get; }
 
     private async void UpdateFolderName(string newFolderName)
     {
@@ -95,4 +95,6 @@ public class FolderDetailsViewModel : BaseViewModel
         
         _eventAggregator.Publish(new FolderDeletedEvent(_folder));
     }
+
+    private void OnFolderSelected(FolderSelectedEvent folderEvent) => Folder = folderEvent.Folder;
 }

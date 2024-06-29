@@ -182,8 +182,7 @@ public class NavigationViewModel : BaseViewModel
             folderInNewPosition.NavigationIndex = positionEvent.OldIndex;
             folderInOldPosition.NavigationIndex = positionEvent.NewIndex;
 
-            await _foldersRepository.Update(folderInNewPosition);
-            await _foldersRepository.Update(folderInOldPosition);
+            await _foldersRepository.Update(folderInNewPosition, folderInOldPosition);
 
             (_allFolders[positionEvent.NewIndex], _allFolders[positionEvent.OldIndex]) = 
                 (_allFolders[positionEvent.OldIndex], _allFolders[positionEvent.NewIndex]);

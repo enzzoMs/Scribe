@@ -110,8 +110,15 @@ public partial class PagedList : UserControl
     {
         var itemsSource = pagedList.ItemsSource.Cast<object>();
 
+        var maxPageIndex = pagedList.CalculateMaxPageIndex();
+
+        if (pagedList._currentPageIndex > maxPageIndex)
+        {
+            pagedList._currentPageIndex = maxPageIndex;
+        }
+        
         pagedList.CurrentPageText.Text = (pagedList._currentPageIndex + 1).ToString();
-        pagedList.MaxPagesText.Text = (pagedList.CalculateMaxPageIndex() + 1).ToString();
+        pagedList.MaxPagesText.Text = (maxPageIndex + 1).ToString();
 
         pagedList.ItemsListView.ItemsSource = itemsSource.Skip(
             pagedList._itemsPerPage * pagedList._currentPageIndex

@@ -104,13 +104,13 @@ public class NavigationViewModelTests
         
         _navigationViewModel.CreateFolderCommand.Execute(null);
 
-        _folderRepositoryMock.Received(1);
+        _folderRepositoryMock.Received(1).Add(Arg.Any<Folder>());
         Assert.Single(_navigationViewModel.CurrentFolders);
         Assert.Equal(newFolder, _navigationViewModel.CurrentFolders[0]);
     }
 
     [Fact]
-    public void FolderDeletedEvent_RemovesDeletedFolder()
+    public void FolderDeletedEvent_RemovesFolder()
     {
         List<Folder> folders = [new Folder("", 0), new Folder("", 1)];
         var deletedFolder = folders[0];
@@ -137,7 +137,7 @@ public class NavigationViewModelTests
         
         _eventAggregator.Publish(new FolderDeletedEvent(deletedFolder));
 
-        _folderRepositoryMock.Received(1);
+        _folderRepositoryMock.Received(1).Update(folders.Skip(1).ToArray());
         Assert.Equal(0, _navigationViewModel.CurrentFolders[0].NavigationIndex);
         Assert.Equal(1, _navigationViewModel.CurrentFolders[1].NavigationIndex);
     }
@@ -161,7 +161,7 @@ public class NavigationViewModelTests
         Assert.Equal(newIndex, folderA.NavigationIndex);
         Assert.Equal(oldIndex, folderB.NavigationIndex);
         
-        _folderRepositoryMock.Received(2);
+        _folderRepositoryMock.Received(1).Update(folderB, folderA);
     }
     
     [Fact]
@@ -202,7 +202,7 @@ public class NavigationViewModelTests
         _navigationViewModel.LoadFolders([folder]);
         _eventAggregator.Publish(new TagAddedEvent(newTag));
 
-        _tagRepositoryMock.Received(1);
+        _tagRepositoryMock.Received(1).Add(newTag);
     }
     
     [Fact]
@@ -244,7 +244,7 @@ public class NavigationViewModelTests
         _navigationViewModel.LoadFolders([folder]);
         _eventAggregator.Publish(new TagRemovedEvent(tag));
 
-        _tagRepositoryMock.Received(1);
+        _tagRepositoryMock.Received(1).Delete(tag);
     }
     
     [Fact]
