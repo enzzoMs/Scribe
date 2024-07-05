@@ -3,33 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:components="clr-namespace:Scribe.UI.Views.Components">
     
-    <Style x:Key="HorizontalTopScrollViewer" TargetType="{x:Type ScrollViewer}">
-        <Setter Property="OverridesDefaultStyle" Value="True"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ScrollViewer}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        
-                        <ScrollContentPresenter
-                            Grid.Row="1"/>
-                        <ScrollBar 
-                            Name="PART_HorizontalScrollBar"
-                            Grid.Row="0"
-                            Orientation="Horizontal"
-                            Value="{TemplateBinding HorizontalOffset}"
-                            Maximum="{TemplateBinding ScrollableWidth}"
-                            ViewportSize="{TemplateBinding ViewportWidth}"
-                            Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    
     <Style TargetType="components:ClosableTabControl">
         <Setter Property="Template">
             <Setter.Value>
@@ -37,7 +10,7 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         
                         <Rectangle
@@ -61,7 +34,7 @@
                         <ScrollViewer 
                             Grid.Row="0"
                             Name="TabScrollViewer"
-                            Style="{StaticResource HorizontalTopScrollViewer}"
+                            Style="{StaticResource Style.ScrollViewer.TopHorizontal}"
                             HorizontalScrollBarVisibility="Auto" 
                             VerticalScrollBarVisibility="Disabled">
                             <TabPanel

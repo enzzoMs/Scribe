@@ -10,9 +10,9 @@
     </Style>
     
     <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
-        <Grid Margin="10 0 0 0">
+        <Grid Margin="{DynamicResource Dimen.ScrollBar.Vertical.OuterMargin}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Track x:Name="PART_Track" IsDirectionReversed="True">
                 <Track.Thumb>
@@ -23,7 +23,7 @@
                                     <Setter.Value>
                                         <ControlTemplate>
                                             <Border 
-                                                Background="#e0e0e0" 
+                                                Background="#dadada" 
                                                 Margin="{DynamicResource Dimen.ScrollBar.Vertical.Margin}"/>
                                         </ControlTemplate>
                                     </Setter.Value>
@@ -69,7 +69,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate>
-                                            <Border Background="#e0e0e0"/>
+                                            <Border Background="#dadada"/>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>

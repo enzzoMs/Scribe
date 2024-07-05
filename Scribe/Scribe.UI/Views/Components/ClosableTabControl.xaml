@@ -43,6 +43,7 @@
                                 IconGeometry="{StaticResource Drawing.Close}"
                                 IconBrush="{DynamicResource Brush.Text.Primary}"
                                 IconPadding="{DynamicResource Dimen.ClosebleTabControl.Icon.Padding}"
+                                ToolTip="{DynamicResource String.ClosableTabControl.Close.Tooltip}"
                                 Margin="{DynamicResource Dimen.ClosebleTabControl.Icon.Margin}"/>
                             <Border
                                 Name="SelectedTabIndicator"

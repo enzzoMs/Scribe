@@ -114,11 +114,13 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     
                     <editorSection:EditorToolbarSection
                         Grid.Row="0"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="4"
                         Margin="0 0 0 20"/>
                     <Path
                         Grid.Row="1"
@@ -133,6 +135,7 @@
                     <ItemsControl
                         Grid.Row="1"
                         Grid.Column="1"
+                        Grid.ColumnSpan="3"
                         BorderThickness="0"
                         VerticalAlignment="Center">
                         <ItemsControl.ItemsPanel>
@@ -174,13 +177,91 @@
                         OnEditMode="{Binding OnEditMode, Mode=TwoWay}"
                         VerticalAlignment="Center"
                         ConfirmChangesCommand="{Binding UpdateDocumentNameCommand}"
-                        Margin="0 5 20 0"/>
+                        Margin="0 5 0 0"/>
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="2"
+                        Text="Design"
+                        Cursor="Hand"
+                        VerticalAlignment="Center"
+                        Margin="30 5 30 0">
+                        <TextBlock.InputBindings>
+                            <MouseBinding 
+                                MouseAction="LeftClick"
+                                Command="{Binding SetOnPreviewModeCommand}"
+                                CommandParameter="{StaticResource False}"/>
+                        </TextBlock.InputBindings>
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding OnPreviewMode}" Value="True">
+                                        <Setter Property="Opacity" Value="0.6"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="3"
+                        Text="Preview"
+                        Cursor="Hand"
+                        Margin="30 5 50 0"
+                        VerticalAlignment="Center">
+                        <TextBlock.InputBindings>
+                            <MouseBinding 
+                                MouseAction="LeftClick"
+                                Command="{Binding SetOnPreviewModeCommand}"
+                                CommandParameter="{StaticResource True}"/>
+                        </TextBlock.InputBindings>
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding OnPreviewMode}" Value="False">
+                                        <Setter Property="Opacity" Value="0.6"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                     <Rectangle
                         Grid.Row="3"
                         Grid.Column="0"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="3"
                         Style="{StaticResource Style.Divider.Horizontal}"
-                        Margin="20 6 20 8"/>
+                        Margin="20 6 0 0"/>
+                    <Rectangle
+                        Grid.Row="3"
+                        Grid.Column="2"
+                        Margin="0 6 0 0">
+                        <Rectangle.Style>
+                            <Style TargetType="{x:Type Rectangle}" BasedOn="{StaticResource Style.Divider.Horizontal}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding OnPreviewMode}" Value="False">
+                                        <Setter Property="Fill" Value="#232323"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Rectangle.Style>
+                    </Rectangle>
+                    <Rectangle
+                        Grid.Row="3"
+                        Grid.Column="3"
+                        Margin="0 6 20 0">
+                        <Rectangle.Style>
+                            <Style TargetType="{x:Type Rectangle}" BasedOn="{StaticResource Style.Divider.Horizontal}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding OnPreviewMode}" Value="True">
+                                        <Setter Property="Fill" Value="#232323"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Rectangle.Style>
+                    </Rectangle>
+                    <components:NumberedTextBox
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="4"/>
                 </Grid>
             </DataTemplate>
         </components:ClosableTabControl.TabContentTemplate>

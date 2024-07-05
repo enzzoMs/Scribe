@@ -5,4 +5,5 @@
     <FontFamily x:Key="Text.ExtraBold">/Resources/Fonts/#Lexend ExtraBold"</FontFamily>
     <FontFamily x:Key="Text.SemiBold">/Resources/Fonts/#Lexend SemiBold"</FontFamily>
     <FontFamily x:Key="Text.Medium">/Resources/Fonts/#Lexend Medium"</FontFamily>
+    <FontFamily x:Key="Text.Monospace">/Resources/Fonts/#Fira Mono Medium"</FontFamily>
 </ResourceDictionary>

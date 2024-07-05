@@ -16,6 +16,7 @@ public class EditorViewModel : BaseViewModel
     private ObservableCollection<Tag>? _documentTags;
     
     private bool _onEditMode;
+    private bool _onPreviewMode;
     
     public EditorViewModel(IEventAggregator eventAggregator, IRepository<Document> documentsRepository)
     {
@@ -53,6 +54,13 @@ public class EditorViewModel : BaseViewModel
             if (param is Tag tag)
             {
                 RemoveTag(tag);
+            }
+        });
+        SetOnPreviewModeCommand = new DelegateCommand(param =>
+        {
+            if (param is bool onPreviewMode)
+            {
+                OnPreviewMode = onPreviewMode;
             }
         });
     }
@@ -108,7 +116,19 @@ public class EditorViewModel : BaseViewModel
     public ICommand AddTagCommand { get; }
 
     public ICommand RemoveTagCommand { get; }
+
+    public bool OnPreviewMode
+    {
+        get => _onPreviewMode;
+        set
+        {
+            _onPreviewMode = value;
+            RaisePropertyChanged();
+        }
+    }
     
+    public ICommand SetOnPreviewModeCommand { get; }
+
     private void CloseDocument(Document document)
     {
         var documentIndex = OpenDocuments.IndexOf(document);

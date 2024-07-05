@@ -83,10 +83,11 @@
             Background="Transparent"
             BorderThickness="0"
             HorizontalContentAlignment="Stretch"
+            Padding="{DynamicResource Dimen.Nav.Expanded.Folders.Padding}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Vertical" Margin="{DynamicResource Dimen.Nav.Expanded.Folders.Margin}"/>
+                    <StackPanel Orientation="Vertical"/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
             <ListView.ItemContainerStyle>

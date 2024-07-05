@@ -12,7 +12,7 @@
     ShowInTaskbar="False"
     WindowStartupLocation="CenterScreen"
     Title="{Binding WindowTitle, ElementName=Root}"
-    Icon="../../Resources/Images/scribe_logo.png"
+    Icon="../../Resources/Images/scribe_logo.ico"
     Name="Root">
     
     <Window.Resources>
