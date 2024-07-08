@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:editorSection="clr-namespace:Scribe.UI.Views.Sections.Editor"
+    xmlns:editorState="clr-namespace:Scribe.UI.Views.Sections.Editor.State"
     xmlns:components="clr-namespace:Scribe.UI.Views.Components"
     xmlns:models="clr-namespace:Scribe.Data.Model;assembly=Scribe.Data"
     mc:Ignorable="d"
@@ -95,12 +96,36 @@
         </ControlTemplate>
     </UserControl.Resources>
     
+    <UserControl.InputBindings>
+        <KeyBinding 
+            Command="{Binding SaveSelectedDocumentCommand}" 
+            Key="s" 
+            Modifiers="Ctrl"/>
+    </UserControl.InputBindings>
+    
     <components:ClosableTabControl
+        x:Name="EditorTabControl"
         ItemsSource="{Binding OpenDocuments}"
         SelectedItem="{Binding SelectedDocument, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-        CloseTabCommand="{Binding CloseDocumentCommand}">
-        <components:ClosableTabControl.TabContentTemplate>
-            <DataTemplate DataType="{x:Type models:Document}">
+        CloseTabClick="OnCloseTabClicked">
+        <components:ClosableTabControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type editorState:DocumentViewState}">
+                <TextBlock>
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Setter Property="Text" Value="{Binding Document.Name}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
+                                    <Setter Property="Text" Value="{Binding Document.Name, StringFormat=* {0}}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </DataTemplate>
+        </components:ClosableTabControl.ItemTemplate>
+        <components:ClosableTabControl.ContentTemplate>
+            <DataTemplate>
                 <Grid 
                     DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=TabControl}}"
                     d:DataContext="{d:DesignInstance editorSection:EditorViewModel}">
@@ -173,10 +198,10 @@
                     <components:EditableTextBlock
                         Grid.Row="2"
                         Grid.Column="1"
-                        Text="{Binding SelectedDocument.Name, FallbackValue=#}"
+                        Text="{Binding SelectedDocument.Document.Name, FallbackValue=#}"
                         OnEditMode="{Binding OnEditMode, Mode=TwoWay}"
                         VerticalAlignment="Center"
-                        ConfirmChangesCommand="{Binding UpdateDocumentNameCommand}"
+                        ConfirmChangesCommand="{Binding UpdateSelectedDocumentNameCommand}"
                         Margin="0 5 0 0"/>
                     <TextBlock
                         Grid.Row="2"
@@ -261,9 +286,11 @@
                     <components:NumberedTextBox
                         Grid.Row="4"
                         Grid.Column="0"
-                        Grid.ColumnSpan="4"/>
+                        Grid.ColumnSpan="4"
+                        Text="{Binding SelectedDocument.EditedContent, Mode=TwoWay}"
+                        TextChanged="OnDocumentContentChanged"/>
                 </Grid>
             </DataTemplate>
-        </components:ClosableTabControl.TabContentTemplate>
+        </components:ClosableTabControl.ContentTemplate>
     </components:ClosableTabControl>
 </UserControl>

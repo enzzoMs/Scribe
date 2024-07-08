@@ -24,6 +24,8 @@
     <sys:String x:Key="String.Documents.DefaultName">New Document</sys:String>
     <sys:String x:Key="String.Documents.Create">Create Document</sys:String>
     <sys:String x:Key="String.Documents.Delete">Delete Document</sys:String>
+    <sys:String x:Key="String.Documents.Save">Save Document</sys:String>
+    <sys:String x:Key="String.Documents.Save.Message">Do you want to save the changes made to &quot;{0}&quot;?</sys:String>
     <sys:String x:Key="String.Documents.Delete.Message">Do you really want to delete the &quot;{0}&quot; document?</sys:String>
     <sys:String x:Key="String.Documents.Tooltip.Search">Search Document</sys:String>
     <sys:String x:Key="String.Documents.Tooltip.None">No Document</sys:String>
@@ -41,11 +43,13 @@
     <sys:String x:Key="String.Config.Scale.Increase">Increase value</sys:String>
     <sys:String x:Key="String.Config.Scale.Decrease">Decrease value</sys:String>
     
-    <sys:String x:Key="String.Button.Confirm">Confirm</sys:String>
     <sys:String x:Key="String.Button.Cancel">Cancel</sys:String>
     <sys:String x:Key="String.Button.Edit">Edit</sys:String>
     <sys:String x:Key="String.Button.Delete">Delete</sys:String>
-    <sys:String x:Key="String.Button.Pin">Pin Document</sys:String>
+    <sys:String x:Key="String.Button.Pin">Pin</sys:String>
+    <sys:String x:Key="String.Button.Save">Save</sys:String>
+    <sys:String x:Key="String.Button.Save.WithShortcut">Save (Ctrl + s)</sys:String>
+    <sys:String x:Key="String.Button.DontSave">Don't Save</sys:String>
 
     <sys:String x:Key="String.Error.RequiredField">* Required</sys:String>
     

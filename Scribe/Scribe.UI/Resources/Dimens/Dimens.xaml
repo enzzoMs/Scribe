@@ -106,11 +106,11 @@
     
     <sys:Double x:Key="Dimen.MessageBox.MinHeight">225</sys:Double>
     <sys:Double x:Key="Dimen.MessageBox.MinWidth">500</sys:Double>
-    <Thickness x:Key="Dimen.MessageBox.Message.Margin" Left="24" Right="24" Top="4" Bottom="4"/>
+    <Thickness x:Key="Dimen.MessageBox.Message.Margin" Left="32" Right="32" Top="4" Bottom="4"/>
     <Thickness x:Key="Dimen.MessageBox.Divider.Margin" Left="32" Right="32"/>
     <sys:Double x:Key="Dimen.MessageBox.Icon.Size">80</sys:Double>
     <Thickness x:Key="Dimen.MessageBox.Icon.Margin">14</Thickness>
-    <Thickness x:Key="Dimen.MessageBox.Button.Margin" Left="10" Right="10" Top="6" Bottom="6"/>
+    <Thickness x:Key="Dimen.MessageBox.Button.Margin" Left="14" Right="14" Top="6" Bottom="6"/>
     <Thickness x:Key="Dimen.MessageBox.Button.Border.Thickness">2</Thickness>
 
     <sys:Double x:Key="Dimen.EditableTextBlock.Icon.Size">30</sys:Double>

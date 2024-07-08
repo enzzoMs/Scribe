@@ -4,6 +4,7 @@ using Scribe.Data.Model;
 using Scribe.Data.Repositories;
 using Scribe.UI.Command;
 using Scribe.UI.Events;
+using Scribe.UI.Views.Sections.Editor.State;
 
 namespace Scribe.UI.Views.Sections.Editor;
 
@@ -12,7 +13,7 @@ public class EditorViewModel : BaseViewModel
     private readonly IEventAggregator _eventAggregator; 
     private readonly IRepository<Document> _documentsRepository;
     
-    private Document? _selectedDocument;
+    private DocumentViewState? _selectedDocument;
     private ObservableCollection<Tag>? _documentTags;
     
     private bool _onEditMode;
@@ -28,20 +29,31 @@ public class EditorViewModel : BaseViewModel
         
         CloseDocumentCommand = new DelegateCommand(param =>
         {
-            if (param is Document doc)
+            if (param is DocumentViewState docState)
             {
-                CloseDocument(doc);
+                CloseDocument(docState);
             }
         });
-        DeleteDocumentCommand = new DelegateCommand(_ => DeleteSelectedDocument());
-        EnterEditModeCommand = new DelegateCommand(_ => OnEditMode = true);
-        UpdateDocumentNameCommand = new DelegateCommand(param =>
+        SaveAndCloseDocumentCommand = new DelegateCommand(param =>
+        {
+            if (param is not DocumentViewState docState) return;
+            SaveDocumentContent(docState);
+            CloseDocument(docState);
+        });
+        SaveSelectedDocumentCommand = new DelegateCommand(_ =>
+        {
+            if (_selectedDocument == null) return;
+            SaveDocumentContent(_selectedDocument);
+        });
+        DeleteSelectedDocumentCommand = new DelegateCommand(_ => DeleteSelectedDocument());
+        UpdateSelectedDocumentNameCommand = new DelegateCommand(param =>
         {
             if (param is not string newDocumentName) return;
             UpdateSelectedDocumentName(newDocumentName);
             OnEditMode = false;
         });
-        ToggleDocumentPinnedStatusCommand = new DelegateCommand(_ => ToggleDocumentPinnedStatus());
+        ToggleSelectedDocumentPinnedStatusCommand = new DelegateCommand(_ => ToggleSelectedDocumentPinnedStatus());
+        EnterEditModeCommand = new DelegateCommand(_ => OnEditMode = true);
         AddTagCommand = new DelegateCommand(param =>
         {
             if (param is string tagName)
@@ -65,9 +77,9 @@ public class EditorViewModel : BaseViewModel
         });
     }
     
-    public ObservableCollection<Document> OpenDocuments { get; } = [];
+    public ObservableCollection<DocumentViewState> OpenDocuments { get; } = [];
 
-    public Document? SelectedDocument { 
+    public DocumentViewState? SelectedDocument { 
         get => _selectedDocument;
         set
         {
@@ -75,8 +87,9 @@ public class EditorViewModel : BaseViewModel
             
             if (_selectedDocument != null)
             {
-                DocumentTags = new ObservableCollection<Tag>(_selectedDocument.Tags);   
+                DocumentTags = new ObservableCollection<Tag>(_selectedDocument.Document.Tags);   
             }
+            
             OnEditMode = false;
 
             RaisePropertyChanged();
@@ -102,16 +115,20 @@ public class EditorViewModel : BaseViewModel
             RaisePropertyChanged();
         }
     }
-
+    
     public ICommand CloseDocumentCommand { get; }
 
-    public ICommand DeleteDocumentCommand { get; }
+    public ICommand SaveAndCloseDocumentCommand { get; }
+
+    public ICommand SaveSelectedDocumentCommand { get; }
+    
+    public ICommand DeleteSelectedDocumentCommand { get; }
+    
+    public ICommand UpdateSelectedDocumentNameCommand { get; }
+    
+    public ICommand ToggleSelectedDocumentPinnedStatusCommand { get; }
     
     public ICommand EnterEditModeCommand { get; }
-
-    public ICommand UpdateDocumentNameCommand { get; }
-
-    public ICommand ToggleDocumentPinnedStatusCommand { get; }
 
     public ICommand AddTagCommand { get; }
 
@@ -129,15 +146,15 @@ public class EditorViewModel : BaseViewModel
     
     public ICommand SetOnPreviewModeCommand { get; }
 
-    private void CloseDocument(Document document)
+    private void CloseDocument(DocumentViewState documentViewState)
     {
-        var documentIndex = OpenDocuments.IndexOf(document);
+        var documentIndex = OpenDocuments.IndexOf(documentViewState);
 
-        OpenDocuments.Remove(document);
+        OpenDocuments.Remove(documentViewState);
 
-        if (_selectedDocument == document)
+        if (_selectedDocument == documentViewState)
         {
-            Document? nextSelectedDocument = null;
+            DocumentViewState? nextSelectedDocument = null;
 
             if (documentIndex == 0 && OpenDocuments.Count >= 1) 
                 nextSelectedDocument = OpenDocuments[0];
@@ -147,16 +164,27 @@ public class EditorViewModel : BaseViewModel
             SelectedDocument = nextSelectedDocument;
         }
     }
+    
+    private async void SaveDocumentContent(DocumentViewState documentViewState)
+    {
+        if (documentViewState.Document.Content == documentViewState.EditedContent) return;
+        
+        documentViewState.Document.Content = documentViewState.EditedContent;
+        
+        await _documentsRepository.Update(documentViewState.Document);
 
+        documentViewState.HasUnsavedChanges = false;
+    }
+    
     private async void DeleteSelectedDocument()
     {
         if (_selectedDocument == null) return;
         
-        await _documentsRepository.Delete(_selectedDocument);
+        await _documentsRepository.Delete(_selectedDocument.Document);
 
-        _eventAggregator.Publish(new DocumentDeletedEvent(_selectedDocument));
+        _eventAggregator.Publish(new DocumentDeletedEvent(_selectedDocument.Document));
         
-        foreach (var tag in _selectedDocument.Tags)
+        foreach (var tag in _selectedDocument.Document.Tags)
         {
             _eventAggregator.Publish(new TagRemovedEvent(tag));
         }
@@ -166,10 +194,10 @@ public class EditorViewModel : BaseViewModel
     
     private async void UpdateSelectedDocumentName(string newDocumentName)
     {
-        if (_selectedDocument == null || _selectedDocument.Name == newDocumentName) return;
+        if (_selectedDocument == null || _selectedDocument.Document.Name == newDocumentName) return;
 
-        _selectedDocument.Name = newDocumentName.Trim();
-        await _documentsRepository.Update(_selectedDocument);
+        _selectedDocument.Document.Name = newDocumentName.Trim();
+        await _documentsRepository.Update(_selectedDocument.Document);
         
         // Forcing an update on the 'SelectedDocument tab'
         var doc = _selectedDocument;
@@ -179,13 +207,13 @@ public class EditorViewModel : BaseViewModel
         _eventAggregator.Publish(new DocumentUpdatedEvent());
     }
 
-    private async void ToggleDocumentPinnedStatus()
+    private async void ToggleSelectedDocumentPinnedStatus()
     {
         if (_selectedDocument == null) return;
 
-        _selectedDocument.IsPinned = !_selectedDocument.IsPinned;
+        _selectedDocument.Document.IsPinned = !_selectedDocument.Document.IsPinned;
 
-        await _documentsRepository.Update(_selectedDocument);
+        await _documentsRepository.Update(_selectedDocument.Document);
         
         RaisePropertyChanged(nameof(SelectedDocument));
         _eventAggregator.Publish(new DocumentUpdatedEvent());
@@ -195,40 +223,45 @@ public class EditorViewModel : BaseViewModel
     {
         if (_selectedDocument == null || tagName == "" || _documentTags!.Any(tag => tag.Name == tagName)) return;
 
-        var newTag = new Tag(tagName, _selectedDocument.FolderId);
+        var newTag = new Tag(tagName, _selectedDocument.Document.FolderId);
         
-        _selectedDocument.Tags.Add(newTag);
+        _selectedDocument.Document.Tags.Add(newTag);
         _documentTags!.Add(newTag);
         
         _eventAggregator.Publish(new TagAddedEvent(newTag));
         
-        await _documentsRepository.Update(_selectedDocument);
+        await _documentsRepository.Update(_selectedDocument.Document);
     }
 
     private async void RemoveTag(Tag tag)
     {
         if (_selectedDocument == null) return;
         
-        _selectedDocument.Tags.Remove(tag);
+        _selectedDocument.Document.Tags.Remove(tag);
         _documentTags!.Remove(tag);
 
-        await _documentsRepository.Update(_selectedDocument);
+        await _documentsRepository.Update(_selectedDocument.Document);
 
         _eventAggregator.Publish(new TagRemovedEvent(tag));
     }
 
     private void OnDocumentSelected(DocumentSelectedEvent docEvent)
     {
-        if (!OpenDocuments.Contains(docEvent.Document))
-            OpenDocuments.Add(docEvent.Document);
+        var documentState = OpenDocuments.FirstOrDefault(docState => docState.Document == docEvent.Document);
+        
+        if (documentState == null)
+        {
+            documentState = new DocumentViewState(docEvent.Document);
+            OpenDocuments.Add(documentState);
+        }
 
-        SelectedDocument = docEvent.Document;
+        SelectedDocument = documentState;
     }
 
     private void OnFolderDeleted(FolderDeletedEvent folderEvent)
     {
         var deletedFolderId = folderEvent.DeletedFolder.Id;
-        var deletedDocuments = OpenDocuments.Where(d => d.FolderId == deletedFolderId).ToList();
+        var deletedDocuments = OpenDocuments.Where(docState => docState.Document.FolderId == deletedFolderId).ToList();
 
         foreach (var document in deletedDocuments)
         {

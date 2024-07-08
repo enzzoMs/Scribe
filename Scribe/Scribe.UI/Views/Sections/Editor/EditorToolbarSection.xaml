@@ -27,6 +27,8 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
@@ -37,14 +39,13 @@
             Grid.Row="0"
             Grid.Column="0"
             ToolTip="{DynamicResource String.Button.Pin}"
-            Command="{Binding ToggleDocumentPinnedStatusCommand}">
+            Command="{Binding ToggleSelectedDocumentPinnedStatusCommand}">
             <components:IconButton.Style>
                 <Style TargetType="components:IconButton" BasedOn="{StaticResource {x:Type components:IconButton}}">
                     <Setter Property="IconGeometry" Value="{StaticResource Drawing.Pin.Empty}"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding SelectedDocument.IsPinned, FallbackValue=False}" Value="True">
+                        <DataTrigger Binding="{Binding SelectedDocument.Document.IsPinned, FallbackValue=False}" Value="True">
                             <Setter Property="IconGeometry" Value="{StaticResource Drawing.Pin.Filled}"/>
-                            <Setter Property="IconBrush" Value="{StaticResource Brush.Icon}"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -55,29 +56,50 @@
             Grid.Column="1"
             Style="{StaticResource Style.Divider.Vertical}"
             Margin="{DynamicResource Dimen.Toolbar.Divider.Margin}"/>
-        
+        <components:IconButton
+            Grid.Row="0"
+            Grid.Column="2"
+            ToolTip="{DynamicResource String.Button.Save.WithShortcut}"
+            Command="{Binding SaveSelectedDocumentCommand}">
+            <components:IconButton.Style>
+                <Style TargetType="components:IconButton" BasedOn="{StaticResource {x:Type components:IconButton}}">
+                    <Setter Property="IconGeometry" Value="{StaticResource Drawing.Save.Filled}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedDocument.HasUnsavedChanges, FallbackValue=False}" Value="True">
+                            <Setter Property="IconGeometry" Value="{StaticResource Drawing.Save.Empty}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </components:IconButton.Style>
+        </components:IconButton>
         <Rectangle
             Grid.Row="0"
             Grid.Column="3"
             Style="{StaticResource Style.Divider.Vertical}"
             Margin="{DynamicResource Dimen.Toolbar.Divider.Margin}"/>
+        
+        <Rectangle
+            Grid.Row="0"
+            Grid.Column="5"
+            Style="{StaticResource Style.Divider.Vertical}"
+            Margin="{DynamicResource Dimen.Toolbar.Divider.Margin}"/>
         <components:IconButton
             Grid.Row="0"
-            Grid.Column="4"
+            Grid.Column="6"
             IconGeometry="{StaticResource Drawing.Edit}"
             ToolTip="{DynamicResource String.Button.Edit}"
             Command="{Binding EnterEditModeCommand}"/>
         <components:IconButton
             Grid.Row="0"
-            Grid.Column="5"
+            Grid.Column="7"
             ToolTip="{DynamicResource String.Button.Delete}"
-            PreviewMouseLeftButtonDown="OnDeleteButtonClicked"
+            PreviewMouseLeftButtonDown="OnDeleteDocumentClicked"
             IconGeometry="{StaticResource Drawing.Delete}"/>
             
         <Rectangle
             Grid.Row="1"
             Grid.Column="0"
-            Grid.ColumnSpan="6"
+            Grid.ColumnSpan="8"
             Style="{StaticResource Style.Divider.Horizontal}"/>
     </Grid>
 </UserControl>

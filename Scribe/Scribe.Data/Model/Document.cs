@@ -10,10 +10,8 @@ public class Document(
     public string Name { get; set; } = name;
     public string Content { get; set; } = "";
     public bool IsPinned { get; set; }
-    public DateTime LastModifiedTimestamp { get; set; } = lastModifiedTimestamp;
     public DateTime CreatedTimestamp { get; init; } = createdTimestamp;
+    public DateTime LastModifiedTimestamp { get; set; } = lastModifiedTimestamp;
     public ICollection<Tag> Tags { get; set; } = [];
     public int FolderId { get; } = folderId;
-
-    public override string ToString() => Name;
 }

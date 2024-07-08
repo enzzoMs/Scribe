@@ -3,17 +3,16 @@ using System.Windows.Input;
 using Scribe.Data.Model;
 using Scribe.UI.Command;
 using Scribe.UI.Events;
+using Scribe.UI.Views.Sections.Tags.State;
 
 namespace Scribe.UI.Views.Sections.Tags;
-
-public record TagItem(string Name, bool IsSelected = false);
 
 public class TagsViewModel : BaseViewModel
 {
     private readonly IEventAggregator _eventAggregator;
     
     private Folder? _associatedFolder;
-    private ObservableCollection<TagItem>? _tagItems;
+    private ObservableCollection<TagViewState>? _tags;
     
     public TagsViewModel(IEventAggregator eventAggregator)
     {
@@ -26,51 +25,49 @@ public class TagsViewModel : BaseViewModel
 
         ToggleTagSelectionCommand = new DelegateCommand(param =>
         {
-            if (param is not TagItem tagItem) return;
+            if (param is not TagViewState tagItem) return;
             ToggleTagItemSelection(tagItem);
         });
     }
 
-    public ObservableCollection<TagItem>? TagItems
+    public ObservableCollection<TagViewState>? Tags
     {
-        get => _tagItems;
+        get => _tags;
         private set
         {
-            _tagItems = value;
+            _tags = value;
             RaisePropertyChanged();
         }
     }
 
     public ICommand ToggleTagSelectionCommand { get; }
     
-    private void ToggleTagItemSelection(TagItem tagItem)
+    private void ToggleTagItemSelection(TagViewState tagViewState)
     {
-        if (_tagItems == null) return;
+        if (_tags == null) return;
 
-        var itemIndex = _tagItems.IndexOf(tagItem);
-        var newTagItem = tagItem with { IsSelected = !tagItem.IsSelected };
-        _tagItems[itemIndex] = newTagItem;
+        tagViewState.IsSelected = !tagViewState.IsSelected;
         
-        _eventAggregator.Publish(new TagSelectionChangedEvent(newTagItem.Name, newTagItem.IsSelected));
+        _eventAggregator.Publish(new TagSelectionChangedEvent(tagViewState.Name, tagViewState.IsSelected));
     }
     
     private void OnFolderSelected(FolderSelectedEvent folderEvent)
     {
         _associatedFolder = folderEvent.Folder;
         
-        TagItems = _associatedFolder == null ? 
-            null : new ObservableCollection<TagItem>(_associatedFolder.Tags.Select(tag => new TagItem(tag.Name)).ToList());
+        Tags = _associatedFolder == null ? 
+            null : new ObservableCollection<TagViewState>(_associatedFolder.Tags.Select(tag => new TagViewState(tag.Name)).ToList());
     }
     
     private void OnTagAdded(TagAddedEvent tagEvent)
     {
         var createdTag = tagEvent.CreatedTag;
         
-        if (_tagItems == null || createdTag.FolderId != _associatedFolder?.Id) return;
+        if (_tags == null || createdTag.FolderId != _associatedFolder?.Id) return;
 
-        if (_tagItems.All(tagItem => tagItem.Name != createdTag.Name))
+        if (_tags.All(tagState => tagState.Name != createdTag.Name))
         {
-            _tagItems.Add(new TagItem(createdTag.Name));
+            _tags.Add(new TagViewState(createdTag.Name));
         }
     }
     
@@ -78,27 +75,30 @@ public class TagsViewModel : BaseViewModel
     {
         var removedTag = tagEvent.RemovedTag;
         
-        if (_tagItems == null || removedTag.FolderId != _associatedFolder?.Id) return;
+        if (_tags == null || removedTag.FolderId != _associatedFolder?.Id) return;
         
         if (_associatedFolder.Tags.All(tag => tag.Name != removedTag.Name))
         {
-            var associatedTagItem = _tagItems.FirstOrDefault(tagItem => tagItem.Name == removedTag.Name);
+            var tagState = _tags.FirstOrDefault(tagState => tagState.Name == removedTag.Name);
             
-            if (associatedTagItem?.IsSelected == true)
+            if (tagState?.IsSelected == true)
             {
-                _eventAggregator.Publish(new TagSelectionChangedEvent(associatedTagItem.Name, false));
+                _eventAggregator.Publish(new TagSelectionChangedEvent(tagState.Name, false));
             }
-            _tagItems.Remove(associatedTagItem);
+
+            if (tagState != null)
+            {
+                _tags.Remove(tagState);
+            }
         }
     }
 
     private void OnTagSelectionChanged(TagSelectionChangedEvent tagEvent)
     {
-        var tagItem = _tagItems?.FirstOrDefault(item => item.Name == tagEvent.TagName);
+        var tagState = _tags?.FirstOrDefault(item => item.Name == tagEvent.TagName);
 
-        if (tagItem == null) return;
+        if (tagState == null) return;
 
-        var itemIndex = _tagItems!.IndexOf(tagItem);
-        _tagItems[itemIndex] = tagItem with { IsSelected = tagEvent.IsSelected };
+        tagState.IsSelected = tagEvent.IsSelected;
     }
 }

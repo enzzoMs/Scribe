@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using Scribe.UI.Views.Components;
+using MessageBox = Scribe.UI.Views.Components.MessageBox;
 
 namespace Scribe.UI.Views.Sections.FolderDetails;
 
@@ -14,11 +15,11 @@ public partial class FolderDetailsSection : UserControl
         var detailsViewModel = (FolderDetailsViewModel) DataContext;
         var appResources = Application.Current.Resources;
         
-        string confirmationMessage;
+        string boxMessage;
 
         if (detailsViewModel.Folder?.Documents.Count == 0)
         {
-            confirmationMessage = string.Format(
+            boxMessage = string.Format(
                 appResources["String.Folders.Delete.Message"] as string ?? "", 
                 detailsViewModel.Folder.Name
             );
@@ -35,15 +36,18 @@ public partial class FolderDetailsSection : UserControl
                 detailsViewModel.Folder?.Documents.Count
             );
             
-            confirmationMessage = $"{deleteMessage}\n{documentsWarningMessage}";
+            boxMessage = $"{deleteMessage}\n{documentsWarningMessage}";
         }
         
-        new ConfirmationMessageBox
+        new MessageBox
         {
             Owner = Application.Current.MainWindow,
-            WindowTitle = appResources["String.Folders.Delete"] as string ?? "",
-            ConfirmationMessage = confirmationMessage,
-            OnConfirm = detailsViewModel.DeleteFolderCommand
+            Title = appResources["String.Folders.Delete"] as string ?? "",
+            Message = boxMessage,
+            Options = [
+                new MessageBoxOption(appResources["String.Button.Delete"] as string ?? "", detailsViewModel.DeleteFolderCommand),
+                new MessageBoxOption(appResources["String.Button.Cancel"] as string ?? "")
+            ]
         }.ShowDialog();
     }
 }

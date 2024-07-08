@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:tagsSection="clr-namespace:Scribe.UI.Views.Sections.Tags"
+    xmlns:tagsState="clr-namespace:Scribe.UI.Views.Sections.Tags.State"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance tagsSection:TagsViewModel}"
     d:DesignHeight="100"
@@ -14,7 +15,7 @@
         <Style TargetType="UserControl">
             <Setter Property="Visibility" Value="Visible"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding TagItems}" Value="{x:Null}">
+                <DataTrigger Binding="{Binding Tags}" Value="{x:Null}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -22,7 +23,7 @@
     </UserControl.Style>
     
     <UserControl.Resources>
-        <ControlTemplate x:Key="SelectedTagTemplate" d:DataContext="{d:DesignInstance tagsSection:TagItem}">
+        <ControlTemplate x:Key="SelectedTagTemplate" d:DataContext="{d:DesignInstance tagsState:TagViewState}">
             <Border
                 PreviewMouseLeftButtonDown="OnTagItemClicked"
                 Background="{DynamicResource Brush.Item.Selected.Background}"
@@ -38,7 +39,7 @@
             </Border>
         </ControlTemplate>
         
-        <ControlTemplate x:Key="UnselectedTagTemplate" d:DataContext="{d:DesignInstance tagsSection:TagItem}">
+        <ControlTemplate x:Key="UnselectedTagTemplate" d:DataContext="{d:DesignInstance tagsState:TagViewState}">
             <Border
                 PreviewMouseLeftButtonDown="OnTagItemClicked"
                 Background="{DynamicResource Brush.Item.Unselected.Background}"
@@ -90,7 +91,7 @@
             Grid.RowSpan="2"
             Grid.Column="0"
             Grid.ColumnSpan="2"
-            ItemsSource="{Binding TagItems}"
+            ItemsSource="{Binding Tags}"
             SelectionMode="Multiple"
             BorderThickness="0"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
@@ -120,7 +121,7 @@
                 <Style TargetType="Path" BasedOn="{StaticResource Style.NoData.Icon}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding TagItems.Count, FallbackValue=0}" Value="0">
+                        <DataTrigger Binding="{Binding Tags.Count, FallbackValue=0}" Value="0">
                             <Setter Property="Visibility" Value="Visible"/>
                         </DataTrigger>
                     </Style.Triggers>
@@ -136,7 +137,7 @@
                 <Style TargetType="TextBlock" BasedOn="{StaticResource Style.NoData.Text}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding TagItems.Count, FallbackValue=0}" Value="0">
+                        <DataTrigger Binding="{Binding Tags.Count, FallbackValue=0}" Value="0">
                             <Setter Property="Visibility" Value="Visible"/>
                         </DataTrigger>
                     </Style.Triggers>

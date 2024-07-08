@@ -24,10 +24,10 @@ public class TagsViewModelTests
         
         _eventAggregator.Publish(new FolderSelectedEvent(folder));
 
-        Assert.Equal(3, _tagsViewModel.TagItems!.Count);
-        Assert.Equal("TagA", _tagsViewModel.TagItems[0].Name);
-        Assert.Equal("TagB", _tagsViewModel.TagItems[1].Name);
-        Assert.Equal("TagC", _tagsViewModel.TagItems[2].Name);
+        Assert.Equal(3, _tagsViewModel.Tags!.Count);
+        Assert.Equal("TagA", _tagsViewModel.Tags[0].Name);
+        Assert.Equal("TagB", _tagsViewModel.Tags[1].Name);
+        Assert.Equal("TagC", _tagsViewModel.Tags[2].Name);
     }
 
     [Fact]
@@ -39,10 +39,10 @@ public class TagsViewModelTests
         
         _eventAggregator.Publish(new FolderSelectedEvent(folder));
 
-        _tagsViewModel.ToggleTagSelectionCommand.Execute(_tagsViewModel.TagItems![0]);
-        Assert.True(_tagsViewModel.TagItems[0].IsSelected);
-        _tagsViewModel.ToggleTagSelectionCommand.Execute(_tagsViewModel.TagItems[0]);
-        Assert.False(_tagsViewModel.TagItems[0].IsSelected);
+        _tagsViewModel.ToggleTagSelectionCommand.Execute(_tagsViewModel.Tags![0]);
+        Assert.True(_tagsViewModel.Tags[0].IsSelected);
+        _tagsViewModel.ToggleTagSelectionCommand.Execute(_tagsViewModel.Tags[0]);
+        Assert.False(_tagsViewModel.Tags[0].IsSelected);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class TagsViewModelTests
         TagSelectionChangedEvent? tagSelectionEvent = null;
         _eventAggregator.Subscribe<TagSelectionChangedEvent>(this, e => tagSelectionEvent = e );
 
-        _tagsViewModel.ToggleTagSelectionCommand.Execute(_tagsViewModel.TagItems![0]);
+        _tagsViewModel.ToggleTagSelectionCommand.Execute(_tagsViewModel.Tags![0]);
         
         Assert.NotNull(tagSelectionEvent);
         Assert.Equal(tag.Name, tagSelectionEvent.TagName);
@@ -73,8 +73,8 @@ public class TagsViewModelTests
         _eventAggregator.Publish(new FolderSelectedEvent(folder));
         _eventAggregator.Publish(new TagAddedEvent(tag));
 
-        Assert.Single(_tagsViewModel.TagItems!);
-        Assert.Equal(tag.Name, _tagsViewModel.TagItems![0].Name);
+        Assert.Single(_tagsViewModel.Tags!);
+        Assert.Equal(tag.Name, _tagsViewModel.Tags![0].Name);
     }
 
     [Fact]
@@ -88,8 +88,8 @@ public class TagsViewModelTests
         _eventAggregator.Publish(new TagAddedEvent(tag));
         _eventAggregator.Publish(new TagAddedEvent(tag));
 
-        Assert.Single(_tagsViewModel.TagItems!);
-        Assert.Equal(tag.Name, _tagsViewModel.TagItems![0].Name);
+        Assert.Single(_tagsViewModel.Tags!);
+        Assert.Equal(tag.Name, _tagsViewModel.Tags![0].Name);
     }
     
     [Fact]
@@ -101,7 +101,7 @@ public class TagsViewModelTests
         _eventAggregator.Publish(new FolderSelectedEvent(folder));
         _eventAggregator.Publish(new TagAddedEvent(tag));
 
-        Assert.Empty(_tagsViewModel.TagItems!);
+        Assert.Empty(_tagsViewModel.Tags!);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class TagsViewModelTests
         folder.Tags.Remove(tag);
         _eventAggregator.Publish(new TagRemovedEvent(tag));
 
-        Assert.Empty(_tagsViewModel.TagItems!);
+        Assert.Empty(_tagsViewModel.Tags!);
     }
     
     [Fact]
@@ -131,8 +131,8 @@ public class TagsViewModelTests
         
         _eventAggregator.Publish(new TagRemovedEvent(new Tag("Tag", folderId: 1)));
 
-        Assert.Single(_tagsViewModel.TagItems!);
-        Assert.Equal(tag.Name, _tagsViewModel.TagItems![0].Name);
+        Assert.Single(_tagsViewModel.Tags!);
+        Assert.Equal(tag.Name, _tagsViewModel.Tags![0].Name);
     }
     
     [Fact]
@@ -145,8 +145,8 @@ public class TagsViewModelTests
         _eventAggregator.Publish(new FolderSelectedEvent(folder));
         _eventAggregator.Publish(new TagRemovedEvent(tag));
 
-        Assert.Single(_tagsViewModel.TagItems!);
-        Assert.Equal(tag.Name, _tagsViewModel.TagItems![0].Name);
+        Assert.Single(_tagsViewModel.Tags!);
+        Assert.Equal(tag.Name, _tagsViewModel.Tags![0].Name);
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class TagsViewModelTests
         
         _eventAggregator.Publish(new FolderSelectedEvent(folder));
 
-        _tagsViewModel.ToggleTagSelectionCommand.Execute(_tagsViewModel.TagItems![0]);
+        _tagsViewModel.ToggleTagSelectionCommand.Execute(_tagsViewModel.Tags![0]);
         
         TagSelectionChangedEvent? tagSelectionEvent = null;
         _eventAggregator.Subscribe<TagSelectionChangedEvent>(this, e => tagSelectionEvent = e);

@@ -6,12 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:components="clr-namespace:Scribe.UI.Views.Components"
     mc:Ignorable="d"
-    d:DesignWidth="800"
     SelectionChanged="OnTabSelectionChanged"
-    ContentTemplate="{Binding TabContentTemplate, ElementName=Root}"
     BorderThickness="0"
-    Padding="0"
-    Name="Root">
+    Padding="0">
     
     <TabControl.Resources>
         <Style TargetType="TabItem">
@@ -28,18 +25,17 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             
-                            <ContentControl
+                            <ContentPresenter
                                 Name="TabHeader"
-                                Content="{Binding}"
+                                ContentSource="Header"
                                 Margin="{DynamicResource Dimen.ClosebleTabControl.Header.Margin}"/>
                             <components:IconButton
                                 x:Name="CloseTabButton"
                                 Grid.Row="0"
                                 Grid.Column="1"
+                                Click="OnCloseTabButtonClicked"
                                 Width="{DynamicResource Dimen.ClosebleTabControl.Icon.Size}"
                                 Height="{DynamicResource Dimen.ClosebleTabControl.Icon.Size}"
-                                Command="{Binding CloseTabCommand, ElementName=Root}"
-                                CommandParameter="{Binding}"
                                 IconGeometry="{StaticResource Drawing.Close}"
                                 IconBrush="{DynamicResource Brush.Text.Primary}"
                                 IconPadding="{DynamicResource Dimen.ClosebleTabControl.Icon.Padding}"

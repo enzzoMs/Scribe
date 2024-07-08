@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace Scribe.UI.Views.Components;
 
@@ -8,29 +7,18 @@ public partial class ClosableTabControl : TabControl
 {
     public ClosableTabControl() => InitializeComponent();
 
-    public DataTemplate TabContentTemplate
+    public event EventHandler<object>? CloseTabClick;
+
+    public void CloseAllTabs()
     {
-        get => (DataTemplate) GetValue(TabContentTemplateProperty);
-        set => SetValue(TabContentTemplateProperty, value);
+        var itemsSource = ItemsSource.Cast<object>().ToList();
+        
+        foreach (var item in itemsSource)
+        {
+            var tabItem = (TabItem) ItemContainerGenerator.ContainerFromItem(item);
+            CloseTabClick?.Invoke(this, tabItem.Content);   
+        }
     }
-    
-    public ICommand CloseTabCommand
-    {
-        get => (ICommand) GetValue(CloseTabCommandProperty);
-        set => SetValue(CloseTabCommandProperty, value);
-    }
-    
-    public static readonly DependencyProperty TabContentTemplateProperty = DependencyProperty.Register(
-        name: nameof(TabContentTemplate),
-        propertyType: typeof(DataTemplate),
-        ownerType: typeof(ClosableTabControl)
-    );
-    
-    public static readonly DependencyProperty CloseTabCommandProperty = DependencyProperty.Register(
-        name: nameof(CloseTabCommand),
-        propertyType: typeof(ICommand),
-        ownerType: typeof(ClosableTabControl)
-    );
     
     private void OnTabSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -48,5 +36,11 @@ public partial class ClosableTabControl : TabControl
         {
             tabTemplate.Content = selectedTabItem.DataContext.ToString();
         }
+    }
+
+    private void OnCloseTabButtonClicked(object sender, RoutedEventArgs e)
+    {
+        var tabItem = (TabItem) ((FrameworkElement) sender).TemplatedParent;
+        CloseTabClick?.Invoke(this, tabItem.Content);   
     }
 }
