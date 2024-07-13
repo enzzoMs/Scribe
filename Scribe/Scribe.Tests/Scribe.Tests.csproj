@@ -21,5 +21,6 @@
     <ItemGroup>
         <ProjectReference Include="..\Scribe.UI\Scribe.UI.csproj"/>
         <ProjectReference Include="..\Scribe.Data\Scribe.Data.csproj"/>
+        <ProjectReference Include="..\Scribe.Markdown\Scribe.Markdown.csproj" />
     </ItemGroup>
 </Project>

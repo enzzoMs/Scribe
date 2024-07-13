@@ -202,7 +202,7 @@
                         OnEditMode="{Binding OnEditMode, Mode=TwoWay}"
                         VerticalAlignment="Center"
                         ConfirmChangesCommand="{Binding UpdateSelectedDocumentNameCommand}"
-                        Margin="0 5 0 0"/>
+                        Margin="0 5 20 0"/>
                     <TextBlock
                         Grid.Row="2"
                         Grid.Column="2"
@@ -288,7 +288,23 @@
                         Grid.Column="0"
                         Grid.ColumnSpan="4"
                         Text="{Binding SelectedDocument.EditedContent, Mode=TwoWay}"
-                        TextChanged="OnDocumentContentChanged"/>
+                        TextChanged="OnDocumentContentChanged">
+                        <components:NumberedTextBox.Style>
+                            <Style TargetType="components:NumberedTextBox">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding OnPreviewMode}" Value="True">
+                                       <Setter Property="Visibility" Value="Hidden"/> 
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </components:NumberedTextBox.Style>
+                    </components:NumberedTextBox>
+                    <components:MarkdownViewer
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="4"
+                        DocumentRoot="{Binding DocumentRoot}"
+                        Visibility="{Binding OnPreviewMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 </Grid>
             </DataTemplate>
         </components:ClosableTabControl.ContentTemplate>

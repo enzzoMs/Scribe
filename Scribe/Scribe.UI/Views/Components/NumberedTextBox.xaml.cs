@@ -12,7 +12,15 @@ public partial class NumberedTextBox : UserControl
     private const int LineStartToleranceInChars = 5;
     private int _lineCount = 1;
     
-    public NumberedTextBox() => InitializeComponent();
+    private bool _textBoxIsFocused;
+    
+    public NumberedTextBox()
+    {
+        InitializeComponent();
+
+        MainTextBox.GotFocus += (_, _) => { _textBoxIsFocused = true; };
+        MainTextBox.LostFocus += (_, _) => { _textBoxIsFocused = false; };
+    }
 
     public event EventHandler<string>? TextChanged;
     
@@ -57,12 +65,13 @@ public partial class NumberedTextBox : UserControl
 
             LineNumbersTextBlock.Text = lineNumbersText.ToString();
             _lineCount = MainTextBox.LineCount;
-
-            MainTextBox.ScrollToLine(_lineCount - 1);
         }
             
         var largestLineLength = MainTextBox.Text.Split("\n").Max(line => line.Length);
         var currentLine = MainTextBox.GetLineIndexFromCharacterIndex(MainTextBox.CaretIndex);
+        
+        if (currentLine == -1) return;
+        
         var currentLineStartIndex = MainTextBox.GetCharacterIndexFromLineIndex(currentLine);
 
         // Scroll to the right end if the caret is at the end of the longest line.
@@ -87,6 +96,15 @@ public partial class NumberedTextBox : UserControl
         if (MainTextBox.CaretIndex < currentLineStartIndex + LineStartToleranceInChars)
         {
             MainScrollViewer.ScrollToLeftEnd();
+        }
+    }
+
+    private void OnRequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
+    {
+        // Prevents scroll when the 'MainTextBox' is first focused
+        if (!_textBoxIsFocused)
+        {
+            e.Handled = true;
         }
     }
 }

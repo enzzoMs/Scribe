@@ -31,7 +31,7 @@
                 FontWeight="Medium"
                 FontFamily="{StaticResource Text.Monospace}"
                 Foreground="{StaticResource Brush.BackgroundText}"
-                Padding="{DynamicResource Dimen.NumberedTextBox.LineNumber.Margin}"/>
+                Margin="{DynamicResource Dimen.NumberedTextBox.LineNumber.Margin}"/>
             <TextBox
                 Name="MainTextBox"
                 Grid.Column="1"
@@ -41,11 +41,12 @@
                 FontWeight="Medium"
                 FontFamily="{StaticResource Text.Monospace}"
                 FontSize="{DynamicResource Dimen.TextSize.Normal1}"
-                TextChanged="OnTextChanged" 
+                TextChanged="OnTextChanged"
                 SelectionChanged="OnSelectionChanged"
+                RequestBringIntoView="OnRequestBringIntoView"
                 AcceptsReturn="True"
                 BorderThickness="0"
-                Padding="{DynamicResource Dimen.NumberedTextBox.TextBox.Margin}"/>
+                Margin="{DynamicResource Dimen.NumberedTextBox.TextBox.Margin}"/>
         </Grid>
     </ScrollViewer>
 </UserControl>

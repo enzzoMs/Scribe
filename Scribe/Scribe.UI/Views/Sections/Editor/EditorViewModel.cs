@@ -2,6 +2,8 @@
 using System.Windows.Input;
 using Scribe.Data.Model;
 using Scribe.Data.Repositories;
+using Scribe.Markdown;
+using Scribe.Markdown.Nodes;
 using Scribe.UI.Command;
 using Scribe.UI.Events;
 using Scribe.UI.Views.Sections.Editor.State;
@@ -18,6 +20,8 @@ public class EditorViewModel : BaseViewModel
     
     private bool _onEditMode;
     private bool _onPreviewMode;
+
+    private IMarkdownNode _documentRoot = MarkdownParser.Parse("");
     
     public EditorViewModel(IEventAggregator eventAggregator, IRepository<Document> documentsRepository)
     {
@@ -89,9 +93,10 @@ public class EditorViewModel : BaseViewModel
             {
                 DocumentTags = new ObservableCollection<Tag>(_selectedDocument.Document.Tags);   
             }
-            
-            OnEditMode = false;
 
+            OnPreviewMode = true;
+            OnEditMode = false;
+            
             RaisePropertyChanged();
         }
     }
@@ -140,10 +145,26 @@ public class EditorViewModel : BaseViewModel
         set
         {
             _onPreviewMode = value;
+            
+            if (_onPreviewMode && _selectedDocument != null)
+            {
+                DocumentRoot = MarkdownParser.Parse(_selectedDocument.EditedContent);
+            }
+            
             RaisePropertyChanged();
         }
     }
-    
+
+    public IMarkdownNode DocumentRoot
+    {
+        get => _documentRoot;
+        private set
+        {
+            _documentRoot = value;
+            RaisePropertyChanged();   
+        }
+    }
+
     public ICommand SetOnPreviewModeCommand { get; }
 
     private void CloseDocument(DocumentViewState documentViewState)
@@ -167,11 +188,12 @@ public class EditorViewModel : BaseViewModel
     
     private async void SaveDocumentContent(DocumentViewState documentViewState)
     {
-        if (documentViewState.Document.Content == documentViewState.EditedContent) return;
+        if (documentViewState.Document.Content != documentViewState.EditedContent)
+        {
+            documentViewState.Document.Content = documentViewState.EditedContent;
         
-        documentViewState.Document.Content = documentViewState.EditedContent;
-        
-        await _documentsRepository.Update(documentViewState.Document);
+            await _documentsRepository.Update(documentViewState.Document);
+        }
 
         documentViewState.HasUnsavedChanges = false;
     }
