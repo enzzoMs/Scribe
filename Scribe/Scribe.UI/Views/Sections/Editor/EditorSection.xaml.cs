@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using Scribe.UI.Views.Components;
 using Scribe.UI.Views.Sections.Editor.State;
 using MessageBox = Scribe.UI.Views.Components.MessageBox;
@@ -15,10 +16,23 @@ public partial class EditorSection : UserControl
 
         if (Application.Current.MainWindow == null) return;
         
-        Application.Current.MainWindow.Closing += (_, _) =>
+        Application.Current.MainWindow.Closing += (_, _) => { EditorTabControl.CloseAllTabs(); };
+        
+        var markdownEditor = Resources["MarkdownEditor"] as MarkdownEditor;
+        var editorToolbarSection = Resources["EditorToolbarSection"] as EditorToolbarSection;
+
+        if (markdownEditor?.FindName("EditorTextBox") is not TextBox editorTextBox ||
+            editorToolbarSection?.FindName("UndoDocumentEditButton") is not IconButton undoDocumentEditButton ||
+            editorToolbarSection.FindName("RedoDocumentEditButton") is not IconButton redoDocumentEditButton)
         {
-            EditorTabControl.CloseAllTabs();
-        };
+            return;
+        }
+
+        undoDocumentEditButton.Command = ApplicationCommands.Undo;
+        undoDocumentEditButton.CommandTarget = editorTextBox;
+        
+        redoDocumentEditButton.Command = ApplicationCommands.Redo;
+        redoDocumentEditButton.CommandTarget = editorTextBox;
     }
 
     private void OnAddTagButtonClicked(object sender, RoutedEventArgs e)

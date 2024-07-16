@@ -2,8 +2,6 @@
 using System.Windows.Input;
 using Scribe.Data.Model;
 using Scribe.Data.Repositories;
-using Scribe.Markdown;
-using Scribe.Markdown.Nodes;
 using Scribe.UI.Command;
 using Scribe.UI.Events;
 using Scribe.UI.Views.Sections.Editor.State;
@@ -18,10 +16,8 @@ public class EditorViewModel : BaseViewModel
     private DocumentViewState? _selectedDocument;
     private ObservableCollection<Tag>? _documentTags;
     
-    private bool _onEditMode;
-    private bool _onPreviewMode;
-
-    private IMarkdownNode _documentRoot = MarkdownParser.Parse("");
+    private bool _inEditMode;
+    private bool _inPreviewMode;
     
     public EditorViewModel(IEventAggregator eventAggregator, IRepository<Document> documentsRepository)
     {
@@ -54,10 +50,10 @@ public class EditorViewModel : BaseViewModel
         {
             if (param is not string newDocumentName) return;
             UpdateSelectedDocumentName(newDocumentName);
-            OnEditMode = false;
+            InEditMode = false;
         });
         ToggleSelectedDocumentPinnedStatusCommand = new DelegateCommand(_ => ToggleSelectedDocumentPinnedStatus());
-        EnterEditModeCommand = new DelegateCommand(_ => OnEditMode = true);
+        EnterEditModeCommand = new DelegateCommand(_ => InEditMode = true);
         AddTagCommand = new DelegateCommand(param =>
         {
             if (param is string tagName)
@@ -72,11 +68,11 @@ public class EditorViewModel : BaseViewModel
                 RemoveTag(tag);
             }
         });
-        SetOnPreviewModeCommand = new DelegateCommand(param =>
+        SetInPreviewModeCommand = new DelegateCommand(param =>
         {
             if (param is bool onPreviewMode)
             {
-                OnPreviewMode = onPreviewMode;
+                InPreviewMode = onPreviewMode;
             }
         });
     }
@@ -94,8 +90,8 @@ public class EditorViewModel : BaseViewModel
                 DocumentTags = new ObservableCollection<Tag>(_selectedDocument.Document.Tags);   
             }
 
-            OnPreviewMode = true;
-            OnEditMode = false;
+            InPreviewMode = true;
+            InEditMode = false;
             
             RaisePropertyChanged();
         }
@@ -111,12 +107,12 @@ public class EditorViewModel : BaseViewModel
         }
     }
 
-    public bool OnEditMode
+    public bool InEditMode
     {
-        get => _onEditMode;
+        get => _inEditMode;
         set
         {
-            _onEditMode = value;
+            _inEditMode = value;
             RaisePropertyChanged();
         }
     }
@@ -139,34 +135,18 @@ public class EditorViewModel : BaseViewModel
 
     public ICommand RemoveTagCommand { get; }
 
-    public bool OnPreviewMode
+    public bool InPreviewMode
     {
-        get => _onPreviewMode;
+        get => _inPreviewMode;
         set
         {
-            _onPreviewMode = value;
-            
-            if (_onPreviewMode && _selectedDocument != null)
-            {
-                DocumentRoot = MarkdownParser.Parse(_selectedDocument.EditedContent);
-            }
-            
+            _inPreviewMode = value;
             RaisePropertyChanged();
         }
     }
-
-    public IMarkdownNode DocumentRoot
-    {
-        get => _documentRoot;
-        private set
-        {
-            _documentRoot = value;
-            RaisePropertyChanged();   
-        }
-    }
-
-    public ICommand SetOnPreviewModeCommand { get; }
-
+    
+    public ICommand SetInPreviewModeCommand { get; }
+    
     private void CloseDocument(DocumentViewState documentViewState)
     {
         var documentIndex = OpenDocuments.IndexOf(documentViewState);

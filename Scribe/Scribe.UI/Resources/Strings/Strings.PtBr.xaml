@@ -50,6 +50,8 @@
     <sys:String x:Key="String.Button.Save">Salvar</sys:String>
     <sys:String x:Key="String.Button.Save.WithShortcut">Salvar (Ctrl + s)</sys:String>
     <sys:String x:Key="String.Button.DontSave">Não Salvar</sys:String>
+    <sys:String x:Key="String.Button.Undo">Desfazer (Ctrl + z)</sys:String>
+    <sys:String x:Key="String.Button.Redo">Refazer (Ctrl + y)</sys:String>
 
     <sys:String x:Key="String.Error.RequiredField">* Obrigatório</sys:String>
     

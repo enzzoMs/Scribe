@@ -38,10 +38,20 @@
                     <Path
                         Name="ButtonIcon"
                         Data="{Binding IconGeometry}"
-                        Fill="{Binding IconBrush}"
                         Stretch="Uniform"
                         HorizontalAlignment="Center"
-                        VerticalAlignment="Center"/>
+                        VerticalAlignment="Center">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Setter Property="Fill" Value="{Binding IconBrush}"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Fill" Value="{DynamicResource Brush.BackgroundIcon}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                    </Path>
                 </Border>
             </Grid>
         </ControlTemplate>

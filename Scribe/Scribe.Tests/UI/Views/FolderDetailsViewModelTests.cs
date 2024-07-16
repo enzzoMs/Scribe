@@ -60,11 +60,11 @@ public class FolderDetailsViewModelTests
     [Fact]
     public void EnterEditModeCommand_Sets_OnEditMode()
     {
-        _folderDetailsViewModel.OnEditMode = false;
+        _folderDetailsViewModel.InEditMode = false;
 
         _folderDetailsViewModel.EnterEditModeCommand.Execute(null);
         
-        Assert.True(_folderDetailsViewModel.OnEditMode);
+        Assert.True(_folderDetailsViewModel.InEditMode);
     }
 
     [Fact]

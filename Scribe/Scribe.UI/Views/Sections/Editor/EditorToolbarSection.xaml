@@ -29,6 +29,9 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
@@ -77,21 +80,38 @@
             Grid.Column="3"
             Style="{StaticResource Style.Divider.Vertical}"
             Margin="{DynamicResource Dimen.Toolbar.Divider.Margin}"/>
+        <components:IconButton
+            x:Name="UndoDocumentEditButton"
+            Grid.Row="0"
+            Grid.Column="4"
+            IconGeometry="{StaticResource Drawing.Undo}"
+            ToolTip="{DynamicResource String.Button.Undo}"/>
+        <components:IconButton
+            x:Name="RedoDocumentEditButton"
+            Grid.Row="0"
+            Grid.Column="5"
+            IconGeometry="{StaticResource Drawing.Redo}"
+            ToolTip="{DynamicResource String.Button.Redo}"/>
+        <Rectangle
+            Grid.Row="0"
+            Grid.Column="6"
+            Style="{StaticResource Style.Divider.Vertical}"
+            Margin="{DynamicResource Dimen.Toolbar.Divider.Margin}"/>
         
         <Rectangle
             Grid.Row="0"
-            Grid.Column="5"
+            Grid.Column="8"
             Style="{StaticResource Style.Divider.Vertical}"
             Margin="{DynamicResource Dimen.Toolbar.Divider.Margin}"/>
         <components:IconButton
             Grid.Row="0"
-            Grid.Column="6"
+            Grid.Column="9"
             IconGeometry="{StaticResource Drawing.Edit}"
             ToolTip="{DynamicResource String.Button.Edit}"
             Command="{Binding EnterEditModeCommand}"/>
         <components:IconButton
             Grid.Row="0"
-            Grid.Column="7"
+            Grid.Column="10"
             ToolTip="{DynamicResource String.Button.Delete}"
             PreviewMouseLeftButtonDown="OnDeleteDocumentClicked"
             IconGeometry="{StaticResource Drawing.Delete}"/>
@@ -99,7 +119,7 @@
         <Rectangle
             Grid.Row="1"
             Grid.Column="0"
-            Grid.ColumnSpan="8"
+            Grid.ColumnSpan="11"
             Style="{StaticResource Style.Divider.Horizontal}"/>
     </Grid>
 </UserControl>

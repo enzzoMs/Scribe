@@ -118,6 +118,7 @@
     <Thickness x:Key="Dimen.EditableTextBlock.Icon.Margin" Left="5" Right="1"/>
     <Thickness x:Key="Dimen.EditableTextBlock.Error.Margin" Left="4" Bottom="2"/>
     
-    <Thickness x:Key="Dimen.NumberedTextBox.LineNumber.Margin" Left="20" Top="16" Bottom="16" Right="16"/>
-    <Thickness x:Key="Dimen.NumberedTextBox.TextBox.Margin" Top="16" Bottom="16" Right="20"/>
+    <Thickness x:Key="Dimen.MarkdownEditor.LineNumber.Margin" Left="20" Top="16" Bottom="16" Right="16"/>
+    <Thickness x:Key="Dimen.MarkdownEditor.EditorTextBox.Margin" Top="16" Bottom="16" Right="20"/>
+    <Thickness x:Key="Dimen.MarkdownEditor.MarkdownViewer.Margin" Top="16" Bottom="16" Left="20" Right="20"/>
 </ResourceDictionary>

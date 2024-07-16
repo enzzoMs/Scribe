@@ -2,6 +2,7 @@
 
 public class ParagraphNode : IMarkdownNode
 {
-    public ICollection<IMarkdownNode> Children { get; } = [];
     public string Text { get; set; } = "";
+
+    public ICollection<IMarkdownNode> Children { get; } = [];
 }

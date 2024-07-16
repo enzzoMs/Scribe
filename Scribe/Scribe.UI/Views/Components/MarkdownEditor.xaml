@@ -1,0 +1,75 @@
+﻿<UserControl
+    x:Class="Scribe.UI.Views.Components.MarkdownEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:sys="clr-namespace:System;assembly=mscorelib"
+    mc:Ignorable="d"
+    Name="Root">
+    
+    <UserControl.Resources>
+        <Thickness x:Key="Dimen.ScrollBar.Vertical.Margin" Top="16" Bottom="16"/>
+        <Thickness x:Key="Dimen.ScrollBar.Vertical.OuterMargin" Left="0"/>
+        <sys:Double x:Key="Dimen.ScrollBar.Vertical.Size">9</sys:Double>
+    </UserControl.Resources>
+    
+    <Grid>
+        <ScrollViewer
+            Name="EditorScrollViewer"
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Auto">
+            <ScrollViewer.Style>
+                <Style TargetType="ScrollViewer" BasedOn="{StaticResource {x:Type ScrollViewer}}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding InPreviewMode, ElementName=Root}" Value="True">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ScrollViewer.Style>
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+            
+                <TextBlock
+                    Name="EditorLineNumbers"
+                    Text="1"
+                    TextAlignment="Right"
+                    FontWeight="Medium"
+                    FontFamily="{StaticResource Text.Monospace}"
+                    Foreground="{StaticResource Brush.BackgroundText}"
+                    Margin="{DynamicResource Dimen.MarkdownEditor.LineNumber.Margin}"/>
+                <TextBox
+                    Name="EditorTextBox"
+                    Grid.Column="1"
+                    Text="{Binding EditorText, ElementName=Root, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{x:Null}"
+                    Background="Transparent"
+                    FontWeight="Medium"
+                    FontFamily="{StaticResource Text.Monospace}"
+                    FontSize="{DynamicResource Dimen.TextSize.Normal1}"
+                    TextChanged="EditorTextChanged_OnTextChanged"
+                    SelectionChanged="EditorTextBox_OnSelectionChanged"
+                    RequestBringIntoView="EditorTextBox_OnRequestBringIntoView"
+                    AcceptsReturn="True"
+                    BorderThickness="0"
+                    Margin="{DynamicResource Dimen.MarkdownEditor.EditorTextBox.Margin}"/>
+            </Grid>
+        </ScrollViewer>
+        
+        <ScrollViewer
+            Visibility="{Binding
+                InPreviewMode,
+                ElementName=Root,
+                Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel
+                Name="MarkdownViewerPanel"
+                Orientation="Vertical"
+                Margin="{DynamicResource Dimen.MarkdownEditor.MarkdownViewer.Margin}"/>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

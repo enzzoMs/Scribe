@@ -13,7 +13,7 @@ public class FolderDetailsViewModel : BaseViewModel
 
     private Folder? _folder;
 
-    private bool _onEditMode;
+    private bool _inEditMode;
     
     public FolderDetailsViewModel(IEventAggregator eventAggregator, IRepository<Folder> foldersRepository)
     {
@@ -22,11 +22,11 @@ public class FolderDetailsViewModel : BaseViewModel
         
         _eventAggregator.Subscribe<FolderSelectedEvent>(this, OnFolderSelected);
 
-        EnterEditModeCommand = new DelegateCommand( _ => OnEditMode = true);
+        EnterEditModeCommand = new DelegateCommand( _ => InEditMode = true);
         UpdateFolderNameCommand = new DelegateCommand(param =>
         {
             if (param is not string newFolderName) return;
-            OnEditMode = false;
+            InEditMode = false;
             UpdateFolderName(newFolderName);
         });
         DeleteFolderCommand = new DelegateCommand(_ => DeleteFolder());
@@ -38,7 +38,7 @@ public class FolderDetailsViewModel : BaseViewModel
         set
         {
             _folder = value;
-            OnEditMode = false;
+            InEditMode = false;
             
             RaisePropertyChanged();
             RaisePropertyChanged(nameof(FolderNavigationPosition));
@@ -51,12 +51,12 @@ public class FolderDetailsViewModel : BaseViewModel
         set => UpdateFolderPosition(value - 1);
     }
 
-    public bool OnEditMode
+    public bool InEditMode
     {
-        get => _onEditMode;
+        get => _inEditMode;
         set
         {
-            _onEditMode = value;
+            _inEditMode = value;
             RaisePropertyChanged();
         }
     }

@@ -28,7 +28,7 @@
             <Setter Property="IconBrush" Value="{DynamicResource Brush.Text.Primary}"/>
             <Setter Property="IconPadding" Value="{DynamicResource Dimen.EditableTextBlock.Icon.Padding}"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding OnEditMode}" Value="True">
+                <DataTrigger Binding="{Binding InEditMode}" Value="True">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -60,14 +60,14 @@
             Grid.Row="0"
             Grid.Column="1"
             Text="{Binding Folder.Name, FallbackValue=#}"
-            OnEditMode="{Binding OnEditMode, Mode=TwoWay}"
+            OnEditMode="{Binding InEditMode, Mode=TwoWay}"
             ConfirmChangesCommand="{Binding UpdateFolderNameCommand}"
             VerticalAlignment="Center"
             Margin="{DynamicResource Dimen.FolderDetails.Name.Margin}">
             <components:EditableTextBlock.Style>
                 <Style TargetType="components:EditableTextBlock">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding OnEditMode}" Value="True">
+                        <DataTrigger Binding="{Binding InEditMode}" Value="True">
                             <Setter Property="Grid.ColumnSpan" Value="3"/>
                         </DataTrigger>
                     </Style.Triggers>

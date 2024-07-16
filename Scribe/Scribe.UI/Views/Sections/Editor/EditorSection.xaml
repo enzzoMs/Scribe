@@ -94,6 +94,16 @@
                     Margin="0 4"/>
             </Border>
         </ControlTemplate>
+        
+        <components:MarkdownEditor
+            x:Key="MarkdownEditor"
+            EditorText="{Binding SelectedDocument.EditedContent, Mode=TwoWay}"
+            EditorTextChanged="OnDocumentContentChanged"
+            InPreviewMode="{Binding InPreviewMode}"/>
+        
+        <editorSection:EditorToolbarSection
+            x:Key="EditorToolbarSection"
+            Margin="0 0 0 20"/>
     </UserControl.Resources>
     
     <UserControl.InputBindings>
@@ -143,10 +153,10 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     
-                    <editorSection:EditorToolbarSection
+                    <ContentControl
                         Grid.Row="0"
                         Grid.ColumnSpan="4"
-                        Margin="0 0 0 20"/>
+                        Content="{StaticResource EditorToolbarSection}"/>
                     <Path
                         Grid.Row="1"
                         Grid.Column="0"
@@ -199,7 +209,7 @@
                         Grid.Row="2"
                         Grid.Column="1"
                         Text="{Binding SelectedDocument.Document.Name, FallbackValue=#}"
-                        OnEditMode="{Binding OnEditMode, Mode=TwoWay}"
+                        OnEditMode="{Binding InEditMode, Mode=TwoWay}"
                         VerticalAlignment="Center"
                         ConfirmChangesCommand="{Binding UpdateSelectedDocumentNameCommand}"
                         Margin="0 5 20 0"/>
@@ -213,13 +223,13 @@
                         <TextBlock.InputBindings>
                             <MouseBinding 
                                 MouseAction="LeftClick"
-                                Command="{Binding SetOnPreviewModeCommand}"
+                                Command="{Binding SetInPreviewModeCommand}"
                                 CommandParameter="{StaticResource False}"/>
                         </TextBlock.InputBindings>
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding OnPreviewMode}" Value="True">
+                                    <DataTrigger Binding="{Binding InPreviewMode}" Value="True">
                                         <Setter Property="Opacity" Value="0.6"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -236,13 +246,13 @@
                         <TextBlock.InputBindings>
                             <MouseBinding 
                                 MouseAction="LeftClick"
-                                Command="{Binding SetOnPreviewModeCommand}"
+                                Command="{Binding SetInPreviewModeCommand}"
                                 CommandParameter="{StaticResource True}"/>
                         </TextBlock.InputBindings>
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding OnPreviewMode}" Value="False">
+                                    <DataTrigger Binding="{Binding InPreviewMode}" Value="False">
                                         <Setter Property="Opacity" Value="0.6"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -262,7 +272,7 @@
                         <Rectangle.Style>
                             <Style TargetType="{x:Type Rectangle}" BasedOn="{StaticResource Style.Divider.Horizontal}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding OnPreviewMode}" Value="False">
+                                    <DataTrigger Binding="{Binding InPreviewMode}" Value="False">
                                         <Setter Property="Fill" Value="#232323"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -276,35 +286,18 @@
                         <Rectangle.Style>
                             <Style TargetType="{x:Type Rectangle}" BasedOn="{StaticResource Style.Divider.Horizontal}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding OnPreviewMode}" Value="True">
+                                    <DataTrigger Binding="{Binding InPreviewMode}" Value="True">
                                         <Setter Property="Fill" Value="#232323"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Rectangle.Style>
                     </Rectangle>
-                    <components:NumberedTextBox
+                    <ContentControl
                         Grid.Row="4"
                         Grid.Column="0"
                         Grid.ColumnSpan="4"
-                        Text="{Binding SelectedDocument.EditedContent, Mode=TwoWay}"
-                        TextChanged="OnDocumentContentChanged">
-                        <components:NumberedTextBox.Style>
-                            <Style TargetType="components:NumberedTextBox">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding OnPreviewMode}" Value="True">
-                                       <Setter Property="Visibility" Value="Hidden"/> 
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </components:NumberedTextBox.Style>
-                    </components:NumberedTextBox>
-                    <components:MarkdownViewer
-                        Grid.Row="4"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="4"
-                        DocumentRoot="{Binding DocumentRoot}"
-                        Visibility="{Binding OnPreviewMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        Content="{StaticResource MarkdownEditor}"/>
                 </Grid>
             </DataTemplate>
         </components:ClosableTabControl.ContentTemplate>
