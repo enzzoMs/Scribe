@@ -29,7 +29,7 @@
         <TextBlock
             Grid.Column="0"
             Text="{Binding Text, ElementName=Root}"
-            FontSize="{DynamicResource Dimen.TextSize.Normal2}"
+            FontSize="{Binding FontSize, ElementName=Root}"
             TextTrimming="WordEllipsis"
             VerticalAlignment="Center">
             <TextBlock.Style>
@@ -47,6 +47,7 @@
             Name="TextErrorField"
             Grid.Column="0"
             Text="{DynamicResource String.Error.RequiredField}"
+            FontSize="{Binding FontSize, ElementName=Root}"
             Foreground="{DynamicResource Brush.Warning}"
             Opacity="0.7"
             Margin="{DynamicResource Dimen.EditableTextBlock.Error.Margin}"
@@ -72,7 +73,7 @@
             Name="TextEditBox"
             Grid.Column="0"
             Foreground="{DynamicResource Brush.Text.Primary}"
-            FontSize="{DynamicResource Dimen.TextSize.Normal2}"
+            FontSize="{Binding FontSize, ElementName=Root}"
             Background="Transparent"
             VerticalAlignment="Center"
             Visibility="{Binding OnEditMode, ElementName=Root, Converter={StaticResource BooleanToVisibilityConverter}}">

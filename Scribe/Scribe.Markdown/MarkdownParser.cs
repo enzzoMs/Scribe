@@ -5,6 +5,8 @@ namespace Scribe.Markdown;
 
 public static class MarkdownParser
 {
+    private static readonly Regex HeadingPattern = new(@"^(#+)\s(.+)$", RegexOptions.Compiled);
+
     public static DocumentNode Parse(string documentText)
     {
         var documentRoot = new DocumentNode();
@@ -13,35 +15,47 @@ public static class MarkdownParser
         {
             return documentRoot;
         }
-
-        var openNodes = new List<IMarkdownNode> { documentRoot };
         
-        foreach (var line in documentText.Split("\n"))
+        var openNodes = new List<IMarkdownNode> { documentRoot };
+
+        foreach (var docLine in documentText.Split("\n"))
         {
-            switch (openNodes.Last())
+            openNodes.RemoveAll(node => 
+                (string.IsNullOrWhiteSpace(docLine) || HeadingPattern.IsMatch(docLine)) && node is ParagraphNode or HeaderNode
+            );
+
+            if (string.IsNullOrWhiteSpace(docLine))
             {
-                case DocumentNode documentNode:
-                    if (!string.IsNullOrWhiteSpace(line))
-                    {
-                        var newParagraphNode = new ParagraphNode
-                        {
-                            Text = Regex.Replace(line, "\\s+", " ").Trim()
-                        };
-                        
-                        documentNode.Children.Add(newParagraphNode);
-                        openNodes.Add(newParagraphNode);
-                    }
-                    break;
-                case ParagraphNode paragraphNode:
-                    if (string.IsNullOrWhiteSpace(line))
-                    {
-                        openNodes.Remove(paragraphNode);
-                    }
-                    else
-                    {
-                        paragraphNode.Text += $" {Regex.Replace(line, "\\s+", " ").Trim()}";
-                    }
-                    break;
+                continue;
+            }
+            
+            var lineWithoutMarkup = docLine;
+
+            if (HeadingPattern.IsMatch(docLine))
+            {
+                var newHeader = new HeaderNode(
+                    level: docLine.TakeWhile(c => c == '#').Count()
+                );
+                
+                openNodes.Last().Children.Add(newHeader);
+                openNodes.Add(newHeader);
+
+                lineWithoutMarkup = docLine.TrimStart('#').Trim();
+            } 
+            
+            if (openNodes.Last() is ParagraphNode paragraphNode)
+            {
+                paragraphNode.Text += $" {Regex.Replace(lineWithoutMarkup, "\\s+", " ").Trim()}";
+            }
+            else
+            {
+                var newParagraphNode = new ParagraphNode
+                {
+                    Text = Regex.Replace(lineWithoutMarkup, "\\s+", " ").Trim()
+                };
+                
+                openNodes.Last().Children.Add(newParagraphNode);
+                openNodes.Add(newParagraphNode);
             }
         }
 

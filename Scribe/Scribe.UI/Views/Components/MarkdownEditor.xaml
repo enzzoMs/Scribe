@@ -12,6 +12,26 @@
         <Thickness x:Key="Dimen.ScrollBar.Vertical.Margin" Top="16" Bottom="16"/>
         <Thickness x:Key="Dimen.ScrollBar.Vertical.OuterMargin" Left="0"/>
         <sys:Double x:Key="Dimen.ScrollBar.Vertical.Size">9</sys:Double>
+        
+        <Style x:Key="Header1.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="{DynamicResource Dimen.MarkdownEditor.Header1.FontSize}"/>
+        </Style>
+        
+        <Style x:Key="Header2.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="{DynamicResource Dimen.MarkdownEditor.Header2.FontSize}"/>
+        </Style>
+        
+        <Style x:Key="Header3.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="{DynamicResource Dimen.MarkdownEditor.Header3.FontSize}"/>
+        </Style>
+        
+        <Style x:Key="Header4.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="{DynamicResource Dimen.MarkdownEditor.Header4.FontSize}"/>
+        </Style>
+        
+        <Style x:Key="Header5.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="{DynamicResource Dimen.MarkdownEditor.Header5.FontSize}"/>
+        </Style>
     </UserControl.Resources>
     
     <Grid>

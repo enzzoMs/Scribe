@@ -60,6 +60,7 @@
             Grid.Row="0"
             Grid.Column="1"
             Text="{Binding Folder.Name, FallbackValue=#}"
+            FontSize="{DynamicResource Dimen.TextSize.Normal2}"
             OnEditMode="{Binding InEditMode, Mode=TwoWay}"
             ConfirmChangesCommand="{Binding UpdateFolderNameCommand}"
             VerticalAlignment="Center"

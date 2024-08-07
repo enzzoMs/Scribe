@@ -30,6 +30,7 @@
     <sys:String x:Key="String.Documents.Tooltip.Search">Search Document</sys:String>
     <sys:String x:Key="String.Documents.Tooltip.None">No Document</sys:String>
 
+    <sys:String x:Key="String.Tag.DefaultName">New Tag</sys:String>
     <sys:String x:Key="String.Tags">Tags</sys:String>
     <sys:String x:Key="String.Tags.Tooltip.None">No Tag</sys:String>
 
@@ -52,6 +53,8 @@
     <sys:String x:Key="String.Button.DontSave">Don't Save</sys:String>
     <sys:String x:Key="String.Button.Undo">Undo (Ctrl + z)</sys:String>
     <sys:String x:Key="String.Button.Redo">Redo (Ctrl + y)</sys:String>
+    
+    <sys:String x:Key="String.Markdown.Header">Header</sys:String>
     
     <sys:String x:Key="String.Error.RequiredField">* Required</sys:String>
     

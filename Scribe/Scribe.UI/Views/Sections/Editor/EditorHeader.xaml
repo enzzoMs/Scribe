@@ -1,0 +1,252 @@
+﻿<UserControl 
+    x:Class="Scribe.UI.Views.Sections.Editor.EditorHeader"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:editorSection="clr-namespace:Scribe.UI.Views.Sections.Editor"
+    xmlns:components="clr-namespace:Scribe.UI.Views.Components"
+    xmlns:models="clr-namespace:Scribe.Data.Model;assembly=Scribe.Data"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance editorSection:EditorViewModel}"
+    d:DesignHeight="800" 
+    d:DesignWidth="800"
+    Name="Root">
+    
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="TagsDataProvider" Source="{Binding DocumentTags}"/>
+        
+        <DataTemplate DataType="{x:Type models:Tag}">
+            <Border
+                Background="{DynamicResource Brush.Item.Unselected.Background}"
+                CornerRadius="{DynamicResource Dimen.TagItem.CornerRadius}"
+                Padding="{DynamicResource Dimen.TagItem.Padding}"
+                Margin="{DynamicResource Dimen.TagItem.Margin}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        Text="{Binding Name}"
+                        FontSize="{DynamicResource Dimen.TagItem.TextSize}"
+                        VerticalAlignment="Center"/>
+                    <components:IconButton
+                        Width="{DynamicResource Dimen.TagItem.DeleteButton.Size}"
+                        Height="{DynamicResource Dimen.TagItem.DeleteButton.Size}"
+                        IconGeometry="{StaticResource Drawing.Close}"
+                        IconBrush="{DynamicResource Brush.Text.Primary}"
+                        Style="{x:Null}"
+                        Command="{Binding DataContext.RemoveTagCommand, ElementName=Root}"
+                        CommandParameter="{Binding}"
+                        Margin="4 0 0 0"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+        
+        <Style TargetType="MenuItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <StackPanel 
+                            Orientation="Horizontal"
+                            Background="White">
+                            <TextBox 
+                                Name="TagNameBox"
+                                MinWidth="125"
+                                FontSize="{DynamicResource Dimen.TagNameBox.TextSize}"
+                                Margin="{DynamicResource Dimen.TagNameBox.Margin.Size}"
+                                VerticalAlignment="Center">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                        <Style.Triggers>
+                                            <DataTrigger 
+                                                Binding="{Binding Visibility, RelativeSource={RelativeSource Self}}"
+                                                Value="Visible">
+                                                <Setter Property="Text" Value="{DynamicResource String.Tag.DefaultName}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <components:IconButton
+                                Click="OnConfirmTagNameClicked"
+                                Width="{DynamicResource Dimen.TagNameBox.Icon.Size}"
+                                Height="{DynamicResource Dimen.TagNameBox.Icon.Size}"
+                                IconGeometry="{StaticResource Drawing.Confirm}"
+                                IconBrush="{DynamicResource Brush.Icon}"
+                                Command="{Binding AddTagCommand}"
+                                CommandParameter="{Binding Text, ElementName=TagNameBox}"
+                                VerticalAlignment="Center"
+                                Margin="0 0 10 0"/>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <ControlTemplate x:Key="AddTagButtonTemplate">
+            <Border Background="Transparent">
+                <Path
+                    Width="{DynamicResource Dimen.TagItem.Icon.Size}"
+                    Height="{DynamicResource Dimen.TagItem.Icon.Size}"
+                    Data="{StaticResource Drawing.Add}"
+                    Fill="{DynamicResource Brush.Text.Secondary}"
+                    Stretch="Uniform"
+                    VerticalAlignment="Center"
+                    Margin="0 4"/>
+            </Border>
+        </ControlTemplate>
+    </UserControl.Resources>
+    
+    <Grid 
+        DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=TabControl}}"
+        d:DataContext="{d:DesignInstance editorSection:EditorViewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <Path
+            Grid.Row="0"
+            Grid.Column="0"
+            Width="{DynamicResource Dimen.TagItem.Icon.Size}"
+            Height="{DynamicResource Dimen.TagItem.Icon.Size}"
+            Data="{StaticResource Drawing.Tag}"
+            Fill="{DynamicResource Brush.Text.Secondary}"
+            Stretch="Uniform"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.TagItem.Icon.Margin}"/>
+        <ItemsControl
+            Grid.Row="0"
+            Grid.Column="1"
+            Grid.ColumnSpan="3"
+            BorderThickness="0"
+            VerticalAlignment="Center">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemsSource>
+                <CompositeCollection>
+                    <CollectionContainer 
+                        Collection="{Binding Source={StaticResource TagsDataProvider}}"/>
+                    <Button
+                        Click="OnAddTagButtonClicked"
+                        Cursor="Hand"
+                        Template="{StaticResource AddTagButtonTemplate}">
+                        <Button.ContextMenu>
+                            <ContextMenu Padding="0">
+                                <MenuItem StaysOpenOnClick="True"/>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
+                </CompositeCollection>
+            </ItemsControl.ItemsSource>
+        </ItemsControl>
+        <Path
+            Grid.Row="1"
+            Grid.Column="0"
+            Width="{DynamicResource Dimen.EditorHeader.Icon.Size}"
+            Height="{DynamicResource Dimen.EditorHeader.Icon.Size}"
+            Data="{StaticResource Drawing.Document}"
+            Fill="{DynamicResource Brush.Text.Primary}"
+            Stretch="Uniform"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.EditorHeader.Icon.Margin}"/>
+        <components:EditableTextBlock
+            Grid.Row="1"
+            Grid.Column="1"
+            Text="{Binding SelectedDocument.Document.Name, FallbackValue=#}"
+            FontSize="{DynamicResource Dimen.MarkdownEditor.Header1.FontSize}"
+            OnEditMode="{Binding InEditMode, Mode=TwoWay}"
+            ConfirmChangesCommand="{Binding UpdateSelectedDocumentNameCommand}"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.EditorHeader.DocName.Margin}"/>
+        <TextBlock
+            Grid.Row="1"
+            Grid.Column="2"
+            Text="Design"
+            Cursor="Hand"
+            VerticalAlignment="Center"
+            Margin="{DynamicResource Dimen.EditorHeader.Design.Margin}">
+            <TextBlock.InputBindings>
+                <MouseBinding 
+                    MouseAction="LeftClick"
+                    Command="{Binding SetInPreviewModeCommand}"
+                    CommandParameter="{StaticResource False}"/>
+            </TextBlock.InputBindings>
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding InPreviewMode}" Value="True">
+                            <Setter Property="Opacity" Value="0.6"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <TextBlock
+            Grid.Row="1"
+            Grid.Column="3"
+            Text="Preview"
+            Cursor="Hand"
+            Margin="{DynamicResource Dimen.EditorHeader.Preview.Margin}"
+            VerticalAlignment="Center">
+            <TextBlock.InputBindings>
+                <MouseBinding 
+                    MouseAction="LeftClick"
+                    Command="{Binding SetInPreviewModeCommand}"
+                    CommandParameter="{StaticResource True}"/>
+            </TextBlock.InputBindings>
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding InPreviewMode}" Value="False">
+                            <Setter Property="Opacity" Value="0.6"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <Rectangle
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Style="{StaticResource Style.Divider.Horizontal}"
+            Margin="20 6 0 0"/>
+        <Rectangle
+            Grid.Row="2"
+            Grid.Column="2"
+            Margin="0 6 0 0">
+            <Rectangle.Style>
+                <Style TargetType="{x:Type Rectangle}" BasedOn="{StaticResource Style.Divider.Horizontal}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding InPreviewMode}" Value="False">
+                            <Setter Property="Fill" Value="#232323"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Rectangle.Style>
+        </Rectangle>
+        <Rectangle
+            Grid.Row="2"
+            Grid.Column="3"
+            Margin="0 6 20 0">
+            <Rectangle.Style>
+                <Style TargetType="{x:Type Rectangle}" BasedOn="{StaticResource Style.Divider.Horizontal}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding InPreviewMode}" Value="True">
+                            <Setter Property="Fill" Value="#232323"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Rectangle.Style>
+        </Rectangle>
+    </Grid>
+</UserControl>
