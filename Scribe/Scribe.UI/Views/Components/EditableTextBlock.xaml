@@ -27,6 +27,7 @@
         </Grid.ColumnDefinitions>
         
         <TextBlock
+            Name="MainTextBlock"
             Grid.Column="0"
             Text="{Binding Text, ElementName=Root}"
             FontSize="{Binding FontSize, ElementName=Root}"
@@ -94,28 +95,12 @@
         <components:IconButton
             Grid.Column="1"
             IconGeometry="{StaticResource Drawing.Confirm}"
+            Click="OnConfirmChangesClicked"
             Command="{Binding ConfirmChangesCommand, ElementName=Root}"
             ToolTip="{DynamicResource String.Button.Confirm}"
             Visibility="{Binding OnEditMode, ElementName=Root, Converter={StaticResource BooleanToVisibilityConverter}}"
             VerticalAlignment="Center"
-            Margin="{DynamicResource Dimen.EditableTextBlock.Icon.Margin}">
-            <components:IconButton.Style>
-                <Style TargetType="components:IconButton" BasedOn="{StaticResource {x:Type components:IconButton}}">
-                    <Style.Triggers>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding Visibility, ElementName=TextErrorField}" Value="Collapsed"/>
-                                <Condition Binding="{Binding OnEditMode, ElementName=Root}" Value="True"/>
-                            </MultiDataTrigger.Conditions>
-                            <MultiDataTrigger.Setters>
-                                <Setter Property="Command" Value="{Binding ConfirmChangesCommand, ElementName=Root}"/>
-                                <Setter Property="CommandParameter" Value="{Binding Text, ElementName=TextEditBox}"/>
-                            </MultiDataTrigger.Setters>
-                        </MultiDataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </components:IconButton.Style>
-        </components:IconButton>
+            Margin="{DynamicResource Dimen.EditableTextBlock.Icon.Margin}"/>
         <components:IconButton
             Grid.Column="2"
             PreviewMouseLeftButtonDown="OnCancelEditClicked"

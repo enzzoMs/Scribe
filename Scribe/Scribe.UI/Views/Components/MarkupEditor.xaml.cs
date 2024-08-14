@@ -1,22 +1,25 @@
 ﻿using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Shapes;
-using Scribe.Markdown;
-using Scribe.Markdown.Nodes;
+using Scribe.Markup;
+using Scribe.Markup.Inlines;
+using Scribe.Markup.Nodes;
 
 namespace Scribe.UI.Views.Components;
 
-public partial class MarkdownEditor : UserControl
+public partial class MarkupEditor : UserControl
 {
-    private const int MarkdownViewMargin = 8;
-    
+    private const int MarkupViewMargin = 8;
+    private const double SubAndSuperscriptFontSizePct = 0.85;
+
     private const int LineStartToleranceInChars = 5;
     private int _lineCount = 1;
     
     public event EventHandler<string>? EditorTextChanged;
     
-    public MarkdownEditor()
+    public MarkupEditor()
     {
         InitializeComponent();
 
@@ -41,95 +44,126 @@ public partial class MarkdownEditor : UserControl
     public static readonly DependencyProperty EditorTextProperty = DependencyProperty.Register(
         name: nameof(EditorText),
         propertyType: typeof(string),
-        ownerType: typeof(MarkdownEditor),
-        typeMetadata: new FrameworkPropertyMetadata(propertyChangedCallback: OnMarkdownChanged)
+        ownerType: typeof(MarkupEditor),
+        typeMetadata: new FrameworkPropertyMetadata(propertyChangedCallback: OnMarkupChanged)
     );
 
     public static readonly DependencyProperty InPreviewModeProperty = DependencyProperty.Register(
         name: nameof(InPreviewMode),
         propertyType: typeof(bool),
-        ownerType: typeof(MarkdownEditor),
+        ownerType: typeof(MarkupEditor),
         typeMetadata: new FrameworkPropertyMetadata(
             defaultValue: false, 
             flags: FrameworkPropertyMetadataOptions.AffectsRender,
-            propertyChangedCallback: OnMarkdownChanged
+            propertyChangedCallback: OnMarkupChanged
         )
     );
     
     private static readonly DependencyPropertyKey IsTextBoxFocusedPropertyKey = DependencyProperty.RegisterReadOnly(
         name: nameof(IsTextBoxFocused),
         propertyType: typeof(bool),
-        ownerType: typeof(MarkdownEditor),
+        ownerType: typeof(MarkupEditor),
         typeMetadata: new FrameworkPropertyMetadata()
     );
 
-    public void InsertMarkdownNode<T>() where T : IMarkdownNode
+    public void InsertMarkupNode<T>() where T : IMarkupNode
     {
-        string markdownText;
+        string markupText;
 
         switch (typeof(T))
         {
             default:
-                markdownText = "# ";
+                markupText = "= ";
                 break;
         }
         
         var caretIndex = EditorTextBox.CaretIndex;
-        EditorTextBox.Text = EditorTextBox.Text.Insert(caretIndex, markdownText);
-        EditorTextBox.CaretIndex = caretIndex + markdownText.Length;
+        EditorTextBox.Text = EditorTextBox.Text.Insert(caretIndex, markupText);
+        EditorTextBox.CaretIndex = caretIndex + markupText.Length;
     }
     
-    private static void OnMarkdownChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private static void OnMarkupChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        var markdownEditor = (MarkdownEditor) d;
+        var markupEditor = (MarkupEditor) d;
         
-        if (markdownEditor.InPreviewMode)
+        if (markupEditor.InPreviewMode)
         {
-            RenderMarkdown(MarkdownParser.Parse(markdownEditor.EditorText), markdownEditor);
+            RenderMarkup(MarkupParser.ParseText(markupEditor.EditorText), markupEditor);
         }
     }
 
-    private static void RenderMarkdown(DocumentNode documentRoot, MarkdownEditor markdownEditor)
+    private static void RenderMarkup(DocumentNode documentRoot, MarkupEditor markupEditor)
     {
-        markdownEditor.MarkdownViewerPanel.Children.Clear();
+        markupEditor.MarkupViewerPanel.Children.Clear();
         
         foreach (var node in documentRoot.Children)
         {
-            var nodeView = GetViewFromMarkdownNode(node, markdownEditor);
+            var nodeView = GetViewFromMarkupNode(node, markupEditor);
             nodeView.Margin = new Thickness(
                 left: 0, 
-                top: markdownEditor.MarkdownViewerPanel.Children.Count == 0 ? 0 : MarkdownViewMargin,
+                top: markupEditor.MarkupViewerPanel.Children.Count == 0 ? 0 : MarkupViewMargin,
                 right: 0,
-                bottom: MarkdownViewMargin
+                bottom: MarkupViewMargin
             );
             
-            markdownEditor.MarkdownViewerPanel.Children.Add(nodeView);
+            markupEditor.MarkupViewerPanel.Children.Add(nodeView);
         }
     }
 
-    private static FrameworkElement GetViewFromMarkdownNode(IMarkdownNode node, MarkdownEditor markdownEditor)
+    private static FrameworkElement GetViewFromMarkupNode(IMarkupNode node, MarkupEditor markupEditor)
     {
         switch (node)
         {
             case ParagraphNode paragraphNode:
-                return new TextBlock
+                var paragraphBlock = new TextBlock { TextWrapping = TextWrapping.Wrap };
+
+                foreach (var inline in paragraphNode.Inlines)
                 {
-                    Text = paragraphNode.Text,
-                    TextWrapping = TextWrapping.Wrap
-                };
+                    var inlineRun = new Run(inline.Text);
+
+                    foreach (var modifier in inline.Modifiers)
+                    {
+                        switch (modifier)
+                        {
+                            case InlineMarkupModifiers.Bold:
+                                inlineRun.FontWeight = FontWeights.Bold;
+                                break;
+                            case InlineMarkupModifiers.Italic:
+                                inlineRun.FontStyle = FontStyles.Italic;
+                                break;
+                            case InlineMarkupModifiers.Underline:
+                                inlineRun.TextDecorations.Add(TextDecorations.Underline);
+                                break;
+                            case InlineMarkupModifiers.Strikethrough:
+                                inlineRun.TextDecorations.Add(TextDecorations.Strikethrough);
+                                break;
+                            case InlineMarkupModifiers.Superscript:
+                                inlineRun.FontSize = SubAndSuperscriptFontSizePct * paragraphBlock.FontSize;
+                                inlineRun.BaselineAlignment = BaselineAlignment.Superscript;
+                                break;
+                            case InlineMarkupModifiers.Subscript:
+                                inlineRun.FontSize = SubAndSuperscriptFontSizePct * paragraphBlock.FontSize;
+                                inlineRun.BaselineAlignment = BaselineAlignment.Subscript;
+                                break;
+                        }
+                    }
+                    
+                    paragraphBlock.Inlines.Add(inlineRun);
+                }
+                return paragraphBlock;
             case HeaderNode headerNode:
                 var headerGrid = new Grid();
                 headerGrid.RowDefinitions.Add(new RowDefinition());
                 headerGrid.RowDefinitions.Add(new RowDefinition());
                 
-                if (markdownEditor.Resources[$"Header{headerNode.Level}.Style"] is Style headerStyle)
+                if (markupEditor.Resources[$"Header{headerNode.Level}.Style"] is Style headerStyle)
                 {
                     headerGrid.Resources.Add(typeof(TextBlock), headerStyle); 
                 }
                 
                 foreach (var headerChildNode in headerNode.Children)
                 {
-                    var nodeView = GetViewFromMarkdownNode(headerChildNode, markdownEditor);
+                    var nodeView = GetViewFromMarkupNode(headerChildNode, markupEditor);
                     
                     headerGrid.ColumnDefinitions.Add(new ColumnDefinition());
                     Grid.SetColumn(nodeView, headerGrid.ColumnDefinitions.Count - 1);
@@ -139,7 +173,7 @@ public partial class MarkdownEditor : UserControl
                 var headerDivider = new Rectangle
                 {
                     Style = Application.Current.Resources["Style.Divider.Horizontal"] as Style,
-                    Margin = new Thickness(0, MarkdownViewMargin, 0, 0)
+                    Margin = new Thickness(0, MarkupViewMargin, 0, 0)
                 };
                 Grid.SetRow(headerDivider, 1);
                 Grid.SetColumnSpan(headerDivider, headerGrid.ColumnDefinitions.Count);
@@ -147,7 +181,7 @@ public partial class MarkdownEditor : UserControl
                 
                 return headerGrid;
             default:
-                return new TextBlock { Text = "Markdown Node not implemented" };
+                return new TextBlock { Text = "Markup Node not implemented" };
         }
     }
     

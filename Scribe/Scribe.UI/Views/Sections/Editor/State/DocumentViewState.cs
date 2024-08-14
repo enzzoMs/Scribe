@@ -23,7 +23,9 @@ public class DocumentViewState(Document document) : INotifyPropertyChanged
     }
 
     public string EditedContent { get; set; } = document.Content;
-    
+
+    public override string ToString() => Document.Name;
+
     private void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

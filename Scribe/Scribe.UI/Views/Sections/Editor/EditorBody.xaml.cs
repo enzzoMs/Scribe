@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Scribe.Markdown.Nodes;
+using Scribe.Markup.Nodes;
 using Scribe.UI.Views.Components;
 using MessageBox = Scribe.UI.Views.Components.MessageBox;
 
@@ -13,7 +13,7 @@ public partial class EditorBody : UserControl
     {
         InitializeComponent();
 
-        if (MarkdownEditor.FindName("EditorTextBox") is not TextBox editorTextBox) return;
+        if (MarkupEditor.FindName("EditorTextBox") is not TextBox editorTextBox) return;
         
         UndoDocumentEditButton.Command = ApplicationCommands.Undo;
         UndoDocumentEditButton.CommandTarget = editorTextBox;
@@ -69,21 +69,21 @@ public partial class EditorBody : UserControl
         }.ShowDialog();
     }
 
-    private void OnMarkdownIconClicked(object sender, RoutedEventArgs e)
+    private void OnMarkupIconClicked(object sender, RoutedEventArgs e)
     {
-        var insertMarkdownNodeMethod = typeof(MarkdownEditor).GetMethod(nameof(MarkdownEditor.InsertMarkdownNode));
+        var insertMarkupNodeMethod = typeof(MarkupEditor).GetMethod(nameof(MarkupEditor.InsertMarkupNode));
         
-        if (insertMarkdownNodeMethod == null) return;
+        if (insertMarkupNodeMethod == null) return;
         
         var nodeType = (Type) ((IconButton) sender).CommandParameter;
         
         switch (nodeType)
         {
             default:
-                insertMarkdownNodeMethod =  insertMarkdownNodeMethod.MakeGenericMethod(typeof(HeaderNode));
+                insertMarkupNodeMethod =  insertMarkupNodeMethod.MakeGenericMethod(typeof(HeaderNode));
                 break;
         }
         
-        insertMarkdownNodeMethod.Invoke(MarkdownEditor, null);
+        insertMarkupNodeMethod.Invoke(MarkupEditor, null);
     }
 }

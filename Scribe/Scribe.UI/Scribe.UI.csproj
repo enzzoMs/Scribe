@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Scribe.Data\Scribe.Data.csproj"/>
-        <ProjectReference Include="..\Scribe.Markdown\Scribe.Markdown.csproj"/>
+        <ProjectReference Include="..\Scribe.Markup\Scribe.Markup.csproj" />
     </ItemGroup>
     
     <ItemGroup>

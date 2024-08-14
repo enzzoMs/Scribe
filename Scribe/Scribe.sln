@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scribe.Data", "Scribe.Data\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scribe.Tests", "Scribe.Tests\Scribe.Tests.csproj", "{0BF005B3-8D20-43A5-82DB-EE53AA95EEF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scribe.Markdown", "Scribe.Markdown\Scribe.Markdown.csproj", "{CE1227CC-F44C-4626-A1CE-FBC7089B09D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scribe.Markup", "Scribe.Markup\Scribe.Markup.csproj", "{CE1227CC-F44C-4626-A1CE-FBC7089B09D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

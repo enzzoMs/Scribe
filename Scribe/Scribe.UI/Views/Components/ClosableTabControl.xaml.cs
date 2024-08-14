@@ -19,25 +19,17 @@ public partial class ClosableTabControl : TabControl
             CloseTabClick?.Invoke(this, tabItem.Content);   
         }
     }
-    
-    private void OnTabSelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (e.AddedItems.Count == 0) return;
-        
-        // Updating the tab header content just in case the data context was updated
-        
-        var tabControl = (TabControl) sender;
 
-        var selectedItem = e.AddedItems[0]!;
-        
-        var selectedTabItem = (TabItem) tabControl.ItemContainerGenerator.ContainerFromItem(selectedItem);
-        
-        if (selectedTabItem.Template.FindName("TabHeader", selectedTabItem) is ContentControl tabTemplate)
+    public void UpdateSelectedTabHeader()
+    {
+        var selectedTabItem = (TabItem) ItemContainerGenerator.ContainerFromItem(SelectedItem);
+
+        if (selectedTabItem.Template.FindName("TabHeader", selectedTabItem) is ContentControl tabContent)
         {
-            tabTemplate.Content = selectedTabItem.DataContext.ToString();
+            tabContent.Content = selectedTabItem.DataContext.ToString();
         }
     }
-
+    
     private void OnCloseTabButtonClicked(object sender, RoutedEventArgs e)
     {
         var tabItem = (TabItem) ((FrameworkElement) sender).TemplatedParent;

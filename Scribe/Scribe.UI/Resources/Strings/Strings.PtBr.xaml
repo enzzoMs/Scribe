@@ -54,7 +54,7 @@
     <sys:String x:Key="String.Button.Undo">Desfazer (Ctrl + z)</sys:String>
     <sys:String x:Key="String.Button.Redo">Refazer (Ctrl + y)</sys:String>
 
-    <sys:String x:Key="String.Markdown.Header">Título</sys:String>
+    <sys:String x:Key="String.Markup.Header">Título</sys:String>
 
     <sys:String x:Key="String.Error.RequiredField">* Obrigatório</sys:String>
     

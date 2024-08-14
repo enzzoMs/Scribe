@@ -45,4 +45,13 @@ public partial class EditableTextBlock : UserControl
     );
     
     private void OnCancelEditClicked(object sender, MouseButtonEventArgs e) => OnEditMode = false;
+
+    private void OnConfirmChangesClicked(object sender, RoutedEventArgs e)
+    {
+        if (OnEditMode && TextErrorField.Visibility == Visibility.Collapsed)
+        {
+            MainTextBlock.Text = TextEditBox.Text;
+            ConfirmChangesCommand.Execute(TextEditBox.Text);
+        }
+    }
 }

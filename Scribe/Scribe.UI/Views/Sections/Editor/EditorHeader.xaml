@@ -162,10 +162,10 @@
         <components:EditableTextBlock
             Grid.Row="1"
             Grid.Column="1"
-            Text="{Binding SelectedDocument.Document.Name, FallbackValue=#}"
-            FontSize="{DynamicResource Dimen.MarkdownEditor.Header1.FontSize}"
+            Text="{Binding SelectedDocument.Document.Name, FallbackValue=#, Mode=TwoWay}"
+            FontSize="{DynamicResource Dimen.MarkupEditor.Header1.FontSize}"
             OnEditMode="{Binding InEditMode, Mode=TwoWay}"
-            ConfirmChangesCommand="{Binding UpdateSelectedDocumentNameCommand}"
+            ConfirmChangesCommand="{Binding UpdateDocumentNameCommand, ElementName=Root}"
             VerticalAlignment="Center"
             Margin="{DynamicResource Dimen.EditorHeader.DocName.Margin}"/>
         <TextBlock

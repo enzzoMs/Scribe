@@ -6,9 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:components="clr-namespace:Scribe.UI.Views.Components"
     mc:Ignorable="d"
-    SelectionChanged="OnTabSelectionChanged"
     BorderThickness="0"
-    Padding="0" >
+    Padding="0">
     
     <TabControl.Resources>
         <Style TargetType="TabItem">
@@ -25,9 +24,9 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             
-                            <ContentPresenter
+                            <ContentControl
                                 Name="TabHeader"
-                                ContentSource="Header"
+                                Content="{Binding}"
                                 Margin="{DynamicResource Dimen.ClosebleTabControl.Header.Margin}"/>
                             <components:IconButton
                                 x:Name="CloseTabButton"

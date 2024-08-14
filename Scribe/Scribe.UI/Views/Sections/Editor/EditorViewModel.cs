@@ -201,11 +201,6 @@ public class EditorViewModel : BaseViewModel
         _selectedDocument.Document.Name = newDocumentName.Trim();
         await _documentsRepository.Update(_selectedDocument.Document);
         
-        // Forcing an update on the 'SelectedDocument tab'
-        var doc = _selectedDocument;
-        SelectedDocument = null;
-        SelectedDocument = doc;
-        
         _eventAggregator.Publish(new DocumentUpdatedEvent());
     }
 

@@ -10,7 +10,8 @@
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance editorSection:EditorViewModel}"
     d:DesignHeight="800"
-    d:DesignWidth="800">
+    d:DesignWidth="800"
+    Name="Root">
     
     <UserControl.InputBindings>
         <KeyBinding 
@@ -45,7 +46,10 @@
                 <editorSection:EditorBody 
                     DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=TabControl}}">
                     <editorSection:EditorBody.Header>
-                        <editorSection:EditorHeader/>
+                        <editorSection:EditorHeader
+                            UpdateDocumentNameCommand=
+                                "{Binding UpdateDocumentNameProxyCommand, 
+                                RelativeSource={RelativeSource AncestorType=editorSection:EditorSection}}"/>
                     </editorSection:EditorBody.Header>
                 </editorSection:EditorBody>
             </DataTemplate>

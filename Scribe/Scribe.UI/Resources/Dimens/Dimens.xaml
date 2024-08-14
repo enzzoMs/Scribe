@@ -131,13 +131,13 @@
     <Thickness x:Key="Dimen.EditableTextBlock.Icon.Margin" Left="5" Right="1"/>
     <Thickness x:Key="Dimen.EditableTextBlock.Error.Margin" Left="4" Bottom="2"/>
     
-    <Thickness x:Key="Dimen.MarkdownEditor.LineNumber.Margin" Left="20" Top="16" Bottom="16" Right="16"/>
-    <Thickness x:Key="Dimen.MarkdownEditor.EditorTextBox.Margin" Top="16" Bottom="16" Right="20"/>
-    <Thickness x:Key="Dimen.MarkdownEditor.MarkdownViewer.Margin" Top="16" Bottom="16" Left="20" Right="20"/>
+    <Thickness x:Key="Dimen.MarkupEditor.LineNumber.Margin" Left="20" Top="16" Bottom="16" Right="16"/>
+    <Thickness x:Key="Dimen.MarkupEditor.EditorTextBox.Margin" Top="16" Bottom="16" Right="20"/>
+    <Thickness x:Key="Dimen.MarkupEditor.MarkupViewer.Margin" Top="16" Bottom="16" Left="20" Right="20"/>
     
-    <sys:Double x:Key="Dimen.MarkdownEditor.Header1.FontSize">19</sys:Double>
-    <sys:Double x:Key="Dimen.MarkdownEditor.Header2.FontSize">18</sys:Double>
-    <sys:Double x:Key="Dimen.MarkdownEditor.Header3.FontSize">17</sys:Double>
-    <sys:Double x:Key="Dimen.MarkdownEditor.Header4.FontSize">16</sys:Double>
-    <sys:Double x:Key="Dimen.MarkdownEditor.Header5.FontSize">15</sys:Double>
+    <sys:Double x:Key="Dimen.MarkupEditor.Header1.FontSize">19</sys:Double>
+    <sys:Double x:Key="Dimen.MarkupEditor.Header2.FontSize">18</sys:Double>
+    <sys:Double x:Key="Dimen.MarkupEditor.Header3.FontSize">17</sys:Double>
+    <sys:Double x:Key="Dimen.MarkupEditor.Header4.FontSize">16</sys:Double>
+    <sys:Double x:Key="Dimen.MarkupEditor.Header5.FontSize">15</sys:Double>
 </ResourceDictionary>

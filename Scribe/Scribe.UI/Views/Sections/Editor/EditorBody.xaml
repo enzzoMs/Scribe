@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:editorSection="clr-namespace:Scribe.UI.Views.Sections.Editor"
     xmlns:components="clr-namespace:Scribe.UI.Views.Components"
-    xmlns:markdownNodes="clr-namespace:Scribe.Markdown.Nodes;assembly=Scribe.Markdown"
+    xmlns:nodes="clr-namespace:Scribe.Markup.Nodes;assembly=Scribe.Markup"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance editorSection:EditorViewModel}"
     d:DesignHeight="300"
@@ -108,12 +108,12 @@
         <components:IconButton
             Grid.Row="0"
             Grid.Column="7"
-            Click="OnMarkdownIconClicked"
-            ToolTip="{DynamicResource String.Markdown.Header}"
+            Click="OnMarkupIconClicked"
+            ToolTip="{DynamicResource String.Markup.Header}"
             IconGeometry="{StaticResource Drawing.Heading}"
-            CommandParameter="{x:Type markdownNodes:HeaderNode}"
+            CommandParameter="{x:Type nodes:HeaderNode}"
             Focusable="False"
-            IsEnabled="{Binding IsTextBoxFocused, ElementName=MarkdownEditor}"/>
+            IsEnabled="{Binding IsTextBoxFocused, ElementName=MarkupEditor}"/>
         <Rectangle
             Grid.Row="0"
             Grid.Column="8"
@@ -137,7 +137,7 @@
             ToolTip="{DynamicResource String.Button.Delete}"
             PreviewMouseLeftButtonDown="OnDeleteDocumentClicked"
             IconGeometry="{StaticResource Drawing.Delete}"/>
-            
+        
         <Rectangle
             Grid.Row="1"
             Grid.Column="0"
@@ -149,8 +149,8 @@
             Grid.ColumnSpan="13"
             Content="{Binding Header, ElementName=Root}"
             Margin="0 20 0 0"/>
-        <components:MarkdownEditor
-            x:Name="MarkdownEditor"
+        <components:MarkupEditor
+            x:Name="MarkupEditor"
             Grid.Row="3"
             Grid.Column="0"
             Grid.ColumnSpan="13"
