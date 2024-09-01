@@ -6,7 +6,11 @@ namespace Scribe.Markup;
 
 public static class MarkupParser
 {
-    private static readonly Regex HeadingPattern = new(@"^(=+)\s(.+)$", RegexOptions.Compiled);
+    private static readonly Regex BlockMarkupPattern = new(@"(?<=^\s*\[).+?(?=\]\s.+$)", RegexOptions.Compiled);
+    private static readonly Regex OrderedListPattern = new("[0-9][0-9]*.", RegexOptions.Compiled);
+
+    private static readonly Regex BlockMultilineMarkupPattern = new(@"(?<=^\s*\[).+?(?=\]%\s*$)", RegexOptions.Compiled);
+
     private static readonly Regex InlineMarkupPattern = new(@"{(.+?)}(\[(.*?)\])", RegexOptions.Compiled);
     private static readonly Regex InlineInnerTextPattern = new("(?<={)(.+)(?=})", RegexOptions.Compiled);
     private static readonly Regex InlineModifiersPattern = new(@"(?<=\[)(.+?)(?=\])", RegexOptions.Compiled);
@@ -20,47 +24,68 @@ public static class MarkupParser
             return documentRoot;
         }
         
-        var openNodes = new List<IMarkupNode> { documentRoot };
-        var paragraphs = new List<ParagraphNode>();
+        ParagraphNode? openParagraph = null;
+        var openBlocks = new List<IMarkupNode> { documentRoot };
         
+        var paragraphs = new List<ParagraphNode>();
+
         foreach (var docLine in documentText.Split("\n"))
         {
-            openNodes.RemoveAll(node => 
-                (string.IsNullOrWhiteSpace(docLine) || HeadingPattern.IsMatch(docLine)) && node is ParagraphNode or HeaderNode
-            );
-
             if (string.IsNullOrWhiteSpace(docLine))
             {
+                openParagraph = null;
+                continue;
+            }
+
+            var lineWithoutMarkup = Regex.Replace(docLine, "\\s+", " ").Trim();
+
+            var blockMatch = BlockMarkupPattern.Match(lineWithoutMarkup);
+            var blockMultilineMatch = BlockMultilineMarkupPattern.Match(lineWithoutMarkup);
+
+            var markupNodeType = blockMatch.Success ? blockMatch.Value.Trim() : blockMultilineMatch.Value.Trim();
+            var newBlockNode = GetNodeFromMarkup(markupNodeType);
+            
+            if (newBlockNode != null)
+            {
+                openBlocks.Last().Children.Add(newBlockNode);    
+                openParagraph = null;
+                
+                if (blockMultilineMatch.Success)
+                {
+                    openBlocks.Add(newBlockNode);
+                    continue;
+                }
+                
+                if (blockMatch.Success)
+                {
+                    lineWithoutMarkup = lineWithoutMarkup[(blockMatch.Length + 2)..].Trim();
+                } 
+            }
+            
+            if (openBlocks.Count > 1 && lineWithoutMarkup == "%")
+            {
+                openBlocks.RemoveAt(openBlocks.Count - 1);
                 continue;
             }
             
-            var lineWithoutMarkup = docLine;
-
-            if (HeadingPattern.IsMatch(docLine))
+            if (openParagraph != null)
             {
-                var newHeader = new HeaderNode(
-                    level: docLine.TakeWhile(c => c == '=').Count()
-                );
-                
-                openNodes.Last().Children.Add(newHeader);
-                openNodes.Add(newHeader);
-
-                lineWithoutMarkup = docLine.TrimStart('=').Trim();
-            } 
-            
-            if (openNodes.Last() is ParagraphNode paragraphNode)
-            {
-                paragraphNode.RawText += $" {Regex.Replace(lineWithoutMarkup, "\\s+", " ").Trim()}";
+                openParagraph.RawText += " " + lineWithoutMarkup;
             }
             else
             {
-                var newParagraphNode = new ParagraphNode
+                var newParagraphNode = new ParagraphNode { RawText = lineWithoutMarkup };
+
+                if (newBlockNode != null)
                 {
-                    RawText = Regex.Replace(lineWithoutMarkup, "\\s+", " ").Trim()
-                };
+                    newBlockNode.Children.Add(newParagraphNode);
+                }
+                else
+                {
+                    openBlocks.Last().Children.Add(newParagraphNode);
+                }
                 
-                openNodes.Last().Children.Add(newParagraphNode);
-                openNodes.Add(newParagraphNode);
+                openParagraph = newParagraphNode;
                 paragraphs.Add(newParagraphNode);
             }
         }
@@ -71,6 +96,23 @@ public static class MarkupParser
         }
         
         return documentRoot;
+    }
+
+    private static IMarkupNode? GetNodeFromMarkup(string markup)
+    {
+        if (OrderedListPattern.IsMatch(markup))
+        {
+            return new OrderedListNode(listNumber: int.Parse(markup.Trim('.')));
+        }
+        
+        return markup switch
+        {
+            "#" or "##" or "###" or "####" or "#####" or "######" => new HeaderNode(
+                level: markup.TakeWhile(c => c == '#').Count()
+            ),
+            "*" => new UnorderedListNode(),
+            _ => null
+        };
     }
 
     private static void ParseInlines(ParagraphNode paragraphNode)

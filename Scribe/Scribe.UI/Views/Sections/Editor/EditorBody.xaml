@@ -15,12 +15,14 @@
     
     <UserControl.Resources>
         <Style TargetType="components:IconButton">
-            <Setter Property="Width" Value="{DynamicResource Dimen.Toolbar.Icon.Size}"/>
-            <Setter Property="Height" Value="{DynamicResource Dimen.Toolbar.Icon.Size}"/>
-            <Setter Property="Margin" Value="{DynamicResource Dimen.Toolbar.Icon.Margin}"/>
+            <Setter Property="Width" Value="26"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Margin" Value="5"/>
             <Setter Property="IconBrush" Value="{StaticResource Brush.Icon}"/>
-            <Setter Property="IconPadding" Value="{DynamicResource Dimen.Toolbar.Icon.Padding}"/>
+            <Setter Property="IconPadding" Value="3"/>
         </Style>
+        
+        <Thickness x:Key="Dimen.Toolbar.Divider.Margin" Left="5" Right="5" Top="6" Bottom="6"/>
     </UserControl.Resources>
     
     <Grid>
@@ -31,6 +33,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
@@ -66,7 +69,7 @@
             Grid.Row="0"
             Grid.Column="1"
             Style="{StaticResource Style.Divider.Vertical}"
-            Margin="{DynamicResource Dimen.Toolbar.Divider.Margin}"/>
+            Margin="{StaticResource Dimen.Toolbar.Divider.Margin}"/>
         <components:IconButton
             Grid.Row="0"
             Grid.Column="2"
@@ -87,7 +90,7 @@
             Grid.Row="0"
             Grid.Column="3"
             Style="{StaticResource Style.Divider.Vertical}"
-            Margin="{DynamicResource Dimen.Toolbar.Divider.Margin}"/>
+            Margin="{StaticResource Dimen.Toolbar.Divider.Margin}"/>
         <components:IconButton
             x:Name="UndoDocumentEditButton"
             Grid.Row="0"
@@ -104,7 +107,7 @@
             Grid.Row="0"
             Grid.Column="6"
             Style="{StaticResource Style.Divider.Vertical}"
-            Margin="{DynamicResource Dimen.Toolbar.Divider.Margin}"/>
+            Margin="{StaticResource Dimen.Toolbar.Divider.Margin}"/>
         <components:IconButton
             Grid.Row="0"
             Grid.Column="7"
@@ -114,26 +117,39 @@
             CommandParameter="{x:Type nodes:HeaderNode}"
             Focusable="False"
             IsEnabled="{Binding IsTextBoxFocused, ElementName=MarkupEditor}"/>
-        <Rectangle
-            Grid.Row="0"
-            Grid.Column="8"
-            Style="{StaticResource Style.Divider.Vertical}"
-            Margin="{DynamicResource Dimen.Toolbar.Divider.Margin}"/>
-        
-        <Rectangle
-            Grid.Row="0"
-            Grid.Column="10"
-            Style="{StaticResource Style.Divider.Vertical}"
-            Margin="{DynamicResource Dimen.Toolbar.Divider.Margin}"/>
         <components:IconButton
             Grid.Row="0"
+            Grid.Column="8"
+            Click="OnMarkupIconClicked"
+            ToolTip="{DynamicResource String.Markup.List.Unordered}"
+            IconGeometry="{StaticResource Drawing.List.Bullet}"
+            CommandParameter="{x:Type nodes:UnorderedListNode}"
+            Focusable="False"
+            IsEnabled="{Binding IsTextBoxFocused, ElementName=MarkupEditor}"/>
+        <components:IconButton
+            Grid.Row="0"
+            Grid.Column="9"
+            Click="OnMarkupIconClicked"
+            ToolTip="{DynamicResource String.Markup.List.Ordered}"
+            IconGeometry="{StaticResource Drawing.List.Numbered}"
+            CommandParameter="{x:Type nodes:OrderedListNode}"
+            Focusable="False"
+            IsEnabled="{Binding IsTextBoxFocused, ElementName=MarkupEditor}"/>
+
+        <Rectangle
+            Grid.Row="0"
             Grid.Column="11"
+            Style="{StaticResource Style.Divider.Vertical}"
+            Margin="{StaticResource Dimen.Toolbar.Divider.Margin}"/>
+        <components:IconButton
+            Grid.Row="0"
+            Grid.Column="12"
             IconGeometry="{StaticResource Drawing.Edit}"
             ToolTip="{DynamicResource String.Button.Edit}"
             Command="{Binding EnterEditModeCommand}"/>
         <components:IconButton
             Grid.Row="0"
-            Grid.Column="12"
+            Grid.Column="13"
             ToolTip="{DynamicResource String.Button.Delete}"
             PreviewMouseLeftButtonDown="OnDeleteDocumentClicked"
             IconGeometry="{StaticResource Drawing.Delete}"/>
@@ -141,19 +157,19 @@
         <Rectangle
             Grid.Row="1"
             Grid.Column="0"
-            Grid.ColumnSpan="13"
+            Grid.ColumnSpan="14"
             Style="{StaticResource Style.Divider.Horizontal}"/>
         <ContentControl
             Grid.Row="2"
             Grid.Column="0"
-            Grid.ColumnSpan="13"
+            Grid.ColumnSpan="14"
             Content="{Binding Header, ElementName=Root}"
             Margin="0 20 0 0"/>
         <components:MarkupEditor
             x:Name="MarkupEditor"
             Grid.Row="3"
             Grid.Column="0"
-            Grid.ColumnSpan="13"
+            Grid.ColumnSpan="14"
             EditorText="{Binding SelectedDocument.EditedContent, Mode=TwoWay}"
             EditorTextChanged="OnDocumentContentChanged"
             InPreviewMode="{Binding InPreviewMode}"/>

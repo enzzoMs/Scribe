@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using Scribe.Markup;
 using Scribe.Markup.Inlines;
@@ -11,11 +13,20 @@ namespace Scribe.UI.Views.Components;
 
 public partial class MarkupEditor : UserControl
 {
+    private const int TabSize = 4;
+    
     private const int MarkupViewMargin = 8;
     private const double SubAndSuperscriptFontSizePct = 0.85;
 
     private const int LineStartToleranceInChars = 5;
     private int _lineCount = 1;
+    
+    private static readonly Dictionary<Type, string> MarkupDictionary = new()
+    {
+        { typeof(HeaderNode), "[#] " },
+        { typeof(OrderedListNode), "[*] " },
+        { typeof(UnorderedListNode), "[1.] " }
+    };
     
     public event EventHandler<string>? EditorTextChanged;
     
@@ -25,6 +36,17 @@ public partial class MarkupEditor : UserControl
 
         EditorTextBox.GotFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, true); };
         EditorTextBox.LostFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, false); };
+        
+        DataObject.AddPastingHandler(EditorTextBox, (_, args) =>
+        {
+            if (args.DataObject.GetData(DataFormats.Text) is not string pastedText) return;
+            
+            var newDataObject = new DataObject();
+            newDataObject.SetData(
+                DataFormats.Text, pastedText.Replace("\t", new string(' ', TabSize))
+            );
+            args.DataObject = newDataObject;
+        });
     }
     
     public string EditorText
@@ -66,20 +88,14 @@ public partial class MarkupEditor : UserControl
         typeMetadata: new FrameworkPropertyMetadata()
     );
 
-    public void InsertMarkupNode<T>() where T : IMarkupNode
+    public void InsertMarkupNode(Type markupType)
     {
-        string markupText;
-
-        switch (typeof(T))
+        if (MarkupDictionary.TryGetValue(markupType, out var markupText))
         {
-            default:
-                markupText = "= ";
-                break;
+            var caretIndex = EditorTextBox.CaretIndex;
+            EditorTextBox.Text = EditorTextBox.Text.Insert(caretIndex, markupText);
+            EditorTextBox.CaretIndex = caretIndex + markupText.Length;
         }
-        
-        var caretIndex = EditorTextBox.CaretIndex;
-        EditorTextBox.Text = EditorTextBox.Text.Insert(caretIndex, markupText);
-        EditorTextBox.CaretIndex = caretIndex + markupText.Length;
     }
     
     private static void OnMarkupChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -99,12 +115,13 @@ public partial class MarkupEditor : UserControl
         foreach (var node in documentRoot.Children)
         {
             var nodeView = GetViewFromMarkupNode(node, markupEditor);
-            nodeView.Margin = new Thickness(
-                left: 0, 
-                top: markupEditor.MarkupViewerPanel.Children.Count == 0 ? 0 : MarkupViewMargin,
-                right: 0,
-                bottom: MarkupViewMargin
-            );
+            
+                nodeView.Margin = new Thickness(
+                    left: 0, 
+                    top: markupEditor.MarkupViewerPanel.Children.Count == 0 ? 0 : MarkupViewMargin,
+                    right: 0,
+                    bottom: MarkupViewMargin
+                );
             
             markupEditor.MarkupViewerPanel.Children.Add(nodeView);
         }
@@ -112,77 +129,166 @@ public partial class MarkupEditor : UserControl
 
     private static FrameworkElement GetViewFromMarkupNode(IMarkupNode node, MarkupEditor markupEditor)
     {
-        switch (node)
+        return node switch
         {
-            case ParagraphNode paragraphNode:
-                var paragraphBlock = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            ParagraphNode paragraphNode => GetViewFromMarkupNode(paragraphNode),
+            HeaderNode headerNode => GetViewFromMarkupNode(headerNode, markupEditor),
+            UnorderedListNode unorderedListNode => GetViewFromMarkupNode(unorderedListNode, markupEditor),
+            OrderedListNode orderedListNode => GetViewFromMarkupNode(orderedListNode, markupEditor),
+            _ => new TextBlock { Text = "(Markup Node not implemented)" }
+        };
+    }
 
-                foreach (var inline in paragraphNode.Inlines)
-                {
-                    var inlineRun = new Run(inline.Text);
+    private static TextBlock GetViewFromMarkupNode(ParagraphNode paragraphNode)
+    {
+        var paragraphBlock = new TextBlock { TextWrapping = TextWrapping.Wrap };
 
-                    foreach (var modifier in inline.Modifiers)
-                    {
-                        switch (modifier)
-                        {
-                            case InlineMarkupModifiers.Bold:
-                                inlineRun.FontWeight = FontWeights.Bold;
-                                break;
-                            case InlineMarkupModifiers.Italic:
-                                inlineRun.FontStyle = FontStyles.Italic;
-                                break;
-                            case InlineMarkupModifiers.Underline:
-                                inlineRun.TextDecorations.Add(TextDecorations.Underline);
-                                break;
-                            case InlineMarkupModifiers.Strikethrough:
-                                inlineRun.TextDecorations.Add(TextDecorations.Strikethrough);
-                                break;
-                            case InlineMarkupModifiers.Superscript:
-                                inlineRun.FontSize = SubAndSuperscriptFontSizePct * paragraphBlock.FontSize;
-                                inlineRun.BaselineAlignment = BaselineAlignment.Superscript;
-                                break;
-                            case InlineMarkupModifiers.Subscript:
-                                inlineRun.FontSize = SubAndSuperscriptFontSizePct * paragraphBlock.FontSize;
-                                inlineRun.BaselineAlignment = BaselineAlignment.Subscript;
-                                break;
-                        }
-                    }
-                    
-                    paragraphBlock.Inlines.Add(inlineRun);
-                }
-                return paragraphBlock;
-            case HeaderNode headerNode:
-                var headerGrid = new Grid();
-                headerGrid.RowDefinitions.Add(new RowDefinition());
-                headerGrid.RowDefinitions.Add(new RowDefinition());
-                
-                if (markupEditor.Resources[$"Header{headerNode.Level}.Style"] is Style headerStyle)
-                {
-                    headerGrid.Resources.Add(typeof(TextBlock), headerStyle); 
-                }
-                
-                foreach (var headerChildNode in headerNode.Children)
-                {
-                    var nodeView = GetViewFromMarkupNode(headerChildNode, markupEditor);
-                    
-                    headerGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                    Grid.SetColumn(nodeView, headerGrid.ColumnDefinitions.Count - 1);
-                    headerGrid.Children.Add(nodeView);
-                }
-
-                var headerDivider = new Rectangle
-                {
-                    Style = Application.Current.Resources["Style.Divider.Horizontal"] as Style,
-                    Margin = new Thickness(0, MarkupViewMargin, 0, 0)
-                };
-                Grid.SetRow(headerDivider, 1);
-                Grid.SetColumnSpan(headerDivider, headerGrid.ColumnDefinitions.Count);
-                headerGrid.Children.Add(headerDivider);
-                
-                return headerGrid;
-            default:
-                return new TextBlock { Text = "Markup Node not implemented" };
+        foreach (var inline in paragraphNode.Inlines)
+        {
+            paragraphBlock.Inlines.Add(GetRunFromInline(inline, paragraphBlock.FontSize));
         }
+
+        return paragraphBlock;
+    }
+
+    private static Grid GetViewFromMarkupNode(HeaderNode headerNode, MarkupEditor markupEditor)
+    {
+        var headerGrid = new Grid();
+        headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        headerGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                
+        if (markupEditor.Resources[$"Header{headerNode.Level}.Style"] is Style headerStyle)
+        {
+            headerGrid.Resources.Add(typeof(TextBlock), headerStyle); 
+        }
+                
+        var headerLevelIndicator = new TextBlock
+        {
+            Text = new string('#', headerNode.Level),
+            Margin = new Thickness(0, 0, right: 8, 0)
+        };
+        headerGrid.Children.Add(headerLevelIndicator);
+                
+        foreach (var childNode in headerNode.Children)
+        {
+            var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
+                    
+            if (childNode != headerNode.Children.First())
+            {
+                nodeView.Margin = new Thickness(0, top: 4, 0, 0);
+            }
+                    
+            headerGrid.RowDefinitions.Add(new RowDefinition());
+            headerGrid.Children.Add(nodeView);
+            Grid.SetRow(nodeView, headerGrid.RowDefinitions.Count - 1);
+            Grid.SetColumn(nodeView, 1);
+        }
+                
+        return headerGrid;
+    }
+
+    private static Grid GetViewFromMarkupNode(UnorderedListNode unorderedListNode, MarkupEditor markupEditor)
+    {
+        var unorderedListGrid = new Grid();
+        unorderedListGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        unorderedListGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                
+        var bulletIndicator = new Ellipse
+        {
+            Fill = Brushes.Black,
+            Width = 6,
+            Height = 6,
+            Margin = new Thickness(left: 18, top: 7, right: 12, bottom: 0),
+            VerticalAlignment = VerticalAlignment.Top
+        };
+        unorderedListGrid.Children.Add(bulletIndicator); 
+        Grid.SetColumn(bulletIndicator, 0);
+                
+        foreach (var childNode in unorderedListNode.Children)
+        {
+            var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
+            nodeView.VerticalAlignment = VerticalAlignment.Center;
+
+            if (childNode != unorderedListNode.Children.First())
+            {
+                nodeView.Margin = new Thickness(0, top: 14, 0, 0);
+            }
+
+            unorderedListGrid.RowDefinitions.Add(new RowDefinition());
+            unorderedListGrid.Children.Add(nodeView); 
+            Grid.SetRow(nodeView, unorderedListGrid.RowDefinitions.Count - 1);
+            Grid.SetColumn(nodeView, 1);
+        }
+
+        return unorderedListGrid;
+    }
+
+    private static Grid GetViewFromMarkupNode(OrderedListNode orderedListNode, MarkupEditor markupEditor)
+    {
+        var orderedListGrid = new Grid();
+        orderedListGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        orderedListGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                
+        var listNumberIndicator = new TextBlock
+        {
+            Text = $"{orderedListNode.ListNumber}.",
+            Margin = new Thickness(left: 18, 0, right: 12, 0),
+            VerticalAlignment = VerticalAlignment.Top
+        };
+        orderedListGrid.Children.Add(listNumberIndicator); 
+        Grid.SetColumn(listNumberIndicator, 0);
+                
+        foreach (var childNode in orderedListNode.Children)
+        {
+            var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
+            nodeView.VerticalAlignment = VerticalAlignment.Center;
+
+            if (childNode != orderedListNode.Children.First())
+            {
+                nodeView.Margin = new Thickness(0, top: 14, 0, 0);
+            }
+
+            orderedListGrid.RowDefinitions.Add(new RowDefinition());
+            orderedListGrid.Children.Add(nodeView); 
+            Grid.SetRow(nodeView, orderedListGrid.RowDefinitions.Count - 1);
+            Grid.SetColumn(nodeView, 1);
+        }
+
+        return orderedListGrid;
+    }
+
+    private static Run GetRunFromInline(InlineMarkup inline, double paragraphFontSize)
+    {
+        var inlineRun = new Run(inline.Text);
+
+        foreach (var modifier in inline.Modifiers)
+        {
+            switch (modifier)
+            {
+                case InlineMarkupModifiers.Bold:
+                    inlineRun.FontWeight = FontWeights.Bold;
+                    break;
+                case InlineMarkupModifiers.Italic:
+                    inlineRun.FontStyle = FontStyles.Italic;
+                    break;
+                case InlineMarkupModifiers.Underline:
+                    inlineRun.TextDecorations.Add(TextDecorations.Underline);
+                    break;
+                case InlineMarkupModifiers.Strikethrough:
+                    inlineRun.TextDecorations.Add(TextDecorations.Strikethrough);
+                    break;
+                case InlineMarkupModifiers.Superscript:
+                    inlineRun.FontSize = SubAndSuperscriptFontSizePct * paragraphFontSize;
+                    inlineRun.BaselineAlignment = BaselineAlignment.Superscript;
+                    break;
+                case InlineMarkupModifiers.Subscript:
+                    inlineRun.FontSize = SubAndSuperscriptFontSizePct * paragraphFontSize;
+                    inlineRun.BaselineAlignment = BaselineAlignment.Subscript;
+                    break;
+            }
+        }
+
+        return inlineRun;
     }
     
     private void EditorTextChanged_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -253,6 +359,32 @@ public partial class MarkupEditor : UserControl
         // Prevents scroll when the 'EditorTextBox' is first focused
         if (!IsTextBoxFocused)
         {
+            e.Handled = true;
+        }
+    }
+
+    private void EditorTextBox_OnPreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Tab)
+        {
+            EditorTextBox.SelectedText = "";
+
+            var absoluteCaretIndex = EditorTextBox.CaretIndex;
+            var caretIndexInCurrentLine = EditorTextBox.CaretIndex - EditorTextBox.GetCharacterIndexFromLineIndex(
+                EditorTextBox.GetLineIndexFromCharacterIndex(EditorTextBox.CaretIndex)
+            );
+            var tabSize = TabSize - (caretIndexInCurrentLine % TabSize);
+            var tab = new string(' ', tabSize);
+
+            EditorTextBox.BeginChange();
+            
+            var editorText = EditorTextBox.Text;
+            EditorTextBox.Clear();
+            EditorTextBox.AppendText(editorText.Insert(absoluteCaretIndex, tab));
+            EditorTextBox.CaretIndex = absoluteCaretIndex + tabSize;
+            
+            EditorTextBox.EndChange();
+
             e.Handled = true;
         }
     }

@@ -5,8 +5,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     mc:Ignorable="d"
-    MinHeight="{StaticResource Dimen.MessageBox.MinHeight}" 
-    MinWidth="{StaticResource Dimen.MessageBox.MinHeight}"
+    MinHeight="225" 
+    MinWidth="500"
     SizeToContent="WidthAndHeight"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
@@ -17,10 +17,10 @@
     <Window.Resources>
         <ControlTemplate x:Key="ButtonTemplate" TargetType="Button">
             <Border 
-                Padding="{StaticResource Dimen.MessageBox.Button.Margin}"
+                Padding="14 6"
                 Background="Transparent"
                 BorderBrush="{StaticResource Brush.Item.Selected.Background}"
-                BorderThickness="{StaticResource Dimen.MessageBox.Button.Border.Thickness}">
+                BorderThickness="2">
                 <TextBlock
                     Text="{TemplateBinding Content}"
                     VerticalAlignment="Center"
@@ -31,10 +31,10 @@
         <ControlTemplate x:Key="ButtonOnHoverTemplate" TargetType="Button">
             <Border 
                 RenderOptions.EdgeMode="Aliased"
-                Padding="{StaticResource Dimen.MessageBox.Button.Margin}"
+                Padding="14 6"
                 Background="{StaticResource Brush.Item.Selected.Background}"
                 BorderBrush="{StaticResource Brush.Item.Selected.Background}"
-                BorderThickness="{StaticResource Dimen.MessageBox.Button.Border.Thickness}">
+                BorderThickness="2">
                 <TextBlock
                     Text="{TemplateBinding Content}"
                     Foreground="{StaticResource Brush.Item.Selected.Foreground}"
@@ -46,7 +46,7 @@
         <Style TargetType="Button">
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="{StaticResource Dimen.MessageBox.Button.Margin}"/>
+            <Setter Property="Margin" Value="14 6"/>
             <Setter Property="Template" Value="{StaticResource ButtonTemplate}"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
@@ -74,12 +74,12 @@
             Grid.Row="0"
             Grid.RowSpan="3"
             Grid.Column="0"
-            Width="{StaticResource Dimen.MessageBox.Icon.Size}"
-            Height="{StaticResource Dimen.MessageBox.Icon.Size}"
+            Width="80"
+            Height="80"
             Data="{StaticResource Drawing.QuestionMark}"
             Fill="{StaticResource Brush.OnSurface.Dark}"
             Stretch="Uniform"
-            Margin="{StaticResource Dimen.MessageBox.Icon.Margin}"/>
+            Margin="14"/>
         
         <TextBlock
             Grid.Row="0"
@@ -88,12 +88,12 @@
             TextAlignment="Center"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Margin="{StaticResource Dimen.MessageBox.Message.Margin}"/>
+            Margin="32 4 32 4"/>
         <Rectangle
             Grid.Row="1"
             Grid.Column="1"
             Style="{StaticResource Style.Divider.Horizontal}"
-            Margin="{StaticResource Dimen.MessageBox.Divider.Margin}"/>
+            Margin="32 0"/>
         <UniformGrid
             Name="OptionsGrid"
             Grid.Row="2"

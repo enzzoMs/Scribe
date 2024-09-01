@@ -14,23 +14,28 @@
         <sys:Double x:Key="Dimen.ScrollBar.Vertical.Size">9</sys:Double>
         
         <Style x:Key="Header1.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-            <Setter Property="FontSize" Value="{DynamicResource Dimen.MarkupEditor.Header1.FontSize}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="19"/>
         </Style>
         
         <Style x:Key="Header2.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-            <Setter Property="FontSize" Value="{DynamicResource Dimen.MarkupEditor.Header2.FontSize}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="18"/>
         </Style>
         
         <Style x:Key="Header3.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-            <Setter Property="FontSize" Value="{DynamicResource Dimen.MarkupEditor.Header3.FontSize}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="17"/>
         </Style>
         
         <Style x:Key="Header4.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-            <Setter Property="FontSize" Value="{DynamicResource Dimen.MarkupEditor.Header4.FontSize}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="16"/>
         </Style>
         
         <Style x:Key="Header5.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-            <Setter Property="FontSize" Value="{DynamicResource Dimen.MarkupEditor.Header5.FontSize}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="15"/>
         </Style>
     </UserControl.Resources>
     
@@ -62,7 +67,7 @@
                     FontWeight="Medium"
                     FontFamily="{StaticResource Text.Monospace}"
                     Foreground="{StaticResource Brush.BackgroundText}"
-                    Margin="{DynamicResource Dimen.MarkupEditor.LineNumber.Margin}"/>
+                    Margin="20 16 16 16"/>
                 <TextBox
                     Name="EditorTextBox"
                     Grid.Column="1"
@@ -71,13 +76,14 @@
                     Background="Transparent"
                     FontWeight="Medium"
                     FontFamily="{StaticResource Text.Monospace}"
-                    FontSize="{DynamicResource Dimen.TextSize.Normal1}"
+                    FontSize="{StaticResource Dimen.TextSize.Normal1}"
                     TextChanged="EditorTextChanged_OnTextChanged"
                     SelectionChanged="EditorTextBox_OnSelectionChanged"
                     RequestBringIntoView="EditorTextBox_OnRequestBringIntoView"
+                    PreviewKeyDown="EditorTextBox_OnPreviewKeyDown"
                     AcceptsReturn="True"
                     BorderThickness="0"
-                    Margin="{DynamicResource Dimen.MarkupEditor.EditorTextBox.Margin}"/>
+                    Margin="0 16 20 16"/>
             </Grid>
         </ScrollViewer>
         
@@ -89,7 +95,7 @@
             <StackPanel
                 Name="MarkupViewerPanel"
                 Orientation="Vertical"
-                Margin="{DynamicResource Dimen.MarkupEditor.MarkupViewer.Margin}"/>
+                Margin="20 16 20 16"/>
         </ScrollViewer>
     </Grid>
 </UserControl>

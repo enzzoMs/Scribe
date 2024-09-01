@@ -27,25 +27,25 @@
                             <ContentControl
                                 Name="TabHeader"
                                 Content="{Binding}"
-                                Margin="{DynamicResource Dimen.ClosebleTabControl.Header.Margin}"/>
+                                Margin="14 8 8 8"/>
                             <components:IconButton
                                 x:Name="CloseTabButton"
                                 Grid.Row="0"
                                 Grid.Column="1"
                                 Click="OnCloseTabButtonClicked"
-                                Width="{DynamicResource Dimen.ClosebleTabControl.Icon.Size}"
-                                Height="{DynamicResource Dimen.ClosebleTabControl.Icon.Size}"
+                                Width="30"
+                                Height="30"
                                 IconGeometry="{StaticResource Drawing.Close}"
                                 IconBrush="{DynamicResource Brush.Text.Primary}"
-                                IconPadding="{DynamicResource Dimen.ClosebleTabControl.Icon.Padding}"
+                                IconPadding="6"
                                 ToolTip="{DynamicResource String.ClosableTabControl.Close.Tooltip}"
-                                Margin="{DynamicResource Dimen.ClosebleTabControl.Icon.Margin}"/>
+                                Margin="0 0 12 0"/>
                             <Border
                                 Name="SelectedTabIndicator"
                                 Grid.Row="1"
                                 Grid.Column="0"
                                 Grid.ColumnSpan="2"
-                                Height="{DynamicResource Dimen.ClosebleTabControl.TabIndicator.Size}"
+                                Height="3"
                                 Background="{DynamicResource Brush.Primary}"/>
                         </Grid>
                         <ControlTemplate.Triggers>

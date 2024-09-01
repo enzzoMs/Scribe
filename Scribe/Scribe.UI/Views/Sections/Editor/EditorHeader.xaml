@@ -19,17 +19,17 @@
         <DataTemplate DataType="{x:Type models:Tag}">
             <Border
                 Background="{DynamicResource Brush.Item.Unselected.Background}"
-                CornerRadius="{DynamicResource Dimen.TagItem.CornerRadius}"
-                Padding="{DynamicResource Dimen.TagItem.Padding}"
-                Margin="{DynamicResource Dimen.TagItem.Margin}">
+                CornerRadius="{StaticResource Dimen.TagItem.CornerRadius}"
+                Padding="{StaticResource Dimen.TagItem.Padding}"
+                Margin="{StaticResource Dimen.TagItem.Margin}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock
                         Text="{Binding Name}"
-                        FontSize="{DynamicResource Dimen.TagItem.TextSize}"
+                        FontSize="{StaticResource Dimen.TagItem.TextSize}"
                         VerticalAlignment="Center"/>
                     <components:IconButton
-                        Width="{DynamicResource Dimen.TagItem.DeleteButton.Size}"
-                        Height="{DynamicResource Dimen.TagItem.DeleteButton.Size}"
+                        Width="14"
+                        Height="14"
                         IconGeometry="{StaticResource Drawing.Close}"
                         IconBrush="{DynamicResource Brush.Text.Primary}"
                         Style="{x:Null}"
@@ -51,8 +51,8 @@
                             <TextBox 
                                 Name="TagNameBox"
                                 MinWidth="125"
-                                FontSize="{DynamicResource Dimen.TagNameBox.TextSize}"
-                                Margin="{DynamicResource Dimen.TagNameBox.Margin.Size}"
+                                FontSize="13"
+                                Margin="12 12 8 12"
                                 VerticalAlignment="Center">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -68,8 +68,8 @@
                             </TextBox>
                             <components:IconButton
                                 Click="OnConfirmTagNameClicked"
-                                Width="{DynamicResource Dimen.TagNameBox.Icon.Size}"
-                                Height="{DynamicResource Dimen.TagNameBox.Icon.Size}"
+                                Width="27"
+                                Height="27"
                                 IconGeometry="{StaticResource Drawing.Confirm}"
                                 IconBrush="{DynamicResource Brush.Icon}"
                                 Command="{Binding AddTagCommand}"
@@ -85,8 +85,8 @@
         <ControlTemplate x:Key="AddTagButtonTemplate">
             <Border Background="Transparent">
                 <Path
-                    Width="{DynamicResource Dimen.TagItem.Icon.Size}"
-                    Height="{DynamicResource Dimen.TagItem.Icon.Size}"
+                    Width="20"
+                    Height="20"
                     Data="{StaticResource Drawing.Add}"
                     Fill="{DynamicResource Brush.Text.Secondary}"
                     Stretch="Uniform"
@@ -114,13 +114,13 @@
         <Path
             Grid.Row="0"
             Grid.Column="0"
-            Width="{DynamicResource Dimen.TagItem.Icon.Size}"
-            Height="{DynamicResource Dimen.TagItem.Icon.Size}"
+            Width="20"
+            Height="20"
             Data="{StaticResource Drawing.Tag}"
             Fill="{DynamicResource Brush.Text.Secondary}"
             Stretch="Uniform"
             VerticalAlignment="Center"
-            Margin="{DynamicResource Dimen.TagItem.Icon.Margin}"/>
+            Margin="15 7 0 7"/>
         <ItemsControl
             Grid.Row="0"
             Grid.Column="1"
@@ -152,29 +152,30 @@
         <Path
             Grid.Row="1"
             Grid.Column="0"
-            Width="{DynamicResource Dimen.EditorHeader.Icon.Size}"
-            Height="{DynamicResource Dimen.EditorHeader.Icon.Size}"
+            Width="26"
+            Height="26"
             Data="{StaticResource Drawing.Document}"
             Fill="{DynamicResource Brush.Text.Primary}"
             Stretch="Uniform"
             VerticalAlignment="Center"
-            Margin="{DynamicResource Dimen.EditorHeader.Icon.Margin}"/>
+            Margin="20 11 8 6"/>
         <components:EditableTextBlock
             Grid.Row="1"
             Grid.Column="1"
             Text="{Binding SelectedDocument.Document.Name, FallbackValue=#, Mode=TwoWay}"
-            FontSize="{DynamicResource Dimen.MarkupEditor.Header1.FontSize}"
+            FontSize="19"
+            FontWeight="SemiBold"
             OnEditMode="{Binding InEditMode, Mode=TwoWay}"
             ConfirmChangesCommand="{Binding UpdateDocumentNameCommand, ElementName=Root}"
             VerticalAlignment="Center"
-            Margin="{DynamicResource Dimen.EditorHeader.DocName.Margin}"/>
+            Margin="0 5 20 0"/>
         <TextBlock
             Grid.Row="1"
             Grid.Column="2"
             Text="Design"
             Cursor="Hand"
             VerticalAlignment="Center"
-            Margin="{DynamicResource Dimen.EditorHeader.Design.Margin}">
+            Margin="30 5 30 0">
             <TextBlock.InputBindings>
                 <MouseBinding 
                     MouseAction="LeftClick"
@@ -196,7 +197,7 @@
             Grid.Column="3"
             Text="Preview"
             Cursor="Hand"
-            Margin="{DynamicResource Dimen.EditorHeader.Preview.Margin}"
+            Margin="30 5 50 0"
             VerticalAlignment="Center">
             <TextBlock.InputBindings>
                 <MouseBinding 

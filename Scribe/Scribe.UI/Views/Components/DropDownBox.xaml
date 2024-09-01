@@ -29,12 +29,12 @@
                     VerticalAlignment="Center"/>
                 <Path
                     Data="{StaticResource Drawing.DownArrow}"
-                    Width="{DynamicResource Dimen.DropDownBox.Button.Size}"
-                    Height="{DynamicResource Dimen.DropDownBox.Button.Size}"
+                    Width="14"
+                    Height="14"
                     Fill="{DynamicResource Brush.Text.Secondary}"
                     Stretch="Uniform"
                     VerticalAlignment="Center"
-                    Margin="{DynamicResource Dimen.DropDownBox.Button.Margin}"/>
+                    Margin="6 0 0 0"/>
             </StackPanel>
         </ControlTemplate>
     </Button.Template>

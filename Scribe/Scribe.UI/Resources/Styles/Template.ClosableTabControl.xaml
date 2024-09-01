@@ -15,7 +15,7 @@
                         
                         <Rectangle
                             Grid.Row="0"
-                            Height="{DynamicResource Dimen.Divider.Size}"
+                            Height="{StaticResource Dimen.Divider.Size}"
                             VerticalAlignment="Bottom">
                             <Rectangle.Style>
                                 <Style BasedOn="{StaticResource Style.Divider.Horizontal}" TargetType="Rectangle">

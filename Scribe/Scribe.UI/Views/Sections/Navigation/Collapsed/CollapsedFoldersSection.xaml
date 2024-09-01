@@ -15,8 +15,8 @@
         <ControlTemplate x:Key="SelectedItemTemplate">
             <Border 
                 DataContext="{Binding DataContext, ElementName=Root}"
-                Padding="{DynamicResource Dimen.FolderItem.Padding}" 
-                CornerRadius="{DynamicResource Dimen.FolderItem.Radius}" 
+                Padding="12 6" 
+                CornerRadius="8" 
                 Background="#232323">
                 <TextBlock
                     Text="{Binding SelectedFolder.Name[0], FallbackValue=#}"
@@ -30,8 +30,8 @@
         <ControlTemplate x:Key="UnselectedItemTemplate">
             <Border 
                 ToolTip="{Binding Name}"
-                Padding="{DynamicResource Dimen.FolderItem.Padding}" 
-                CornerRadius="{DynamicResource Dimen.FolderItem.Radius}"
+                Padding="12 6" 
+                CornerRadius="8"
                 Background="Transparent">
                 <TextBlock
                     Text="{Binding Name[0]}"

@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Scribe.Markup.Nodes;
 using Scribe.UI.Views.Components;
 using MessageBox = Scribe.UI.Views.Components.MessageBox;
 
@@ -71,19 +70,7 @@ public partial class EditorBody : UserControl
 
     private void OnMarkupIconClicked(object sender, RoutedEventArgs e)
     {
-        var insertMarkupNodeMethod = typeof(MarkupEditor).GetMethod(nameof(MarkupEditor.InsertMarkupNode));
-        
-        if (insertMarkupNodeMethod == null) return;
-        
         var nodeType = (Type) ((IconButton) sender).CommandParameter;
-        
-        switch (nodeType)
-        {
-            default:
-                insertMarkupNodeMethod =  insertMarkupNodeMethod.MakeGenericMethod(typeof(HeaderNode));
-                break;
-        }
-        
-        insertMarkupNodeMethod.Invoke(MarkupEditor, null);
+        MarkupEditor.InsertMarkupNode(nodeType);
     }
 }

@@ -17,7 +17,7 @@
             <DoubleAnimation 
                 Storyboard.TargetName="AppLogo" 
                 Storyboard.TargetProperty="Width" 
-                From="0.0" To="{StaticResource Dimen.Splash.Size}" Duration="0:0:1"
+                From="0.0" To="110" Duration="0:0:1"
                 DecelerationRatio="0.6"/>
         </Storyboard>
         <Storyboard 

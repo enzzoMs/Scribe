@@ -39,8 +39,8 @@
         </Grid.ColumnDefinitions>
         
         <Path
-            Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
-            Height="{DynamicResource Dimen.Config.Item.Icon.Size}"
+            Width="24"
+            Height="24"
             Data="{StaticResource Drawing.Contrast}"
             Fill="{DynamicResource Brush.Text.Primary}"
             Stretch="Uniform"
@@ -50,7 +50,7 @@
             Grid.Column="1"
             Text="{DynamicResource String.Config.Theme}"
             VerticalAlignment="Center"
-            Margin="{DynamicResource Dimen.Config.Item.Margin}"/>
+            Margin="10 8"/>
         <components:DropDownBox
             Grid.Row="0"
             Grid.Column="2"

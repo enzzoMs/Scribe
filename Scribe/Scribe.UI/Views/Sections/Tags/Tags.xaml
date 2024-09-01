@@ -27,14 +27,14 @@
             <Border
                 PreviewMouseLeftButtonDown="OnTagItemClicked"
                 Background="{DynamicResource Brush.Item.Selected.Background}"
-                CornerRadius="{DynamicResource Dimen.TagItem.CornerRadius}"
-                Padding="{DynamicResource Dimen.TagItem.Padding}"
-                Margin="{DynamicResource Dimen.TagItem.Margin}">
+                CornerRadius="{StaticResource Dimen.TagItem.CornerRadius}"
+                Padding="{StaticResource Dimen.TagItem.Padding}"
+                Margin="{StaticResource Dimen.TagItem.Margin}">
                 <TextBlock
                     Name="TagBorder"
                     Text="{Binding Name}"
                     Foreground="{DynamicResource Brush.Item.Selected.Foreground}"
-                    FontSize="{DynamicResource Dimen.TagItem.TextSize}"
+                    FontSize="{StaticResource Dimen.TagItem.TextSize}"
                     VerticalAlignment="Center"/>
             </Border>
         </ControlTemplate>
@@ -43,13 +43,13 @@
             <Border
                 PreviewMouseLeftButtonDown="OnTagItemClicked"
                 Background="{DynamicResource Brush.Item.Unselected.Background}"
-                CornerRadius="{DynamicResource Dimen.TagItem.CornerRadius}"
-                Padding="{DynamicResource Dimen.TagItem.Padding}"
-                Margin="{DynamicResource Dimen.TagItem.Margin}">
+                CornerRadius="{StaticResource Dimen.TagItem.CornerRadius}"
+                Padding="{StaticResource Dimen.TagItem.Padding}"
+                Margin="{StaticResource Dimen.TagItem.Margin}">
                 <TextBlock
                     Name="TagBorder"
                     Text="{Binding Name}"
-                    FontSize="{DynamicResource Dimen.TagItem.TextSize}"
+                    FontSize="{StaticResource Dimen.TagItem.TextSize}"
                     VerticalAlignment="Center"/>
             </Border>
         </ControlTemplate>
@@ -68,8 +68,8 @@
         </Grid.ColumnDefinitions>
         
         <Path
-            Width="{DynamicResource Dimen.Tags.Icon.Size}"
-            Height="{DynamicResource Dimen.Tags.Icon.Size}"
+            Width="18"
+            Height="18"
             Data="{StaticResource Drawing.Tag}"
             Fill="{DynamicResource Brush.Icon}"
             Stretch="Uniform"
@@ -79,13 +79,13 @@
             Grid.Column="1"
             Text="{DynamicResource String.Tags}"
             VerticalAlignment="Center"
-            Margin="{DynamicResource Dimen.Tags.Text.Margin}"/>
+            Margin="6 0 0 0"/>
         <Rectangle
             Grid.Row="1"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Style="{StaticResource Style.Divider.Horizontal}"
-            Margin="{DynamicResource Dimen.Tags.Divider.Margin}"/>
+            Margin="0 8 0 0"/>
         <ListView
             Grid.Row="2"
             Grid.RowSpan="2"
@@ -97,7 +97,7 @@
             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal" Margin="{DynamicResource Dimen.Tags.Margin}"/>
+                    <WrapPanel Orientation="Horizontal" Margin="0 8"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ListView.ItemContainerStyle>

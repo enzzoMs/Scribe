@@ -24,5 +24,11 @@
         </DataTemplate>
     </Window.Resources>
     
-    <ContentControl Content="{Binding CurrentViewModel}"/>
+    <ContentControl Content="{Binding CurrentViewModel}">
+        <ContentControl.LayoutTransform>
+            <ScaleTransform
+                ScaleX="{DynamicResource Dimen.App.ScaleX}"
+                ScaleY="{DynamicResource Dimen.App.ScaleY}"/>
+        </ContentControl.LayoutTransform>
+    </ContentControl>
 </Window>

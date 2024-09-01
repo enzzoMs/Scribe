@@ -20,9 +20,9 @@ namespace Scribe.UI;
 
 public partial class App : Application
 {
-    public const int ThemeDictionaryIndex = 6;
-    public const int DimensDictionaryIndex = 7;
-    public const int StringsDictionaryIndex = 8;
+    public const int ThemeDictionaryIndex = 0;
+    public const int DimensDictionaryIndex = 1;
+    public const int StringsDictionaryIndex = 2;
     
     protected override void OnStartup(StartupEventArgs e)
     {

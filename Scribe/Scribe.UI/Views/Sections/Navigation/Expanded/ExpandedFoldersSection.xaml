@@ -13,8 +13,8 @@
     <UserControl.Resources>
         <ControlTemplate x:Key="SelectedItemTemplate">
             <Border 
-                Padding="{DynamicResource Dimen.FolderItem.Padding}" 
-                CornerRadius="{DynamicResource Dimen.FolderItem.Radius}" 
+                Padding="12 6" 
+                CornerRadius="8" 
                 Background="{DynamicResource Brush.Primary}">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -22,8 +22,8 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Path
-                        Width="{DynamicResource Dimen.FolderItem.Icon.Size}"
-                        Height="{DynamicResource Dimen.FolderItem.Icon.Size}"
+                        Width="24"
+                        Height="24"
                         Data="{StaticResource Drawing.Folder.Opened}"
                         Fill="White"
                         Stretch="Uniform"
@@ -34,7 +34,7 @@
                         TextTrimming="WordEllipsis"
                         Foreground="White"
                         FontWeight="SemiBold"
-                        Margin="{DynamicResource Dimen.FolderItem.Name.Padding}"
+                        Margin="12 0"
                         VerticalAlignment="Center"/>
                 </Grid>
             </Border>
@@ -42,8 +42,8 @@
         
         <ControlTemplate x:Key="UnselectedItemTemplate">
             <Border 
-                Padding="{DynamicResource Dimen.FolderItem.Padding}" 
-                CornerRadius="{DynamicResource Dimen.FolderItem.Radius}"
+                Padding="12 6" 
+                CornerRadius="8"
                 Background="Transparent">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -51,8 +51,8 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Path
-                        Width="{DynamicResource Dimen.FolderItem.Icon.Size}"
-                        Height="{DynamicResource Dimen.FolderItem.Icon.Size}"
+                        Width="24"
+                        Height="24"
                         Data="{DynamicResource Drawing.Folder.Closed}"
                         Fill="{DynamicResource Brush.Text.Primary}"
                         Stretch="Uniform"
@@ -62,7 +62,7 @@
                         Text="{Binding Name}"
                         TextTrimming="WordEllipsis"
                         FontWeight="SemiBold"
-                        Margin="{DynamicResource Dimen.FolderItem.Name.Padding}"
+                        Margin="12 0"
                         VerticalAlignment="Center"/>
                 </Grid>
             </Border>
@@ -83,7 +83,7 @@
             Background="Transparent"
             BorderThickness="0"
             HorizontalContentAlignment="Stretch"
-            Padding="{DynamicResource Dimen.Nav.Expanded.Folders.Padding}"
+            Padding="0 8"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>

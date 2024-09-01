@@ -11,9 +11,9 @@
     <Border
         DataContext="{Binding ElementName=Root}"
         Background="Transparent"
-        BorderThickness="{DynamicResource Dimen.SearchBox.Border.Thickness}"
-        CornerRadius="{DynamicResource Dimen.SearchBox.Border.Radius}"
-        Padding="{DynamicResource Dimen.SearchBox.Border.Padding}">
+        BorderThickness="2"
+        CornerRadius="5"
+        Padding="10 8">
         <Border.Style>
             <Style TargetType="Border">
                 <Style.Triggers>
@@ -34,7 +34,7 @@
             </Grid.ColumnDefinitions>
             
             <Path
-                Height="{DynamicResource Dimen.SearchBox.Icon.Size}"
+                Height="18"
                 Data="{StaticResource Drawing.Search}"
                 Fill="{DynamicResource Brush.Text.Secondary}"
                 Stretch="Uniform"/>
@@ -44,7 +44,7 @@
                 Foreground="{DynamicResource Brush.Text.Secondary}"
                 Opacity="0.7"
                 VerticalAlignment="Center"
-                Margin="{DynamicResource Dimen.SearchBox.Text.Margin}">
+                Margin="8 0 0 0">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                         <Style.Triggers>
@@ -67,7 +67,7 @@
                 BorderThickness="0"
                 Padding="0"
                 VerticalAlignment="Center"
-                Margin="{DynamicResource Dimen.SearchBox.Hint.Margin}">
+                Margin="6 0 0 0">
             </TextBox>
         </Grid>
     </Border>

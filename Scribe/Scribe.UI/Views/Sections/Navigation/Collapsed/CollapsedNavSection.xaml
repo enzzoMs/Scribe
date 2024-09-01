@@ -19,15 +19,15 @@
             <Setter Property="Height" Value="{DynamicResource Dimen.Config.Item.Icon.Size}"/>
             <Setter Property="IconPadding" Value="0"/>
             <Setter Property="IconBrush" Value="{DynamicResource Brush.Text.Primary}"/>
-            <Setter Property="Margin" Value="{DynamicResource Dimen.Nav.Collapsed.ConfigIcon.Margin}"/>
+            <Setter Property="Margin" Value="0 6 0 3"/>
             <Setter Property="Command" Value="{Binding CollapseNavigationCommand}"/>
             <Setter Property="CommandParameter" Value="{StaticResource False}"/>
         </Style>
     </UserControl.Resources>
     
     <Grid
-        Width="{DynamicResource Dimen.Nav.Collapsed.Size}"
-        Margin="{DynamicResource Dimen.Nav.Collapsed.InnerMargin}">
+        Width="40"
+        Margin="17 29 17 27">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -40,8 +40,8 @@
         </Grid.RowDefinitions>
         
         <components:IconButton
-            Width="{DynamicResource Dimen.Nav.OpenAndCloseIcon.Size}"
-            Height="{DynamicResource Dimen.Nav.OpenAndCloseIcon.Size}"
+            Width="28"
+            Height="28"
             IconGeometry="{StaticResource Drawing.DoubleArrow.Right}"
             IconBrush="{DynamicResource Brush.Text.Primary}"
             ToolTip="{DynamicResource String.Nav.Open}"
@@ -51,30 +51,30 @@
         <Rectangle
             Grid.Row="1"
             Style="{StaticResource Style.Divider.Horizontal}"
-            Margin="{DynamicResource Dimen.Nav.Collapsed.Divider.Margin}"/>
+            Margin="0 10"/>
         <components:IconButton
             Grid.Row="2"
-            Width="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Size}"
-            Height="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Size}"
-            IconPadding="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Padding}"
+            Width="26"
+            Height="26"
+            IconPadding="2"
             IconBrush="{DynamicResource Brush.Text.Secondary}"
             IconGeometry="{StaticResource Drawing.Add}"
             Command="{Binding CreateFolderCommand}"
             ToolTip="{DynamicResource String.Folders.Tooltip.Create}"
-            Margin="{DynamicResource Dimen.Nav.Collapsed.NewFolderIcon.Margin}"
+            Margin="0 0 0 8"
             HorizontalAlignment="Center"/>
         <collapsed:CollapsedFoldersSection
             Grid.Row="3"/>
         <Rectangle
             Grid.Row="4"
             Style="{StaticResource Style.Divider.Horizontal}"
-            Margin="{DynamicResource Dimen.Nav.Collapsed.Divider.Margin}"/>
+            Margin="0 10"/>
         <components:IconButton
             Grid.Row="5"
             IconGeometry="{StaticResource Drawing.Contrast}"
             ToolTip="{DynamicResource String.Config.Theme}"
             Style="{StaticResource ConfigItemStyle}"
-            Margin="{DynamicResource Dimen.Nav.Collapsed.ConfigIcon.Theme.Margin}">
+            Margin="0 4">
         </components:IconButton>
         <components:IconButton
             Grid.Row="6"

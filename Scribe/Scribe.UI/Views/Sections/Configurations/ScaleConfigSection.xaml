@@ -18,8 +18,8 @@
         </Grid.ColumnDefinitions>
         
         <Path
-            Width="{DynamicResource Dimen.Config.Item.Icon.Size}"
-            Height="{DynamicResource Dimen.Config.Item.Icon.Size}"
+            Width="24"
+            Height="24"
             Data="{StaticResource Drawing.Ruler}"
             Fill="{DynamicResource Brush.Text.Primary}"
             Stretch="Uniform"
@@ -28,13 +28,13 @@
             Grid.Column="1"
             Text="{DynamicResource String.Config.Scale}"
             VerticalAlignment="Center"
-            Margin="{DynamicResource Dimen.Config.Item.Margin}"/>
+            Margin="10 8"/>
         <componentes:IncrementalNumberBox
             Grid.Column="2"
             CurrentValue="{Binding CurrentScale, Mode=TwoWay}"
             IncrementStep="0.05"
             MinValue="0.05"
-            TextSize="{DynamicResource Dimen.TextSize.Normal2}"
+            TextSize="{StaticResource Dimen.TextSize.Normal2}"
             ShowDecimalPlaces="{StaticResource True}"/>
     </Grid>
 </UserControl>

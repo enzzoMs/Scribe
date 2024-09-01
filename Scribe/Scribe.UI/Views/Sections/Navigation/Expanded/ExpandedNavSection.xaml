@@ -15,8 +15,8 @@
      Background="{DynamicResource Brush.Surface}">
     
     <Grid
-        Width="{DynamicResource Dimen.Nav.Expanded.Size}"
-        Margin="{DynamicResource Dimen.Nav.Expanded.InnerMargin}">
+        Width="200"
+        Margin="25">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -35,8 +35,8 @@
         <Path
             Grid.Row="0"
             Grid.Column="0"
-            Width="{DynamicResource Dimen.Nav.Expanded.AppLogo.Size}"
-            Height="{DynamicResource Dimen.Nav.Expanded.AppLogo.Size}"
+            Width="32"
+            Height="32"
             Data="{StaticResource Drawing.ScribeLogo}"
             Fill="{DynamicResource Brush.Primary}"
             Stretch="Uniform"/>
@@ -44,17 +44,17 @@
             Grid.Row="0"
             Grid.Column="1"
             Text="{DynamicResource String.AppTitle}"
-            FontSize="{DynamicResource Dimen.TextSize.AppTitle}"
+            FontSize="28"
             FontWeight="Bold"
             FontFamily="{StaticResource Text.ExtraBold}"
             Foreground="{DynamicResource Brush.Primary}"
             VerticalAlignment="Center"
-            Margin="{DynamicResource Dimen.Nav.Expanded.AppTitle.Margin}"/>
+            Margin="16 0 0 0"/>
         <components:IconButton
             Grid.Row="0"
             Grid.Column="2"
-            Width="{DynamicResource Dimen.Nav.OpenAndCloseIcon.Size}"
-            Height="{DynamicResource Dimen.Nav.OpenAndCloseIcon.Size}"
+            Width="28"
+            Height="28"
             IconGeometry="{StaticResource Drawing.DoubleArrow.Left}"
             IconBrush="{DynamicResource Brush.Text.Primary}"
             VerticalAlignment="Center"
@@ -66,21 +66,21 @@
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Text="{DynamicResource String.Folders}"
-            FontSize="{DynamicResource Dimen.TextSize.Normal2}"
+            FontSize="{StaticResource Dimen.TextSize.Normal2}"
             Foreground="{DynamicResource Brush.Text.Secondary}"
-            Margin="{DynamicResource Dimen.Nav.Expanded.Subtitle.Margin}"
+            Margin="0 20 0 10"
             VerticalAlignment="Center"/>
         <components:IconButton
             Grid.Row="1"
             Grid.Column="2"
-            Width="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Size}"
-            Height="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Size}"
-            IconPadding="{DynamicResource Dimen.Nav.Expanded.NewFolderIcon.Padding}"
+            Width="26"
+            Height="26"
+            IconPadding="2"
             IconBrush="{DynamicResource Brush.Text.Secondary}"
             IconGeometry="{StaticResource Drawing.Add}"
             ToolTip="{DynamicResource String.Folders.Tooltip.Create}"
             Command="{Binding CreateFolderCommand}"
-            Margin="{DynamicResource Dimen.Nav.Expanded.Subtitle.Margin}"
+            Margin="0 20 0 10"
             VerticalAlignment="Bottom"/>
         <Rectangle
             Grid.Row="2"
@@ -93,7 +93,7 @@
             Grid.ColumnSpan="3"
             SearchText="{Binding SearchFoldersFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             ToolTip="{DynamicResource String.Folders.Tooltip.Search}"
-            Margin="{DynamicResource Dimen.Nav.Expanded.FolderSearchBox.Margin}"/>
+            Margin="0 20 0 7"/>
         <expandedNavSection:ExpandedFoldersSection
             Grid.Row="4"
             Grid.Column="0"
@@ -103,7 +103,7 @@
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Style="{StaticResource Style.Divider.Horizontal}"
-            Margin="{DynamicResource Dimen.Config.Section.Margin}"/>
+            Margin="0 12 0 10"/>
         <StackPanel
             Grid.Row="6"
             Grid.Column="0"

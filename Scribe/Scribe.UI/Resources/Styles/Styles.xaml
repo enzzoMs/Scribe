@@ -4,33 +4,33 @@
     
     <Style x:Key="Style.Divider.Horizontal" TargetType="Rectangle">
         <Style.Setters>
-            <Setter Property="Height" Value="{DynamicResource Dimen.Divider.Size}"/>
+            <Setter Property="Height" Value="{StaticResource Dimen.Divider.Size}"/>
             <Setter Property="Fill" Value="{DynamicResource Brush.Divider}"/>
         </Style.Setters>
     </Style>
     
     <Style x:Key="Style.Divider.Vertical" TargetType="Rectangle">
         <Style.Setters>
-            <Setter Property="Width" Value="{DynamicResource Dimen.Divider.Size}"/>
+            <Setter Property="Width" Value="{StaticResource Dimen.Divider.Size}"/>
             <Setter Property="Fill" Value="{DynamicResource Brush.Divider}"/>
         </Style.Setters>
     </Style>
     
     <Style x:Key="Style.NoData.Icon" TargetType="Path">
-        <Setter Property="Width" Value="{DynamicResource Dimen.NoData.Icon.Size}"/>
-        <Setter Property="Height" Value="{DynamicResource Dimen.NoData.Icon.Size}"/>
+        <Setter Property="Width" Value="48"/>
+        <Setter Property="Height" Value="48"/>
         <Setter Property="Fill" Value="{DynamicResource Brush.BackgroundIcon}"/>
         <Setter Property="Stretch" Value="Uniform"/>
         <Setter Property="VerticalAlignment" Value="Bottom"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="Margin" Value="{DynamicResource Dimen.NoData.Icon.Margin}"/>
+        <Setter Property="Margin" Value="0 0 0 8"/>
     </Style>
     
     <Style TargetType="TextBlock">
         <Style.Setters>
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
             <Setter Property="FontFamily" Value="{StaticResource Text.Medium}"/>
-            <Setter Property="FontSize" Value="{DynamicResource Dimen.TextSize.Normal1}"/>
+            <Setter Property="FontSize" Value="{StaticResource Dimen.TextSize.Normal1}"/>
         </Style.Setters>
     </Style>
     
@@ -44,10 +44,10 @@
         <Style.Setters>
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}"/>
             <Setter Property="FontFamily" Value="{StaticResource Text.Medium}"/>
-            <Setter Property="FontSize" Value="{DynamicResource Dimen.TextSize.Normal1}"/>
+            <Setter Property="FontSize" Value="{StaticResource Dimen.TextSize.Normal1}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Text.Primary}"/>
-            <Setter Property="BorderThickness" Value="{DynamicResource Dimen.TextBox.Border}"/>
-            <Setter Property="Padding" Value="{DynamicResource Dimen.TextBox.Padding}"/>
+            <Setter Property="BorderThickness" Value="0 0 0 2"/>
+            <Setter Property="Padding" Value="0 0 0 3"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
