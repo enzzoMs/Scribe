@@ -1,6 +1,6 @@
-﻿namespace Scribe.Markup.Nodes;
+﻿namespace Scribe.Markup.Nodes.Blocks;
 
-public class OrderedListNode(int listNumber) : IMarkupNode
+public class OrderedListNode(int listNumber) : IBlockNode
 {
     public int ListNumber { get; } = listNumber;
     

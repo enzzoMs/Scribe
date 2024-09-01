@@ -8,6 +8,8 @@ using System.Windows.Shapes;
 using Scribe.Markup;
 using Scribe.Markup.Inlines;
 using Scribe.Markup.Nodes;
+using Scribe.Markup.Nodes.Blocks;
+using Scribe.Markup.Nodes.Leafs;
 
 namespace Scribe.UI.Views.Components;
 
@@ -135,6 +137,7 @@ public partial class MarkupEditor : UserControl
             HeaderNode headerNode => GetViewFromMarkupNode(headerNode, markupEditor),
             UnorderedListNode unorderedListNode => GetViewFromMarkupNode(unorderedListNode, markupEditor),
             OrderedListNode orderedListNode => GetViewFromMarkupNode(orderedListNode, markupEditor),
+            DividerNode dividerNode => GetViewFromMarkupNode(dividerNode),
             _ => new TextBlock { Text = "(Markup Node not implemented)" }
         };
     }
@@ -257,6 +260,28 @@ public partial class MarkupEditor : UserControl
         return orderedListGrid;
     }
 
+    private static Grid GetViewFromMarkupNode(DividerNode dividerNode)
+    {
+        var dividerGrid = new Grid();
+        dividerGrid.ColumnDefinitions.Add(new ColumnDefinition {             
+            Width = new GridLength(dividerNode.Length, GridUnitType.Star)
+        });
+        dividerGrid.ColumnDefinitions.Add(new ColumnDefinition
+        {
+            Width = new GridLength(DividerNode.MaxLength - dividerNode.Length, GridUnitType.Star)
+        });
+        
+        var dividerRectangle = new Rectangle();
+        dividerGrid.Children.Add(dividerRectangle);
+        
+        if (Application.Current.Resources["Style.Divider.Horizontal"] is Style dividerStyle)
+        {
+            dividerRectangle.Style = dividerStyle;
+        }
+
+        return dividerGrid;
+    }
+    
     private static Run GetRunFromInline(InlineMarkup inline, double paragraphFontSize)
     {
         var inlineRun = new Run(inline.Text);
