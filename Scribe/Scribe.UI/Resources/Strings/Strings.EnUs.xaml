@@ -57,7 +57,9 @@
     <sys:String x:Key="String.Markup.Header">Header</sys:String>
     <sys:String x:Key="String.Markup.List.Unordered">Unordered List</sys:String>
     <sys:String x:Key="String.Markup.List.Ordered">Ordered List</sys:String>
-
+    <sys:String x:Key="String.Markup.Quote">Quote</sys:String>
+    <sys:String x:Key="String.Markup.Code">Code</sys:String>
+    
     <sys:String x:Key="String.Error.RequiredField">* Required</sys:String>
     
     <sys:String x:Key="String.ClosableTabControl.Close.Tooltip">Close Tab</sys:String>

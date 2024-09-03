@@ -17,7 +17,8 @@
     <SolidColorBrush x:Key="Brush.Item.Unselected.Background" Color="#FFEAEAEA"/>
     <SolidColorBrush x:Key="Brush.Item.Selected.Background" Color="#FF232323"/>
     <SolidColorBrush x:Key="Brush.Item.Selected.Foreground" Color="#FFFFFFFF"/>
-
+    <SolidColorBrush x:Key="Brush.Markup.Code" Color="#FFF0F0F0"/>
+    
     <Color x:Key="Color.Divider">#FFD9D9D9</Color>
     <Color x:Key="Color.Primary">#FF292D32</Color>
 </ResourceDictionary>

@@ -11,7 +11,7 @@ public static class MarkupParser
     private static readonly Regex BlockMultilineMarkupPattern = new(@"(?<=^\s*\[).+?(?=\]%\s*$)", RegexOptions.Compiled);
 
     private static readonly Regex OrderedListPattern = new("[0-9][0-9]*.", RegexOptions.Compiled);
-    private static readonly Regex DividerPattern = new("-+", RegexOptions.Compiled);
+    private static readonly Regex DividerPattern = new("^-+$", RegexOptions.Compiled);
 
     private static readonly Regex InlineMarkupPattern = new(@"{(.+?)}(\[(.*?)\])", RegexOptions.Compiled);
     private static readonly Regex InlineInnerTextPattern = new("(?<={)(.+)(?=})", RegexOptions.Compiled);
@@ -33,31 +33,33 @@ public static class MarkupParser
 
         foreach (var docLine in documentText.Split("\n"))
         {
-            if (string.IsNullOrWhiteSpace(docLine))
+            var inCodeBlock = openBlocks.Last() is CodeNode;
+
+            if (!inCodeBlock && string.IsNullOrWhiteSpace(docLine))
             {
                 openParagraph = null;
                 continue;
             }
 
             var lineWithoutMarkup = docLine.Replace("\\s+", " ").Trim();
-
+            
             var blockMatch = BlockMarkupPattern.Match(lineWithoutMarkup);
             var blockMultilineMatch = BlockMultilineMarkupPattern.Match(lineWithoutMarkup);
 
             var markupNodeType = blockMatch.Success ? blockMatch.Value.Trim() : blockMultilineMatch.Value.Trim();
             var newBlockNode = GetBlockNodeFromMarkup(markupNodeType);
-            
-            if (newBlockNode != null)
+        
+            if (!inCodeBlock && newBlockNode != null)
             {
                 openBlocks.Last().Children.Add(newBlockNode);    
                 openParagraph = null;
-                
+            
                 if (blockMultilineMatch.Success)
                 {
                     openBlocks.Add(newBlockNode);
                     continue;
                 }
-                
+            
                 if (blockMatch.Success)
                 {
                     lineWithoutMarkup = lineWithoutMarkup[(blockMatch.Length + 2)..].Trim();
@@ -70,7 +72,7 @@ public static class MarkupParser
                 continue;
             }
 
-            if (DividerPattern.IsMatch(lineWithoutMarkup))
+            if (!inCodeBlock && DividerPattern.IsMatch(lineWithoutMarkup))
             {
                 openBlocks.Last().Children.Add(new DividerNode(length: lineWithoutMarkup.Length));
                 openParagraph = null;
@@ -79,11 +81,15 @@ public static class MarkupParser
             
             if (openParagraph != null)
             {
-                openParagraph.RawText += " " + lineWithoutMarkup.Replace("//", "\n");
+                openParagraph.RawText += inCodeBlock ? docLine : 
+                    (openParagraph.RawText.Last() == '\n' ? "" : " ") + lineWithoutMarkup.Replace("//", "\n");
             }
             else
             {
-                var newParagraphNode = new ParagraphNode { RawText = lineWithoutMarkup.Replace("//", "\n") };
+                var newParagraphNode = new ParagraphNode
+                {
+                    RawText = inCodeBlock ? docLine : lineWithoutMarkup.Replace("//", "\n")
+                };
 
                 if (newBlockNode != null)
                 {
@@ -120,6 +126,8 @@ public static class MarkupParser
                 level: markup.TakeWhile(c => c == '#').Count()
             ),
             "*" => new UnorderedListNode(),
+            "quote" => new QuoteNode(),
+            "code" => new CodeNode(),
             _ => null
         };
     }

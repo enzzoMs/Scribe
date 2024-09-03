@@ -26,8 +26,10 @@ public partial class MarkupEditor : UserControl
     private static readonly Dictionary<Type, string> MarkupDictionary = new()
     {
         { typeof(HeaderNode), "[#] " },
-        { typeof(OrderedListNode), "[*] " },
-        { typeof(UnorderedListNode), "[1.] " }
+        { typeof(OrderedListNode), "[1.] " },
+        { typeof(UnorderedListNode), "[*] " },
+        { typeof(QuoteNode), "[quote] " },
+        { typeof(CodeNode), "[code] " }
     };
     
     public event EventHandler<string>? EditorTextChanged;
@@ -138,6 +140,8 @@ public partial class MarkupEditor : UserControl
             UnorderedListNode unorderedListNode => GetViewFromMarkupNode(unorderedListNode, markupEditor),
             OrderedListNode orderedListNode => GetViewFromMarkupNode(orderedListNode, markupEditor),
             DividerNode dividerNode => GetViewFromMarkupNode(dividerNode),
+            QuoteNode quoteNode => GetViewFromMarkupNode(quoteNode, markupEditor),
+            CodeNode codeBlock => GetViewFromMarkupNode(codeBlock, markupEditor),
             _ => new TextBlock { Text = "(Markup Node not implemented)" }
         };
     }
@@ -198,7 +202,7 @@ public partial class MarkupEditor : UserControl
                 
         var bulletIndicator = new Ellipse
         {
-            Fill = Brushes.Black,
+            Fill = Application.Current.Resources["Brush.Text.Primary"] as Brush,
             Width = 6,
             Height = 6,
             Margin = new Thickness(left: 18, top: 7, right: 12, bottom: 0),
@@ -280,6 +284,60 @@ public partial class MarkupEditor : UserControl
         }
 
         return dividerGrid;
+    }
+    
+    private static Grid GetViewFromMarkupNode(QuoteNode quoteNode, MarkupEditor markupEditor)
+    {
+        var quoteGrid = new Grid();
+        quoteGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        quoteGrid.ColumnDefinitions.Add(new ColumnDefinition());
+        quoteGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["QuoteBlock.Style"] as Style);
+
+        var quoteIndicator = new Rectangle
+        {
+            Width = 3,
+            Fill = Application.Current.Resources["Brush.Text.Primary"] as Brush,
+            Margin = new Thickness(left: 18, 0, right: 12, 0)
+        };
+        quoteGrid.Children.Add(quoteIndicator);
+        
+        foreach (var childNode in quoteNode.Children)
+        {
+            var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
+            
+            if (childNode != quoteNode.Children.First())
+            {
+                nodeView.Margin = new Thickness(0, top: 14, 0, 0);
+            }
+            
+            quoteGrid.RowDefinitions.Add(new RowDefinition());
+            quoteGrid.Children.Add(nodeView); 
+            Grid.SetRow(nodeView, quoteGrid.RowDefinitions.Count - 1);
+            Grid.SetColumn(nodeView, 1);
+            
+            Grid.SetRowSpan(quoteIndicator, quoteGrid.RowDefinitions.Count);
+        }
+
+        return quoteGrid;
+    }
+
+    private static Grid GetViewFromMarkupNode(CodeNode codeNode, MarkupEditor markupEditor)
+    {
+        var codeGrid = new Grid { Style = markupEditor.Resources["CodeBlock.Style"] as Style };
+        codeGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CodeBlock.Text.Style"]);
+        
+        foreach (var childNode in codeNode.Children)
+        {
+            var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
+            
+            nodeView.Margin = new Thickness(left: 14, top: 14, right: 14, bottom: 0);
+            
+            codeGrid.RowDefinitions.Add(new RowDefinition());
+            codeGrid.Children.Add(nodeView); 
+            Grid.SetRow(nodeView, codeGrid.RowDefinitions.Count - 1);
+        }
+
+        return codeGrid;
     }
     
     private static Run GetRunFromInline(InlineMarkup inline, double paragraphFontSize)

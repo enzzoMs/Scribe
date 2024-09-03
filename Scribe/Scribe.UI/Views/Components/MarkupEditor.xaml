@@ -37,6 +37,18 @@
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="15"/>
         </Style>
+        
+        <Style x:Key="QuoteBlock.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontStyle" Value="Italic"/>
+        </Style>
+        
+        <Style x:Key="CodeBlock.Style" TargetType="Grid">
+            <Setter Property="Background" Value="{StaticResource Brush.Markup.Code}"/>
+        </Style>
+        
+        <Style x:Key="CodeBlock.Text.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontFamily" Value="{StaticResource Text.Monospace}"/>
+        </Style>
     </UserControl.Resources>
     
     <Grid>
