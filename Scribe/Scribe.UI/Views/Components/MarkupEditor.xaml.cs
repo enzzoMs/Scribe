@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -23,6 +24,8 @@ public partial class MarkupEditor : UserControl
     private const int LineStartToleranceInChars = 5;
     private int _lineCount = 1;
     
+    private static readonly Regex MarkupSyntaxPattern = MarkupSyntaxRegex();
+
     private static readonly Dictionary<Type, string> MarkupDictionary = new()
     {
         { typeof(HeaderNode), "[#] " },
@@ -65,7 +68,7 @@ public partial class MarkupEditor : UserControl
         set => SetValue(InPreviewModeProperty, value);
     }
     
-    public bool IsTextBoxFocused => (bool) GetValue( IsTextBoxFocusedPropertyKey.DependencyProperty);
+    public bool IsTextBoxFocused => (bool) GetValue(IsTextBoxFocusedPropertyKey.DependencyProperty);
     
     public static readonly DependencyProperty EditorTextProperty = DependencyProperty.Register(
         name: nameof(EditorText),
@@ -101,6 +104,16 @@ public partial class MarkupEditor : UserControl
             EditorTextBox.CaretIndex = caretIndex + markupText.Length;
         }
     }
+    
+    [GeneratedRegex(
+        @"((?<=^)[\t ]*\[[^\]]+\]%?)|" +   // Pattern for block markup. E.g. [quote], [quote]% 
+        @"((?<=^)[\t ]*%[\t\r ]*(?=$))|" +        // Pattern for end of block ( % )
+        @"({[^}]+?}(\[[^\]]*?\]))|" +             // Pattern for inline markup. E.g. {text}[b,i]
+        @"(^[\t ]*-+[\t\r ]*(?=$))|" +            // Pattern for dividers. E.g. "-----" 
+        "//",                                     // Pattern for new line
+        RegexOptions.Compiled
+    )]
+    private static partial Regex MarkupSyntaxRegex();
     
     private static void OnMarkupChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -321,23 +334,27 @@ public partial class MarkupEditor : UserControl
         return quoteGrid;
     }
 
-    private static Grid GetViewFromMarkupNode(CodeNode codeNode, MarkupEditor markupEditor)
+    private static Border GetViewFromMarkupNode(CodeNode codeNode, MarkupEditor markupEditor)
     {
-        var codeGrid = new Grid { Style = markupEditor.Resources["CodeBlock.Style"] as Style };
+        var codeGrid = new Grid();
         codeGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CodeBlock.Text.Style"]);
-        
+
+        var codeBorder = new Border
+        {
+            Style = markupEditor.Resources["CodeBlock.Border.Style"] as Style,
+            Child = codeGrid
+        };
+
         foreach (var childNode in codeNode.Children)
         {
             var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
-            
-            nodeView.Margin = new Thickness(left: 14, top: 14, right: 14, bottom: 0);
             
             codeGrid.RowDefinitions.Add(new RowDefinition());
             codeGrid.Children.Add(nodeView); 
             Grid.SetRow(nodeView, codeGrid.RowDefinitions.Count - 1);
         }
 
-        return codeGrid;
+        return codeBorder;
     }
     
     private static Run GetRunFromInline(InlineMarkup inline, double paragraphFontSize)
@@ -372,6 +389,54 @@ public partial class MarkupEditor : UserControl
         }
 
         return inlineRun;
+    }
+
+    private void ApplySyntaxHighlighting(int startLine, int endLine)
+    {
+        // Splitting the text into lines, keeping the newlines, and skipping the last empty element
+        var highlightedLines= Regex.Split(SyntaxHighlightingBox.Text, @"(?<=\n)").SkipLast(1).ToList();
+
+        var lineDifference = EditorTextBox.LineCount - highlightedLines.Count;
+
+        // If lines were removed 
+        if (highlightedLines.Count != 0 && lineDifference < 0)
+        {
+            highlightedLines.RemoveRange(startLine, -lineDifference);
+        }
+        // If lines were added
+        else if (highlightedLines.Count != 0 && lineDifference > 0)
+        {
+            highlightedLines.Insert(startLine, new string('\n', lineDifference));
+        }
+
+        if (highlightedLines.Count >= endLine)
+        {
+            // Removing the lines that will be highlighted to avoid line duplication
+            highlightedLines.RemoveRange(startLine, endLine - startLine + 1);
+        }
+        
+        var lineWithHighlighting = new StringBuilder();
+
+        foreach (var lineIndex in Enumerable.Range(startLine, endLine - startLine + 1))
+        {
+            var lineText = EditorTextBox.GetLineText(lineIndex);
+            var syntaxMatches = MarkupSyntaxPattern.Matches(lineText);
+
+            var currentIndexInLine = 0;
+            foreach (Match match in syntaxMatches)
+            {
+                // Appending spaces for non-highlighted parts and adding highlighted matches
+                lineWithHighlighting.Append(new string(' ', match.Index - currentIndexInLine));
+                lineWithHighlighting.Append(match.Value);
+                currentIndexInLine = match.Index + match.Length;
+            }
+
+            lineWithHighlighting.Append('\n');
+        }
+        
+        highlightedLines.Insert(startLine, lineWithHighlighting.ToString());
+        
+        SyntaxHighlightingBox.Text = string.Join("", highlightedLines.ToArray());
     }
     
     private void EditorTextChanged_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -417,6 +482,16 @@ public partial class MarkupEditor : UserControl
         if (EditorTextBox.CaretIndex - currentLineStartIndex >= largestLineLength - 1)
         {
             EditorScrollViewer.ScrollToRightEnd();
+        }
+        
+        var textChange = e.Changes.First();
+
+        if (textChange != null)
+        {
+            ApplySyntaxHighlighting(
+                startLine: EditorTextBox.GetLineIndexFromCharacterIndex(textChange.Offset), 
+                endLine: EditorTextBox.GetLineIndexFromCharacterIndex(textChange.Offset + textChange.AddedLength)
+            );   
         }
         
         EditorTextChanged?.Invoke(this, EditorTextBox.Text);

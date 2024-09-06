@@ -42,12 +42,13 @@
             <Setter Property="FontStyle" Value="Italic"/>
         </Style>
         
-        <Style x:Key="CodeBlock.Style" TargetType="Grid">
-            <Setter Property="Background" Value="{StaticResource Brush.Markup.Code}"/>
-        </Style>
-        
         <Style x:Key="CodeBlock.Text.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="FontFamily" Value="{StaticResource Text.Monospace}"/>
+        </Style>
+        
+        <Style x:Key="CodeBlock.Border.Style" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Brush.Markup.Code}"/>
+            <Setter Property="Padding" Value="14"/>
         </Style>
     </UserControl.Resources>
     
@@ -94,6 +95,18 @@
                     RequestBringIntoView="EditorTextBox_OnRequestBringIntoView"
                     PreviewKeyDown="EditorTextBox_OnPreviewKeyDown"
                     AcceptsReturn="True"
+                    BorderThickness="0"
+                    Margin="0 16 20 16"/>
+                <TextBox
+                    Name="SyntaxHighlightingBox"
+                    Grid.Column="1"
+                    Style="{x:Null}"
+                    Background="Transparent"
+                    FontWeight="Medium"
+                    Foreground="#0000fd"
+                    FontFamily="{StaticResource Text.Monospace}"
+                    FontSize="{StaticResource Dimen.TextSize.Normal1}"
+                    IsHitTestVisible="False"
                     BorderThickness="0"
                     Margin="0 16 20 16"/>
             </Grid>

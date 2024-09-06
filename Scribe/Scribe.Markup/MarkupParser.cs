@@ -63,7 +63,7 @@ public static class MarkupParser
                 if (blockMatch.Success)
                 {
                     lineWithoutMarkup = lineWithoutMarkup[(blockMatch.Length + 2)..].Trim();
-                } 
+                }
             }
             
             if (openBlocks.Count > 1 && lineWithoutMarkup == "%")
@@ -81,14 +81,14 @@ public static class MarkupParser
             
             if (openParagraph != null)
             {
-                openParagraph.RawText += inCodeBlock ? docLine : 
+                openParagraph.RawText += inCodeBlock ? $"\n{docLine.TrimEnd('\r')}" : 
                     (openParagraph.RawText.Last() == '\n' ? "" : " ") + lineWithoutMarkup.Replace("//", "\n");
             }
             else
             {
                 var newParagraphNode = new ParagraphNode
                 {
-                    RawText = inCodeBlock ? docLine : lineWithoutMarkup.Replace("//", "\n")
+                    RawText = inCodeBlock ? docLine.TrimEnd('\r') : lineWithoutMarkup.Replace("//", "\n")
                 };
 
                 if (newBlockNode != null)
