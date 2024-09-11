@@ -1,11 +1,10 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using Scribe.Markup;
 using Scribe.Markup.Inlines;
 using Scribe.Markup.Nodes;
@@ -16,16 +15,9 @@ namespace Scribe.UI.Views.Components;
 
 public partial class MarkupEditor : UserControl
 {
-    private const int TabSize = 4;
-    
     private const int MarkupViewMargin = 8;
     private const double SubAndSuperscriptFontSizePct = 0.85;
-
-    private const int LineStartToleranceInChars = 5;
-    private int _lineCount = 1;
     
-    private static readonly Regex MarkupSyntaxPattern = MarkupSyntaxRegex();
-
     private static readonly Dictionary<Type, string> MarkupDictionary = new()
     {
         { typeof(HeaderNode), "[#] " },
@@ -40,20 +32,61 @@ public partial class MarkupEditor : UserControl
     public MarkupEditor()
     {
         InitializeComponent();
-
+        
+        EditorTextBox.TextArea.TextView.Margin = new Thickness(12, 0, 0, 0);
+        
         EditorTextBox.GotFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, true); };
         EditorTextBox.LostFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, false); };
         
-        DataObject.AddPastingHandler(EditorTextBox, (_, args) =>
+        var markupColor = new XshdColor
         {
-            if (args.DataObject.GetData(DataFormats.Text) is not string pastedText) return;
-            
-            var newDataObject = new DataObject();
-            newDataObject.SetData(
-                DataFormats.Text, pastedText.Replace("\t", new string(' ', TabSize))
-            );
-            args.DataObject = newDataObject;
-        });
+            Foreground = new SimpleHighlightingBrush(Colors.Black),
+            FontWeight = FontWeights.Bold
+        };
+        var markupColorReference = new XshdReference<XshdColor>(markupColor);
+        
+        var markupBlockBeginRule = new XshdRule
+        {
+            // Pattern for block markup. E.g. [quote], [quote]% 
+            Regex = @"(?<=^|(^[\t ]*))\[[^\]]+\]%?",
+            ColorReference = markupColorReference,
+        };
+        
+        var markupBlockEndRule = new XshdRule
+        {
+            // Pattern for end of block ( % )
+            Regex = @"(?<=^)[\t ]*%[\t\r ]*(?=$)",
+            ColorReference = markupColorReference
+        };
+
+        var markupInlineBeginRule = new XshdRule
+        {
+            Regex = @"{(?=[^}\n]+?}(\[[^\]\n]*?\]))",
+            ColorReference = markupColorReference
+        };
+        
+        var markupInlineEndRule = new XshdRule {
+            Regex = @"(?<={[^}\n]+?)}\[[^\]\n]*?\]",
+            ColorReference = markupColorReference
+        };
+        
+        // Pattern for dividers. E.g. "-----" 
+        var dividerRule = new XshdRule { Regex = @"^[\t ]*-+[\t\r ]*(?=$)", ColorReference = markupColorReference };
+        
+        var newLineRule = new XshdRule { Regex = @"\/\/", ColorReference = markupColorReference };
+        
+        var mainRuleSet = new XshdRuleSet();
+        mainRuleSet.Elements.Add(markupBlockBeginRule);
+        mainRuleSet.Elements.Add(markupBlockEndRule);
+        mainRuleSet.Elements.Add(markupInlineBeginRule);
+        mainRuleSet.Elements.Add(markupInlineEndRule);
+        mainRuleSet.Elements.Add(dividerRule);
+        mainRuleSet.Elements.Add(newLineRule);
+
+        var syntaxDefinition = new XshdSyntaxDefinition();
+        syntaxDefinition.Elements.Add(mainRuleSet);
+        
+        EditorTextBox.SyntaxHighlighting = HighlightingLoader.Load(syntaxDefinition, HighlightingManager.Instance);
     }
     
     public string EditorText
@@ -74,7 +107,7 @@ public partial class MarkupEditor : UserControl
         name: nameof(EditorText),
         propertyType: typeof(string),
         ownerType: typeof(MarkupEditor),
-        typeMetadata: new FrameworkPropertyMetadata(propertyChangedCallback: OnMarkupChanged)
+        typeMetadata: new FrameworkPropertyMetadata(propertyChangedCallback: OnEditorTextChanged)
     );
 
     public static readonly DependencyProperty InPreviewModeProperty = DependencyProperty.Register(
@@ -84,7 +117,7 @@ public partial class MarkupEditor : UserControl
         typeMetadata: new FrameworkPropertyMetadata(
             defaultValue: false, 
             flags: FrameworkPropertyMetadataOptions.AffectsRender,
-            propertyChangedCallback: OnMarkupChanged
+            propertyChangedCallback: OnPreviewModeChanged
         )
     );
     
@@ -99,26 +132,32 @@ public partial class MarkupEditor : UserControl
     {
         if (MarkupDictionary.TryGetValue(markupType, out var markupText))
         {
-            var caretIndex = EditorTextBox.CaretIndex;
-            EditorTextBox.Text = EditorTextBox.Text.Insert(caretIndex, markupText);
-            EditorTextBox.CaretIndex = caretIndex + markupText.Length;
+            EditorTextBox.TextArea.Document.Insert(EditorTextBox.CaretOffset, markupText);
         }
     }
     
-    [GeneratedRegex(
-        @"((?<=^)[\t ]*\[[^\]]+\]%?)|" +   // Pattern for block markup. E.g. [quote], [quote]% 
-        @"((?<=^)[\t ]*%[\t\r ]*(?=$))|" +        // Pattern for end of block ( % )
-        @"({[^}]+?}(\[[^\]]*?\]))|" +             // Pattern for inline markup. E.g. {text}[b,i]
-        @"(^[\t ]*-+[\t\r ]*(?=$))|" +            // Pattern for dividers. E.g. "-----" 
-        "//",                                     // Pattern for new line
-        RegexOptions.Compiled
-    )]
-    private static partial Regex MarkupSyntaxRegex();
-    
-    private static void OnMarkupChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private static void OnPreviewModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var markupEditor = (MarkupEditor) d;
         
+        if (markupEditor.InPreviewMode)
+        {
+            RenderMarkup(MarkupParser.ParseText(markupEditor.EditorTextBox.Text), markupEditor);
+        }
+    }
+    
+    private static void OnEditorTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var markupEditor = (MarkupEditor) d;
+
+        var undoStackLimit = markupEditor.EditorTextBox.Document.UndoStack.SizeLimit;
+        
+        // Disabling the undo stack
+        markupEditor.EditorTextBox.Document.UndoStack.SizeLimit = 0;
+        
+        markupEditor.EditorTextBox.Text = markupEditor.EditorText;
+        markupEditor.EditorTextBox.Document.UndoStack.SizeLimit = undoStackLimit;
+
         if (markupEditor.InPreviewMode)
         {
             RenderMarkup(MarkupParser.ParseText(markupEditor.EditorText), markupEditor);
@@ -127,20 +166,20 @@ public partial class MarkupEditor : UserControl
 
     private static void RenderMarkup(DocumentNode documentRoot, MarkupEditor markupEditor)
     {
-        markupEditor.MarkupViewerPanel.Children.Clear();
+        markupEditor.MarkupViewerPanel.Items.Clear();
         
         foreach (var node in documentRoot.Children)
         {
             var nodeView = GetViewFromMarkupNode(node, markupEditor);
-            
-                nodeView.Margin = new Thickness(
-                    left: 0, 
-                    top: markupEditor.MarkupViewerPanel.Children.Count == 0 ? 0 : MarkupViewMargin,
-                    right: 0,
-                    bottom: MarkupViewMargin
-                );
-            
-            markupEditor.MarkupViewerPanel.Children.Add(nodeView);
+
+            nodeView.Margin = new Thickness(
+                left: 0,
+                top: markupEditor.MarkupViewerPanel.Items.Count == 0 ? 0 : MarkupViewMargin,
+                right: 0,
+                bottom: MarkupViewMargin
+            );
+
+            markupEditor.MarkupViewerPanel.Items.Add(nodeView);
         }
     }
 
@@ -188,6 +227,10 @@ public partial class MarkupEditor : UserControl
             Margin = new Thickness(0, 0, right: 8, 0)
         };
         headerGrid.Children.Add(headerLevelIndicator);
+
+        var childrenList = new ItemsControl();
+        headerGrid.Children.Add(childrenList);
+        Grid.SetColumn(childrenList, 1);
                 
         foreach (var childNode in headerNode.Children)
         {
@@ -198,10 +241,7 @@ public partial class MarkupEditor : UserControl
                 nodeView.Margin = new Thickness(0, top: 4, 0, 0);
             }
                     
-            headerGrid.RowDefinitions.Add(new RowDefinition());
-            headerGrid.Children.Add(nodeView);
-            Grid.SetRow(nodeView, headerGrid.RowDefinitions.Count - 1);
-            Grid.SetColumn(nodeView, 1);
+            childrenList.Items.Add(nodeView);
         }
                 
         return headerGrid;
@@ -222,8 +262,11 @@ public partial class MarkupEditor : UserControl
             VerticalAlignment = VerticalAlignment.Top
         };
         unorderedListGrid.Children.Add(bulletIndicator); 
-        Grid.SetColumn(bulletIndicator, 0);
                 
+        var childrenList = new ItemsControl();
+        unorderedListGrid.Children.Add(childrenList);
+        Grid.SetColumn(childrenList, 1);
+        
         foreach (var childNode in unorderedListNode.Children)
         {
             var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
@@ -234,10 +277,7 @@ public partial class MarkupEditor : UserControl
                 nodeView.Margin = new Thickness(0, top: 14, 0, 0);
             }
 
-            unorderedListGrid.RowDefinitions.Add(new RowDefinition());
-            unorderedListGrid.Children.Add(nodeView); 
-            Grid.SetRow(nodeView, unorderedListGrid.RowDefinitions.Count - 1);
-            Grid.SetColumn(nodeView, 1);
+            childrenList.Items.Add(nodeView);
         }
 
         return unorderedListGrid;
@@ -256,8 +296,11 @@ public partial class MarkupEditor : UserControl
             VerticalAlignment = VerticalAlignment.Top
         };
         orderedListGrid.Children.Add(listNumberIndicator); 
-        Grid.SetColumn(listNumberIndicator, 0);
-                
+
+        var childrenList = new ItemsControl();
+        orderedListGrid.Children.Add(childrenList);
+        Grid.SetColumn(childrenList, 1);
+        
         foreach (var childNode in orderedListNode.Children)
         {
             var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
@@ -268,10 +311,7 @@ public partial class MarkupEditor : UserControl
                 nodeView.Margin = new Thickness(0, top: 14, 0, 0);
             }
 
-            orderedListGrid.RowDefinitions.Add(new RowDefinition());
-            orderedListGrid.Children.Add(nodeView); 
-            Grid.SetRow(nodeView, orderedListGrid.RowDefinitions.Count - 1);
-            Grid.SetColumn(nodeView, 1);
+            childrenList.Items.Add(nodeView); 
         }
 
         return orderedListGrid;
@@ -314,6 +354,10 @@ public partial class MarkupEditor : UserControl
         };
         quoteGrid.Children.Add(quoteIndicator);
         
+        var childrenList = new ItemsControl();
+        quoteGrid.Children.Add(childrenList);
+        Grid.SetColumn(childrenList, 1);
+        
         foreach (var childNode in quoteNode.Children)
         {
             var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
@@ -323,12 +367,7 @@ public partial class MarkupEditor : UserControl
                 nodeView.Margin = new Thickness(0, top: 14, 0, 0);
             }
             
-            quoteGrid.RowDefinitions.Add(new RowDefinition());
-            quoteGrid.Children.Add(nodeView); 
-            Grid.SetRow(nodeView, quoteGrid.RowDefinitions.Count - 1);
-            Grid.SetColumn(nodeView, 1);
-            
-            Grid.SetRowSpan(quoteIndicator, quoteGrid.RowDefinitions.Count);
+            childrenList.Items.Add(nodeView);
         }
 
         return quoteGrid;
@@ -336,22 +375,19 @@ public partial class MarkupEditor : UserControl
 
     private static Border GetViewFromMarkupNode(CodeNode codeNode, MarkupEditor markupEditor)
     {
-        var codeGrid = new Grid();
-        codeGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CodeBlock.Text.Style"]);
+        var codeList = new ItemsControl();
+        codeList.Resources.Add(typeof(TextBlock), markupEditor.Resources["CodeBlock.Text.Style"]);
 
         var codeBorder = new Border
         {
             Style = markupEditor.Resources["CodeBlock.Border.Style"] as Style,
-            Child = codeGrid
+            Child = codeList
         };
 
         foreach (var childNode in codeNode.Children)
         {
             var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
-            
-            codeGrid.RowDefinitions.Add(new RowDefinition());
-            codeGrid.Children.Add(nodeView); 
-            Grid.SetRow(nodeView, codeGrid.RowDefinitions.Count - 1);
+            codeList.Items.Add(nodeView); 
         }
 
         return codeBorder;
@@ -390,160 +426,9 @@ public partial class MarkupEditor : UserControl
 
         return inlineRun;
     }
-
-    private void ApplySyntaxHighlighting(int startLine, int endLine)
-    {
-        // Splitting the text into lines, keeping the newlines, and skipping the last empty element
-        var highlightedLines= Regex.Split(SyntaxHighlightingBox.Text, @"(?<=\n)").SkipLast(1).ToList();
-
-        var lineDifference = EditorTextBox.LineCount - highlightedLines.Count;
-
-        // If lines were removed 
-        if (highlightedLines.Count != 0 && lineDifference < 0)
-        {
-            highlightedLines.RemoveRange(startLine, -lineDifference);
-        }
-        // If lines were added
-        else if (highlightedLines.Count != 0 && lineDifference > 0)
-        {
-            highlightedLines.Insert(startLine, new string('\n', lineDifference));
-        }
-
-        if (highlightedLines.Count >= endLine)
-        {
-            // Removing the lines that will be highlighted to avoid line duplication
-            highlightedLines.RemoveRange(startLine, endLine - startLine + 1);
-        }
-        
-        var lineWithHighlighting = new StringBuilder();
-
-        foreach (var lineIndex in Enumerable.Range(startLine, endLine - startLine + 1))
-        {
-            var lineText = EditorTextBox.GetLineText(lineIndex);
-            var syntaxMatches = MarkupSyntaxPattern.Matches(lineText);
-
-            var currentIndexInLine = 0;
-            foreach (Match match in syntaxMatches)
-            {
-                // Appending spaces for non-highlighted parts and adding highlighted matches
-                lineWithHighlighting.Append(new string(' ', match.Index - currentIndexInLine));
-                lineWithHighlighting.Append(match.Value);
-                currentIndexInLine = match.Index + match.Length;
-            }
-
-            lineWithHighlighting.Append('\n');
-        }
-        
-        highlightedLines.Insert(startLine, lineWithHighlighting.ToString());
-        
-        SyntaxHighlightingBox.Text = string.Join("", highlightedLines.ToArray());
-    }
     
-    private void EditorTextChanged_OnTextChanged(object sender, TextChangedEventArgs e)
+    private void EditorTextBox_OnTextChanged(object? sender, EventArgs e)
     {
-        if (EditorTextBox.LineCount == -1) return;
-        
-        // If lines were removed
-        if (EditorTextBox.LineCount < _lineCount)
-        {
-            _lineCount = EditorTextBox.LineCount;
-
-            var lastLineNumberIndex = EditorLineNumbers.Text.IndexOf($"\n{_lineCount + 1}", StringComparison.Ordinal);
-            
-            if (lastLineNumberIndex == -1) return;
-            
-            // Remove the extra line numbers
-            EditorLineNumbers.Text = EditorLineNumbers.Text[..lastLineNumberIndex];
-        }
-        // If lines were added
-        else if (EditorTextBox.LineCount > _lineCount)
-        {
-            var lineNumbersText = new StringBuilder(EditorLineNumbers.Text);
-                
-            for (var lineNumber = _lineCount + 1; lineNumber <= EditorTextBox.LineCount; lineNumber++)
-            {
-                lineNumbersText.Append('\n');
-                lineNumbersText.Append(lineNumber);
-            }
-
-            EditorLineNumbers.Text = lineNumbersText.ToString();
-            _lineCount = EditorTextBox.LineCount;
-        }
-            
-        var largestLineLength = EditorTextBox.Text.Split("\n").Max(line => line.Length);
-        var currentLine = EditorTextBox.GetLineIndexFromCharacterIndex(EditorTextBox.CaretIndex);
-        
-        if (currentLine == -1) return;
-        
-        var currentLineStartIndex = EditorTextBox.GetCharacterIndexFromLineIndex(currentLine);
-
-        // Scroll to the right end if the caret is at the end of the longest line.
-        // This ensures that the text does not remain hidden behind the vertical scrollbar.
-        if (EditorTextBox.CaretIndex - currentLineStartIndex >= largestLineLength - 1)
-        {
-            EditorScrollViewer.ScrollToRightEnd();
-        }
-        
-        var textChange = e.Changes.First();
-
-        if (textChange != null)
-        {
-            ApplySyntaxHighlighting(
-                startLine: EditorTextBox.GetLineIndexFromCharacterIndex(textChange.Offset), 
-                endLine: EditorTextBox.GetLineIndexFromCharacterIndex(textChange.Offset + textChange.AddedLength)
-            );   
-        }
-        
         EditorTextChanged?.Invoke(this, EditorTextBox.Text);
-    }
-
-    private void EditorTextBox_OnSelectionChanged(object sender, RoutedEventArgs e)
-    {
-        var currentLine = EditorTextBox.GetLineIndexFromCharacterIndex(EditorTextBox.CaretIndex);
-        
-        if (currentLine == -1) return;
-        
-        var currentLineStartIndex = EditorTextBox.GetCharacterIndexFromLineIndex(currentLine);
-
-        // Scroll to the left end if the caret is near the start of the line
-        if (EditorTextBox.CaretIndex < currentLineStartIndex + LineStartToleranceInChars)
-        {
-            EditorScrollViewer.ScrollToLeftEnd();
-        }
-    }
-
-    private void EditorTextBox_OnRequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
-    {
-        // Prevents scroll when the 'EditorTextBox' is first focused
-        if (!IsTextBoxFocused)
-        {
-            e.Handled = true;
-        }
-    }
-
-    private void EditorTextBox_OnPreviewKeyDown(object sender, KeyEventArgs e)
-    {
-        if (e.Key == Key.Tab)
-        {
-            EditorTextBox.SelectedText = "";
-
-            var absoluteCaretIndex = EditorTextBox.CaretIndex;
-            var caretIndexInCurrentLine = EditorTextBox.CaretIndex - EditorTextBox.GetCharacterIndexFromLineIndex(
-                EditorTextBox.GetLineIndexFromCharacterIndex(EditorTextBox.CaretIndex)
-            );
-            var tabSize = TabSize - (caretIndexInCurrentLine % TabSize);
-            var tab = new string(' ', tabSize);
-
-            EditorTextBox.BeginChange();
-            
-            var editorText = EditorTextBox.Text;
-            EditorTextBox.Clear();
-            EditorTextBox.AppendText(editorText.Insert(absoluteCaretIndex, tab));
-            EditorTextBox.CaretIndex = absoluteCaretIndex + tabSize;
-            
-            EditorTextBox.EndChange();
-
-            e.Handled = true;
-        }
     }
 }

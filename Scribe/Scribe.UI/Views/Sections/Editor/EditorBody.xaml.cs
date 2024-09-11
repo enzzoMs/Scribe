@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ICSharpCode.AvalonEdit;
 using Scribe.UI.Views.Components;
 using MessageBox = Scribe.UI.Views.Components.MessageBox;
 
@@ -11,14 +12,7 @@ public partial class EditorBody : UserControl
     public EditorBody()
     {
         InitializeComponent();
-
-        if (MarkupEditor.FindName("EditorTextBox") is not TextBox editorTextBox) return;
-        
-        UndoDocumentEditButton.Command = ApplicationCommands.Undo;
-        UndoDocumentEditButton.CommandTarget = editorTextBox;
-        
-        RedoDocumentEditButton.Command = ApplicationCommands.Redo;
-        RedoDocumentEditButton.CommandTarget = editorTextBox;
+        UpdateUndoRedoButtons();
     }
 
     public object Header
@@ -33,14 +27,44 @@ public partial class EditorBody : UserControl
         ownerType: typeof(EditorBody)
     );
     
+    private void UpdateUndoRedoButtons()
+    {
+        if (MarkupEditor.FindName("EditorTextBox") is not TextEditor editorTextBox) return;
+
+        UndoDocumentEditButton.IsEnabled = editorTextBox.CanUndo;
+        RedoDocumentEditButton.IsEnabled = editorTextBox.CanRedo;
+    }
+    
+    private void OnUndoButtonClicked(object sender, RoutedEventArgs e)
+    {
+        if (MarkupEditor.FindName("EditorTextBox") is not TextEditor editorTextBox) return;
+
+        editorTextBox.Undo();
+        UpdateUndoRedoButtons();
+    }
+
+    private void OnRedoButtonClicked(object sender, RoutedEventArgs e)
+    {
+        if (MarkupEditor.FindName("EditorTextBox") is not TextEditor editorTextBox) return;
+
+        editorTextBox.Redo();
+        UpdateUndoRedoButtons();
+    }
+
     private void OnDocumentContentChanged(object? sender, string e)
     {
         var documentState = ((EditorViewModel) DataContext).SelectedDocument;
+
+        if (documentState == null) return;
         
-        if (documentState != null && documentState.EditedContent != documentState.Document.Content)
+        documentState.EditedContent = e;
+         
+        if (documentState.EditedContent != documentState.Document.Content)
         {
             documentState.HasUnsavedChanges = true;
         }
+        
+        UpdateUndoRedoButtons();
     }
     
     private void OnDeleteDocumentClicked(object sender, MouseButtonEventArgs e)

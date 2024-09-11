@@ -4,12 +4,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:markupBlockNodes="clr-namespace:Scribe.Markup.Nodes.Blocks;assembly=Scribe.Markup"
+    xmlns:markupBlockLeafs="clr-namespace:Scribe.Markup.Nodes.Leafs;assembly=Scribe.Markup"
+    xmlns:markupInlines="clr-namespace:Scribe.Markup.Inlines;assembly=Scribe.Markup"
+    xmlns:components="clr-namespace:Scribe.UI.Views.Components"
+    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
     xmlns:sys="clr-namespace:System;assembly=mscorelib"
     mc:Ignorable="d"
     Name="Root">
     
     <UserControl.Resources>
-        <Thickness x:Key="Dimen.ScrollBar.Vertical.Margin" Top="16" Bottom="16"/>
+        <Thickness x:Key="Dimen.ScrollBar.Vertical.Margin" Top="0" Bottom="0"/>
         <Thickness x:Key="Dimen.ScrollBar.Vertical.OuterMargin" Left="0"/>
         <sys:Double x:Key="Dimen.ScrollBar.Vertical.Size">9</sys:Double>
         
@@ -50,77 +55,56 @@
             <Setter Property="Background" Value="{StaticResource Brush.Markup.Code}"/>
             <Setter Property="Padding" Value="14"/>
         </Style>
+        
+        <Style TargetType="{x:Type avalonEdit:TextArea}">
+            <Setter Property="SelectionCornerRadius" Value="0" />
+        </Style>
+        
+        <Style TargetType="ItemsControl">
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True"/>
+            <Setter Property="VirtualizingStackPanel.VirtualizationMode" Value="Recycling"/>
+        </Style>
     </UserControl.Resources>
     
     <Grid>
-        <ScrollViewer
-            Name="EditorScrollViewer"
-            VerticalScrollBarVisibility="Auto"
-            HorizontalScrollBarVisibility="Auto">
-            <ScrollViewer.Style>
-                <Style TargetType="ScrollViewer" BasedOn="{StaticResource {x:Type ScrollViewer}}">
+        <avalonEdit:TextEditor
+            Name="EditorTextBox"
+            FontFamily="{StaticResource Text.Monospace}"
+            FontWeight="Medium"
+            FontSize="{StaticResource Dimen.TextSize.Normal1}"
+            SyntaxHighlighting="C#"
+            TextChanged="EditorTextBox_OnTextChanged"
+            ShowLineNumbers="True"
+            Margin="20 12 0 0">
+            <avalonEdit:TextEditor.Style>
+                <Style TargetType="avalonEdit:TextEditor">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding InPreviewMode, ElementName=Root}" Value="True">
                             <Setter Property="Visibility" Value="Hidden"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </ScrollViewer.Style>
-            
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-            
-                <TextBlock
-                    Name="EditorLineNumbers"
-                    Text="1"
-                    TextAlignment="Right"
-                    FontWeight="Medium"
-                    FontFamily="{StaticResource Text.Monospace}"
-                    Foreground="{StaticResource Brush.BackgroundText}"
-                    Margin="20 16 16 16"/>
-                <TextBox
-                    Name="EditorTextBox"
-                    Grid.Column="1"
-                    Text="{Binding EditorText, ElementName=Root, UpdateSourceTrigger=PropertyChanged}"
-                    Style="{x:Null}"
-                    Background="Transparent"
-                    FontWeight="Medium"
-                    FontFamily="{StaticResource Text.Monospace}"
-                    FontSize="{StaticResource Dimen.TextSize.Normal1}"
-                    TextChanged="EditorTextChanged_OnTextChanged"
-                    SelectionChanged="EditorTextBox_OnSelectionChanged"
-                    RequestBringIntoView="EditorTextBox_OnRequestBringIntoView"
-                    PreviewKeyDown="EditorTextBox_OnPreviewKeyDown"
-                    AcceptsReturn="True"
-                    BorderThickness="0"
-                    Margin="0 16 20 16"/>
-                <TextBox
-                    Name="SyntaxHighlightingBox"
-                    Grid.Column="1"
-                    Style="{x:Null}"
-                    Background="Transparent"
-                    FontWeight="Medium"
-                    Foreground="#0000fd"
-                    FontFamily="{StaticResource Text.Monospace}"
-                    FontSize="{StaticResource Dimen.TextSize.Normal1}"
-                    IsHitTestVisible="False"
-                    BorderThickness="0"
-                    Margin="0 16 20 16"/>
-            </Grid>
-        </ScrollViewer>
+            </avalonEdit:TextEditor.Style>
+        </avalonEdit:TextEditor>
         
         <ScrollViewer
             Visibility="{Binding
                 InPreviewMode,
                 ElementName=Root,
                 Converter={StaticResource BooleanToVisibilityConverter}}">
-            <StackPanel
+            <ItemsControl
                 Name="MarkupViewerPanel"
-                Orientation="Vertical"
                 Margin="20 16 20 16"/>
+            <ScrollViewer.Resources>
+                <Thickness x:Key="Dimen.ScrollBar.Vertical.Margin" Top="12" Bottom="12"/>
+            </ScrollViewer.Resources>
         </ScrollViewer>
     </Grid>
 </UserControl>

@@ -98,12 +98,14 @@
             x:Name="UndoDocumentEditButton"
             Grid.Row="0"
             Grid.Column="4"
+            Click="OnUndoButtonClicked"
             IconGeometry="{StaticResource Drawing.Undo}"
             ToolTip="{DynamicResource String.Button.Undo}"/>
         <components:IconButton
             x:Name="RedoDocumentEditButton"
             Grid.Row="0"
             Grid.Column="5"
+            Click="OnRedoButtonClicked"
             IconGeometry="{StaticResource Drawing.Redo}"
             ToolTip="{DynamicResource String.Button.Redo}"/>
         <Rectangle

@@ -14,6 +14,7 @@
     
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="AvalonEdit" Version="6.3.0.90" />
     </ItemGroup>
     
     <ItemGroup>
@@ -24,18 +25,5 @@
         </Resource>
         
         <Resource Include="Resources\Fonts\*.ttf"/>
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Page Update="Views\Sections\Documents\DocumentsSection.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Views\Sections\Tags\Tags.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
     </ItemGroup>
 </Project>
