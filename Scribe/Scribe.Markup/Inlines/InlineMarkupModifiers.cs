@@ -7,5 +7,6 @@ public enum InlineMarkupModifiers
     Underline,
     Strikethrough,
     Superscript,
-    Subscript
+    Subscript,
+    Code
 }

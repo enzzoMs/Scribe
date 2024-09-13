@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Drawing;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Scribe.Markup.Inlines;
 using Scribe.Markup.Nodes.Blocks;
 using Scribe.Markup.Nodes.Leafs;
@@ -16,6 +18,10 @@ public static class MarkupParser
     private static readonly Regex InlineMarkupPattern = new(@"{(.+?)}(\[(.*?)\])", RegexOptions.Compiled);
     private static readonly Regex InlineInnerTextPattern = new("(?<={)(.+)(?=})", RegexOptions.Compiled);
     private static readonly Regex InlineModifiersPattern = new(@"(?<=\[)(.+?)(?=\])", RegexOptions.Compiled);
+
+    private static readonly Regex InlineColorPattern = new(
+        "(foreg|backg)=#(([0-9a-fA-F]{8}|[0-9a-fA-F]{6})|[a-z]+)", RegexOptions.Compiled
+    );
 
     public static DocumentNode ParseText(string documentText)
     {
@@ -128,6 +134,7 @@ public static class MarkupParser
             "*" => new UnorderedListNode(),
             "quote" => new QuoteNode(),
             "code" => new CodeNode(),
+            "-" or "x" => new TaskListNode(isChecked: markup == "x"),
             _ => null
         };
     }
@@ -162,7 +169,40 @@ public static class MarkupParser
 
             foreach (var modifier in modifiers)
             {
-                switch (modifier.Trim())
+                var trimmedModifier = modifier.Trim();
+                
+                if (InlineColorPattern.IsMatch(trimmedModifier))
+                {
+                    var colorModifier = trimmedModifier.Split("=#");
+                    var colorType = colorModifier.First();
+                    var colorText = colorModifier.Last();
+
+                    var color = GetColorByName(colorText);
+
+                    if (color == null)
+                    {
+                        // Adding the alpha channel if needed
+                        colorText = colorText.Length == 6 ? "FF" + colorText : colorText;
+
+                        if (int.TryParse(colorText, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var colorNum))
+                        {
+                            color = Color.FromArgb(colorNum);
+                        }
+                    }
+
+                    if (colorType == "foreg")
+                    {
+                        newInline.Foreground = color;
+                    }
+                    else
+                    {
+                        newInline.Background = color;
+                    }
+                    
+                    continue;
+                }
+                
+                switch (trimmedModifier)
                 {
                     case "b":
                         newInline.Modifiers.Add(InlineMarkupModifiers.Bold);
@@ -182,6 +222,9 @@ public static class MarkupParser
                     case "sub":
                         newInline.Modifiers.Add(InlineMarkupModifiers.Subscript);
                         break;
+                    case "code":
+                        newInline.Modifiers.Add(InlineMarkupModifiers.Code);
+                        break;
                 }
             }
             
@@ -199,4 +242,19 @@ public static class MarkupParser
             ));
         }
     }
+
+    private static Color? GetColorByName(string colorName) => colorName switch
+    {
+        "black" => Color.Black,
+        "white" => Color.White,
+        "gray" => Color.Gray,
+        "orange" => Color.Orange,
+        "yellow" => Color.Yellow,
+        "green" => Color.Green,
+        "blue" => Color.Blue,
+        "purple" => Color.Purple,
+        "pink" => Color.Pink,
+        "red" => Color.Red,
+        _ => null
+    };
 }

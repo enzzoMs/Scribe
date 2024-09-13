@@ -15,7 +15,7 @@ namespace Scribe.UI.Views.Components;
 
 public partial class MarkupEditor : UserControl
 {
-    private const int MarkupViewMargin = 8;
+    private const int MarkupViewMargin = 14;
     private const double SubAndSuperscriptFontSizePct = 0.85;
     
     private static readonly Dictionary<Type, string> MarkupDictionary = new()
@@ -24,7 +24,8 @@ public partial class MarkupEditor : UserControl
         { typeof(OrderedListNode), "[1.] " },
         { typeof(UnorderedListNode), "[*] " },
         { typeof(QuoteNode), "[quote] " },
-        { typeof(CodeNode), "[code] " }
+        { typeof(CodeNode), "[code] " },
+        { typeof(TaskListNode), "[-] " }
     };
     
     public event EventHandler<string>? EditorTextChanged;
@@ -38,37 +39,18 @@ public partial class MarkupEditor : UserControl
         EditorTextBox.GotFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, true); };
         EditorTextBox.LostFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, false); };
         
-        var markupColor = new XshdColor
-        {
-            Foreground = new SimpleHighlightingBrush(Colors.Black),
-            FontWeight = FontWeights.Bold
-        };
+        var markupColor = new XshdColor { Foreground = new SimpleHighlightingBrush(Colors.Black), FontWeight = FontWeights.Bold };
         var markupColorReference = new XshdReference<XshdColor>(markupColor);
         
-        var markupBlockBeginRule = new XshdRule
-        {
-            // Pattern for block markup. E.g. [quote], [quote]% 
-            Regex = @"(?<=^|(^[\t ]*))\[[^\]]+\]%?",
-            ColorReference = markupColorReference,
-        };
+        // Pattern for block markup. E.g. [quote], [quote]% 
+        var markupBlockBeginRule = new XshdRule { Regex = @"(?<=^|(^[\t ]*))\[[^\]]+\]%?", ColorReference = markupColorReference };
         
-        var markupBlockEndRule = new XshdRule
-        {
-            // Pattern for end of block ( % )
-            Regex = @"(?<=^)[\t ]*%[\t\r ]*(?=$)",
-            ColorReference = markupColorReference
-        };
+        // Pattern for end of block ( % )
+        var markupBlockEndRule = new XshdRule { Regex = @"(?<=^)[\t ]*%[\t\r ]*(?=$)", ColorReference = markupColorReference };
 
-        var markupInlineBeginRule = new XshdRule
-        {
-            Regex = @"{(?=[^}\n]+?}(\[[^\]\n]*?\]))",
-            ColorReference = markupColorReference
-        };
+        var markupInlineBeginRule = new XshdRule { Regex = @"{(?=[^}\n]+?}(\[[^\]\n]*?\]))", ColorReference = markupColorReference };
         
-        var markupInlineEndRule = new XshdRule {
-            Regex = @"(?<={[^}\n]+?)}\[[^\]\n]*?\]",
-            ColorReference = markupColorReference
-        };
+        var markupInlineEndRule = new XshdRule { Regex = @"(?<={[^}\n]+?)}\[[^\]\n]*?\]", ColorReference = markupColorReference };
         
         // Pattern for dividers. E.g. "-----" 
         var dividerRule = new XshdRule { Regex = @"^[\t ]*-+[\t\r ]*(?=$)", ColorReference = markupColorReference };
@@ -176,7 +158,7 @@ public partial class MarkupEditor : UserControl
                 left: 0,
                 top: markupEditor.MarkupViewerPanel.Items.Count == 0 ? 0 : MarkupViewMargin,
                 right: 0,
-                bottom: MarkupViewMargin
+                bottom: 0
             );
 
             markupEditor.MarkupViewerPanel.Items.Add(nodeView);
@@ -187,18 +169,14 @@ public partial class MarkupEditor : UserControl
     {
         return node switch
         {
-            ParagraphNode paragraphNode => GetViewFromMarkupNode(paragraphNode),
-            HeaderNode headerNode => GetViewFromMarkupNode(headerNode, markupEditor),
-            UnorderedListNode unorderedListNode => GetViewFromMarkupNode(unorderedListNode, markupEditor),
-            OrderedListNode orderedListNode => GetViewFromMarkupNode(orderedListNode, markupEditor),
-            DividerNode dividerNode => GetViewFromMarkupNode(dividerNode),
-            QuoteNode quoteNode => GetViewFromMarkupNode(quoteNode, markupEditor),
-            CodeNode codeBlock => GetViewFromMarkupNode(codeBlock, markupEditor),
+            ParagraphNode paragraphNode => GetParagraphView(paragraphNode),
+            DividerNode dividerNode => GetDividerView(dividerNode),
+            IBlockNode blockNode => GetViewFromBlockNode(blockNode, markupEditor),
             _ => new TextBlock { Text = "(Markup Node not implemented)" }
         };
     }
 
-    private static TextBlock GetViewFromMarkupNode(ParagraphNode paragraphNode)
+    private static TextBlock GetParagraphView(ParagraphNode paragraphNode)
     {
         var paragraphBlock = new TextBlock { TextWrapping = TextWrapping.Wrap };
 
@@ -210,114 +188,7 @@ public partial class MarkupEditor : UserControl
         return paragraphBlock;
     }
 
-    private static Grid GetViewFromMarkupNode(HeaderNode headerNode, MarkupEditor markupEditor)
-    {
-        var headerGrid = new Grid();
-        headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        headerGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                
-        if (markupEditor.Resources[$"Header{headerNode.Level}.Style"] is Style headerStyle)
-        {
-            headerGrid.Resources.Add(typeof(TextBlock), headerStyle); 
-        }
-                
-        var headerLevelIndicator = new TextBlock
-        {
-            Text = new string('#', headerNode.Level),
-            Margin = new Thickness(0, 0, right: 8, 0)
-        };
-        headerGrid.Children.Add(headerLevelIndicator);
-
-        var childrenList = new ItemsControl();
-        headerGrid.Children.Add(childrenList);
-        Grid.SetColumn(childrenList, 1);
-                
-        foreach (var childNode in headerNode.Children)
-        {
-            var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
-                    
-            if (childNode != headerNode.Children.First())
-            {
-                nodeView.Margin = new Thickness(0, top: 4, 0, 0);
-            }
-                    
-            childrenList.Items.Add(nodeView);
-        }
-                
-        return headerGrid;
-    }
-
-    private static Grid GetViewFromMarkupNode(UnorderedListNode unorderedListNode, MarkupEditor markupEditor)
-    {
-        var unorderedListGrid = new Grid();
-        unorderedListGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        unorderedListGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                
-        var bulletIndicator = new Ellipse
-        {
-            Fill = Application.Current.Resources["Brush.Text.Primary"] as Brush,
-            Width = 6,
-            Height = 6,
-            Margin = new Thickness(left: 18, top: 7, right: 12, bottom: 0),
-            VerticalAlignment = VerticalAlignment.Top
-        };
-        unorderedListGrid.Children.Add(bulletIndicator); 
-                
-        var childrenList = new ItemsControl();
-        unorderedListGrid.Children.Add(childrenList);
-        Grid.SetColumn(childrenList, 1);
-        
-        foreach (var childNode in unorderedListNode.Children)
-        {
-            var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
-            nodeView.VerticalAlignment = VerticalAlignment.Center;
-
-            if (childNode != unorderedListNode.Children.First())
-            {
-                nodeView.Margin = new Thickness(0, top: 14, 0, 0);
-            }
-
-            childrenList.Items.Add(nodeView);
-        }
-
-        return unorderedListGrid;
-    }
-
-    private static Grid GetViewFromMarkupNode(OrderedListNode orderedListNode, MarkupEditor markupEditor)
-    {
-        var orderedListGrid = new Grid();
-        orderedListGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        orderedListGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                
-        var listNumberIndicator = new TextBlock
-        {
-            Text = $"{orderedListNode.ListNumber}.",
-            Margin = new Thickness(left: 18, 0, right: 12, 0),
-            VerticalAlignment = VerticalAlignment.Top
-        };
-        orderedListGrid.Children.Add(listNumberIndicator); 
-
-        var childrenList = new ItemsControl();
-        orderedListGrid.Children.Add(childrenList);
-        Grid.SetColumn(childrenList, 1);
-        
-        foreach (var childNode in orderedListNode.Children)
-        {
-            var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
-            nodeView.VerticalAlignment = VerticalAlignment.Center;
-
-            if (childNode != orderedListNode.Children.First())
-            {
-                nodeView.Margin = new Thickness(0, top: 14, 0, 0);
-            }
-
-            childrenList.Items.Add(nodeView); 
-        }
-
-        return orderedListGrid;
-    }
-
-    private static Grid GetViewFromMarkupNode(DividerNode dividerNode)
+    private static Grid GetDividerView(DividerNode dividerNode)
     {
         var dividerGrid = new Grid();
         dividerGrid.ColumnDefinitions.Add(new ColumnDefinition {             
@@ -328,69 +199,79 @@ public partial class MarkupEditor : UserControl
             Width = new GridLength(DividerNode.MaxLength - dividerNode.Length, GridUnitType.Star)
         });
         
-        var dividerRectangle = new Rectangle();
+        var dividerRectangle = new Rectangle { Style = Application.Current.Resources["Style.Divider.Horizontal"] as Style };
         dividerGrid.Children.Add(dividerRectangle);
         
-        if (Application.Current.Resources["Style.Divider.Horizontal"] is Style dividerStyle)
-        {
-            dividerRectangle.Style = dividerStyle;
-        }
-
         return dividerGrid;
     }
-    
-    private static Grid GetViewFromMarkupNode(QuoteNode quoteNode, MarkupEditor markupEditor)
-    {
-        var quoteGrid = new Grid();
-        quoteGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        quoteGrid.ColumnDefinitions.Add(new ColumnDefinition());
-        quoteGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["QuoteBlock.Style"] as Style);
 
-        var quoteIndicator = new Rectangle
-        {
-            Width = 3,
-            Fill = Application.Current.Resources["Brush.Text.Primary"] as Brush,
-            Margin = new Thickness(left: 18, 0, right: 12, 0)
-        };
-        quoteGrid.Children.Add(quoteIndicator);
+    private static FrameworkElement GetViewFromBlockNode(IBlockNode blockNode, MarkupEditor markupEditor)
+    {
+        var blockGrid = new Grid();
+        blockGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        blockGrid.ColumnDefinitions.Add(new ColumnDefinition());
+        
+        switch (blockNode)
+        {   
+            case HeaderNode headerNode:
+                if (markupEditor.Resources[$"Header{headerNode.Level}.Style"] is Style headerStyle)
+                {
+                    blockGrid.Resources.Add(typeof(TextBlock), headerStyle); 
+                }
+                blockGrid.Children.Add(new TextBlock
+                {
+                    Text = new string('#', headerNode.Level), 
+                    Margin = new Thickness(0, 0, right: 8, 0)
+                });
+                break;
+            case UnorderedListNode:
+                blockGrid.Children.Add(new Ellipse { Style = markupEditor.Resources["BulletIndicator.Style"] as Style });
+                break;
+            case OrderedListNode orderedListNode:
+                blockGrid.Children.Add(new TextBlock
+                {
+                    Text = $"{orderedListNode.ListNumber}.", 
+                    Style = markupEditor.Resources["ListIndicator.Style"] as Style
+                });
+                break;
+            case QuoteNode:
+                blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["QuoteBlock.Text.Style"] as Style);
+                blockGrid.Children.Add(new Rectangle { Style = markupEditor.Resources["QuoteBlock.Indicator.Style"] as Style });
+                break;
+            case TaskListNode taskListNode:
+                if (taskListNode.IsChecked)
+                {
+                    blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CheckBox.Checked.Text.Style"]);
+                }
+                
+                blockGrid.Children.Add(new CheckBox { IsChecked = taskListNode.IsChecked });
+                break;
+        }
         
         var childrenList = new ItemsControl();
-        quoteGrid.Children.Add(childrenList);
+        blockGrid.Children.Add(childrenList);
         Grid.SetColumn(childrenList, 1);
         
-        foreach (var childNode in quoteNode.Children)
+        foreach (var childNode in blockNode.Children)
         {
             var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
-            
-            if (childNode != quoteNode.Children.First())
+            nodeView.VerticalAlignment = VerticalAlignment.Center;
+
+            if (childNode != blockNode.Children.First())
             {
-                nodeView.Margin = new Thickness(0, top: 14, 0, 0);
+                nodeView.Margin = new Thickness(0, top: MarkupViewMargin, 0, 0);
             }
-            
-            childrenList.Items.Add(nodeView);
+
+            childrenList.Items.Add(nodeView); 
         }
 
-        return quoteGrid;
-    }
-
-    private static Border GetViewFromMarkupNode(CodeNode codeNode, MarkupEditor markupEditor)
-    {
-        var codeList = new ItemsControl();
-        codeList.Resources.Add(typeof(TextBlock), markupEditor.Resources["CodeBlock.Text.Style"]);
-
-        var codeBorder = new Border
+        if (blockNode is CodeNode)
         {
-            Style = markupEditor.Resources["CodeBlock.Border.Style"] as Style,
-            Child = codeList
-        };
-
-        foreach (var childNode in codeNode.Children)
-        {
-            var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
-            codeList.Items.Add(nodeView); 
+            blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CodeBlock.Text.Style"]);
+            return new Border { Child = blockGrid, Style = markupEditor.Resources["CodeBlock.Border.Style"] as Style };     
         }
-
-        return codeBorder;
+        
+        return blockGrid;
     }
     
     private static Run GetRunFromInline(InlineMarkup inline, double paragraphFontSize)
@@ -421,9 +302,31 @@ public partial class MarkupEditor : UserControl
                     inlineRun.FontSize = SubAndSuperscriptFontSizePct * paragraphFontSize;
                     inlineRun.BaselineAlignment = BaselineAlignment.Subscript;
                     break;
+                case InlineMarkupModifiers.Code:
+                    inlineRun.FontFamily = Application.Current.Resources["Text.Monospace"] as FontFamily;
+                    inlineRun.Background = Application.Current.Resources["Brush.Markup.Code"] as SolidColorBrush;
+                    break;
             }
-        }
+        }   
 
+        if (inline.Foreground != null)
+        {
+            inlineRun.Foreground = new SolidColorBrush(new Color
+            {
+                A = inline.Foreground.Value.A, R = inline.Foreground.Value.R, 
+                G = inline.Foreground.Value.G, B = inline.Foreground.Value.B
+            });
+        }
+        
+        if (inline.Background != null)
+        {
+            inlineRun.Background = new SolidColorBrush(new Color
+            {
+                A = inline.Background.Value.A, R = inline.Background.Value.R, 
+                G = inline.Background.Value.G, B = inline.Background.Value.B
+            });
+        }
+        
         return inlineRun;
     }
     

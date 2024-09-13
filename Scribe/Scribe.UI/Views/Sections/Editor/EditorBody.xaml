@@ -46,6 +46,7 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
@@ -158,22 +159,30 @@
             CommandParameter="{x:Type blocks:CodeNode}"
             Focusable="False"
             IsEnabled="{Binding IsTextBoxFocused, ElementName=MarkupEditor}"/>
-
+        <components:IconButton
+            Grid.Row="0"
+            Grid.Column="12"
+            Click="OnMarkupIconClicked"
+            ToolTip="{DynamicResource String.Markup.TaskList}"
+            IconGeometry="{StaticResource Drawing.CheckBox}"
+            CommandParameter="{x:Type blocks:TaskListNode}"
+            Focusable="False"
+            IsEnabled="{Binding IsTextBoxFocused, ElementName=MarkupEditor}"/>
         
         <Rectangle
             Grid.Row="0"
-            Grid.Column="13"
+            Grid.Column="14"
             Style="{StaticResource Style.Divider.Vertical}"
             Margin="{StaticResource Dimen.Toolbar.Divider.Margin}"/>
         <components:IconButton
             Grid.Row="0"
-            Grid.Column="14"
+            Grid.Column="15"
             IconGeometry="{StaticResource Drawing.Edit}"
             ToolTip="{DynamicResource String.Button.Edit}"
             Command="{Binding EnterEditModeCommand}"/>
         <components:IconButton
             Grid.Row="0"
-            Grid.Column="15"
+            Grid.Column="16"
             ToolTip="{DynamicResource String.Button.Delete}"
             PreviewMouseLeftButtonDown="OnDeleteDocumentClicked"
             IconGeometry="{StaticResource Drawing.Delete}"/>
@@ -181,19 +190,19 @@
         <Rectangle
             Grid.Row="1"
             Grid.Column="0"
-            Grid.ColumnSpan="16"
+            Grid.ColumnSpan="17"
             Style="{StaticResource Style.Divider.Horizontal}"/>
         <ContentControl
             Grid.Row="2"
             Grid.Column="0"
-            Grid.ColumnSpan="16"
+            Grid.ColumnSpan="17"
             Content="{Binding Header, ElementName=Root}"
             Margin="0 20 0 0"/>
         <components:MarkupEditor
             x:Name="MarkupEditor"
             Grid.Row="3"
             Grid.Column="0"
-            Grid.ColumnSpan="16"
+            Grid.ColumnSpan="17"
             EditorText="{Binding SelectedDocument.EditedContent, Mode=TwoWay}"
             EditorTextChanged="OnDocumentContentChanged"
             InPreviewMode="{Binding InPreviewMode}"/>

@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="Resources/Styles/Template.ScrollBar.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Template.ClosableTabControl.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Template.ScrollViewer.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Template.CheckBox.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>

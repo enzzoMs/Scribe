@@ -4,10 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:markupBlockNodes="clr-namespace:Scribe.Markup.Nodes.Blocks;assembly=Scribe.Markup"
-    xmlns:markupBlockLeafs="clr-namespace:Scribe.Markup.Nodes.Leafs;assembly=Scribe.Markup"
-    xmlns:markupInlines="clr-namespace:Scribe.Markup.Inlines;assembly=Scribe.Markup"
-    xmlns:components="clr-namespace:Scribe.UI.Views.Components"
     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
     xmlns:sys="clr-namespace:System;assembly=mscorelib"
     mc:Ignorable="d"
@@ -17,6 +13,11 @@
         <Thickness x:Key="Dimen.ScrollBar.Vertical.Margin" Top="0" Bottom="0"/>
         <Thickness x:Key="Dimen.ScrollBar.Vertical.OuterMargin" Left="0"/>
         <sys:Double x:Key="Dimen.ScrollBar.Vertical.Size">9</sys:Double>
+        
+        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="LineHeight" Value="20"/>
+            <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>
+        </Style>
         
         <Style x:Key="Header1.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -43,8 +44,27 @@
             <Setter Property="FontSize" Value="15"/>
         </Style>
         
-        <Style x:Key="QuoteBlock.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Style x:Key="BulletIndicator.Style" TargetType="Ellipse">
+            <Setter Property="Width" Value="6"/>
+            <Setter Property="Height" Value="6"/>
+            <Setter Property="Fill" Value="{DynamicResource Brush.Text.Primary}"/>
+            <Setter Property="Margin" Value="18 8 12 0"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
+        
+        <Style x:Key="ListIndicator.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="Margin" Value="18 0 12 0"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
+        
+        <Style x:Key="QuoteBlock.Text.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="FontStyle" Value="Italic"/>
+        </Style>
+        
+        <Style x:Key="QuoteBlock.Indicator.Style" TargetType="Rectangle">
+            <Setter Property="Width" Value="3"/>
+            <Setter Property="Fill" Value="{DynamicResource Brush.Text.Primary}"/>
+            <Setter Property="Margin" Value="18 0 12 0"/>
         </Style>
         
         <Style x:Key="CodeBlock.Text.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -54,6 +74,16 @@
         <Style x:Key="CodeBlock.Border.Style" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource Brush.Markup.Code}"/>
             <Setter Property="Padding" Value="14"/>
+        </Style>
+        
+        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Setter Property="Margin" Value="18 4 12 0"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
+        
+        <Style x:Key="CheckBox.Checked.Text.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="TextDecorations" Value="Strikethrough"/>
         </Style>
         
         <Style TargetType="{x:Type avalonEdit:TextArea}">
