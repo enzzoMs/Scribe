@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using Scribe.UI.Views.Components;
 using MessageBox = Scribe.UI.Views.Components.MessageBox;
 
@@ -43,6 +44,7 @@ public partial class FolderDetailsSection : UserControl
         {
             Owner = Application.Current.MainWindow,
             Title = appResources["String.Folders.Delete"] as string ?? "",
+            MessageIconPath = appResources["Drawing.QuestionMark"] as Geometry,
             Message = boxMessage,
             Options = [
                 new MessageBoxOption(appResources["String.Button.Delete"] as string ?? "", detailsViewModel.DeleteFolderCommand),

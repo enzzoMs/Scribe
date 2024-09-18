@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Scribe.UI.Views.Components;
 
@@ -26,6 +27,12 @@ public partial class MessageBox : Window
         set => SetValue(OptionsProperty, value);
     }
     
+    public Geometry? MessageIconPath
+    {
+        get => (Geometry?) GetValue(MessageIconPathProperty);
+        set => SetValue(MessageIconPathProperty, value);
+    }
+    
     public static readonly DependencyProperty MessageProperty = DependencyProperty.Register(
         name: nameof(Message),
         propertyType: typeof(string),
@@ -38,6 +45,12 @@ public partial class MessageBox : Window
         ownerType: typeof(MessageBox),
         new FrameworkPropertyMetadata(propertyChangedCallback: OnOptionsChanged)
     );
+    
+    public static readonly DependencyProperty MessageIconPathProperty = DependencyProperty.Register(
+        name: nameof(MessageIconPath),
+        propertyType: typeof(Geometry),
+        ownerType: typeof(MessageBox)
+    );
 
     private static void OnOptionsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -49,13 +62,17 @@ public partial class MessageBox : Window
             {
                 Content = option.OptionText,
                 Command = option.Command,
-                CommandParameter = option.CommandParameter,
+                CommandParameter = option.CommandParameter
             };
             optionButton.Click += messageBox.OnOptionClicked;
 
             messageBox.OptionsGrid.Columns += 1;
             messageBox.OptionsGrid.Children.Add(optionButton);
         }
+        
+        messageBox.OptionsGrid.Visibility = messageBox.Options.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        messageBox.MessageDivider.Visibility = messageBox.Options.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        Grid.SetRowSpan(messageBox.MessageBlock,  messageBox.Options.Count == 0 ? 3 : 1);
     }
 
     private void OnOptionClicked(object sender, RoutedEventArgs e)

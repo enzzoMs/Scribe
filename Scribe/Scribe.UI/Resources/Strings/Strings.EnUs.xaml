@@ -61,8 +61,10 @@
     <sys:String x:Key="String.Markup.Code">Code</sys:String>
     <sys:String x:Key="String.Markup.TaskList">Task List</sys:String>
 
+    <sys:String x:Key="String.Error">Error</sys:String>
     <sys:String x:Key="String.Error.RequiredField">* Required</sys:String>
-    
+    <sys:String x:Key="String.Error.OpenLink">Error opening link &quot;{0}&quot;</sys:String>
+
     <sys:String x:Key="String.ClosableTabControl.Close.Tooltip">Close Tab</sys:String>
     
     <sys:String x:Key="String.PagedList.Button.NextPage">Next Page</sys:String>

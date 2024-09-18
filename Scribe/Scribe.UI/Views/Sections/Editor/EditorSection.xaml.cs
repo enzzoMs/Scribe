@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using Scribe.UI.Command;
 using Scribe.UI.Views.Components;
 using Scribe.UI.Views.Sections.Editor.State;
@@ -45,6 +46,7 @@ public partial class EditorSection : UserControl
             {
                 Owner = Application.Current.MainWindow,
                 Title = appResources["String.Documents.Save"] as string,
+                MessageIconPath = appResources["Drawing.QuestionMark"] as Geometry,
                 Message = saveDocumentMessage,
                 Options = [
                     new MessageBoxOption(

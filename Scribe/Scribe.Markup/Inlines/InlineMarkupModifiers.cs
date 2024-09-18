@@ -8,5 +8,6 @@ public enum InlineMarkupModifiers
     Strikethrough,
     Superscript,
     Subscript,
-    Code
+    Code,
+    Spoiler
 }

@@ -1,6 +1,8 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -39,23 +41,35 @@ public partial class MarkupEditor : UserControl
         EditorTextBox.GotFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, true); };
         EditorTextBox.LostFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, false); };
         
+        EditorTextBox.TextArea.TextView.LinkTextForegroundBrush = Brushes.Black;
+        EditorTextBox.TextArea.TextView.LinkTextUnderline = false;
+        
         var markupColor = new XshdColor { Foreground = new SimpleHighlightingBrush(Colors.Black), FontWeight = FontWeights.Bold };
         var markupColorReference = new XshdReference<XshdColor>(markupColor);
         
         // Pattern for block markup. E.g. [quote], [quote]% 
-        var markupBlockBeginRule = new XshdRule { Regex = @"(?<=^|(^[\t ]*))\[[^\]]+\]%?", ColorReference = markupColorReference };
+        var markupBlockBeginRule = new XshdRule { Regex = @"(?<=^|(^[\t ]*))\[[^\]]*[^\\]\]%?", ColorReference = markupColorReference };
         
         // Pattern for end of block ( % )
         var markupBlockEndRule = new XshdRule { Regex = @"(?<=^)[\t ]*%[\t\r ]*(?=$)", ColorReference = markupColorReference };
 
-        var markupInlineBeginRule = new XshdRule { Regex = @"{(?=[^}\n]+?}(\[[^\]\n]*?\]))", ColorReference = markupColorReference };
-        
-        var markupInlineEndRule = new XshdRule { Regex = @"(?<={[^}\n]+?)}\[[^\]\n]*?\]", ColorReference = markupColorReference };
+        // Pattern for inline markup. E.g. {text}[b,i]
+        var markupInlineBeginRule = new XshdRule { Regex = @"{(?=[^}\n]+?}(\[\]|\[[^\]\n]*?[^\\]\]))", ColorReference = markupColorReference };
+        var markupInlineEndRule = new XshdRule { Regex = @"(?<={[^}\n]+?)}(\[\]|\[[^\]\n]*?[^\\]\])", ColorReference = markupColorReference };
         
         // Pattern for dividers. E.g. "-----" 
         var dividerRule = new XshdRule { Regex = @"^[\t ]*-+[\t\r ]*(?=$)", ColorReference = markupColorReference };
-        
-        var newLineRule = new XshdRule { Regex = @"\/\/", ColorReference = markupColorReference };
+
+        var keywords = new XshdKeywords();
+        keywords.Words.Add("///");
+        keywords.Words.Add(@"\/");
+        keywords.Words.Add(@"\[");
+        keywords.Words.Add(@"\]");
+        keywords.Words.Add(@"\{");
+        keywords.Words.Add(@"\}");
+        keywords.Words.Add(@"\%");
+        keywords.Words.Add(@"\\");
+        keywords.ColorReference = markupColorReference;
         
         var mainRuleSet = new XshdRuleSet();
         mainRuleSet.Elements.Add(markupBlockBeginRule);
@@ -63,7 +77,7 @@ public partial class MarkupEditor : UserControl
         mainRuleSet.Elements.Add(markupInlineBeginRule);
         mainRuleSet.Elements.Add(markupInlineEndRule);
         mainRuleSet.Elements.Add(dividerRule);
-        mainRuleSet.Elements.Add(newLineRule);
+        mainRuleSet.Elements.Add(keywords);
 
         var syntaxDefinition = new XshdSyntaxDefinition();
         syntaxDefinition.Elements.Add(mainRuleSet);
@@ -265,6 +279,13 @@ public partial class MarkupEditor : UserControl
             childrenList.Items.Add(nodeView); 
         }
 
+        if (blockNode is QuoteNode { Author: not null } quoteNode)
+        {
+            var authorBlock = new TextBlock();
+            authorBlock.Inlines.Add(new Run($"\n- {quoteNode.Author}") { FontWeight = FontWeights.Bold });
+            childrenList.Items.Add(authorBlock);
+        } 
+        
         if (blockNode is CodeNode)
         {
             blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CodeBlock.Text.Style"]);
@@ -274,60 +295,112 @@ public partial class MarkupEditor : UserControl
         return blockGrid;
     }
     
-    private static Run GetRunFromInline(InlineMarkup inline, double paragraphFontSize)
+    private static Run GetRunFromInline(InlineMarkup inlineMarkup, double paragraphFontSize)
     {
-        var inlineRun = new Run(inline.Text);
+        var inline = new Run(inlineMarkup.Text);
 
-        foreach (var modifier in inline.Modifiers)
+        if (inlineMarkup.Uri != null)
+        {
+            inline.TextDecorations.Add(TextDecorations.Underline);
+
+            Uri.TryCreate(inlineMarkup.Uri, UriKind.Absolute, out var uri);
+            
+            if (uri != null && uri.Scheme is "http" or "https" or "file")
+            {
+                inline.Cursor = Cursors.Hand;
+                inline.Foreground = Brushes.Blue;
+                inline.PreviewMouseLeftButtonDown += (_, _) =>
+                {
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo { FileName = inlineMarkup.Uri, UseShellExecute = true });
+                    }
+                    catch
+                    {
+                        var uriErrorMessage = string.Format(
+                            Application.Current.Resources["String.Error.OpenLink"] as string ?? "", inlineMarkup.Uri
+                        );
+                        
+                        new MessageBox
+                        {
+                            Owner = Application.Current.MainWindow,
+                            Title = Application.Current.Resources["String.Error"] as string,
+                            MessageIconPath = Application.Current.Resources["Drawing.Exclamation"] as Geometry,
+                            Message = uriErrorMessage
+                        }.ShowDialog();
+                    }
+                };
+            }
+            else
+            {
+                inline.Foreground = Brushes.Gray;
+            }    
+        }
+        
+        if (inlineMarkup.Foreground != null)
+        {
+            inline.Foreground = new SolidColorBrush(new Color
+            {
+                A = inlineMarkup.Foreground.Value.A, R = inlineMarkup.Foreground.Value.R, 
+                G = inlineMarkup.Foreground.Value.G, B = inlineMarkup.Foreground.Value.B
+            });
+        }
+        
+        if (inlineMarkup.Background != null)
+        {
+            inline.Background = new SolidColorBrush(new Color
+            {
+                A = inlineMarkup.Background.Value.A, R = inlineMarkup.Background.Value.R, 
+                G = inlineMarkup.Background.Value.G, B = inlineMarkup.Background.Value.B
+            });
+        }
+        
+        var previousBackground = inline.Background;
+        var previousForeground = inline.Foreground;
+        
+        foreach (var modifier in inlineMarkup.Modifiers)
         {
             switch (modifier)
             {
                 case InlineMarkupModifiers.Bold:
-                    inlineRun.FontWeight = FontWeights.Bold;
+                    inline.FontWeight = FontWeights.Bold;
                     break;
                 case InlineMarkupModifiers.Italic:
-                    inlineRun.FontStyle = FontStyles.Italic;
+                    inline.FontStyle = FontStyles.Italic;
                     break;
                 case InlineMarkupModifiers.Underline:
-                    inlineRun.TextDecorations.Add(TextDecorations.Underline);
+                    inline.TextDecorations.Add(TextDecorations.Underline);
                     break;
                 case InlineMarkupModifiers.Strikethrough:
-                    inlineRun.TextDecorations.Add(TextDecorations.Strikethrough);
+                    inline.TextDecorations.Add(TextDecorations.Strikethrough);
                     break;
                 case InlineMarkupModifiers.Superscript:
-                    inlineRun.FontSize = SubAndSuperscriptFontSizePct * paragraphFontSize;
-                    inlineRun.BaselineAlignment = BaselineAlignment.Superscript;
+                    inline.FontSize = SubAndSuperscriptFontSizePct * paragraphFontSize;
+                    inline.BaselineAlignment = BaselineAlignment.Superscript;
                     break;
                 case InlineMarkupModifiers.Subscript:
-                    inlineRun.FontSize = SubAndSuperscriptFontSizePct * paragraphFontSize;
-                    inlineRun.BaselineAlignment = BaselineAlignment.Subscript;
+                    inline.FontSize = SubAndSuperscriptFontSizePct * paragraphFontSize;
+                    inline.BaselineAlignment = BaselineAlignment.Subscript;
                     break;
                 case InlineMarkupModifiers.Code:
-                    inlineRun.FontFamily = Application.Current.Resources["Text.Monospace"] as FontFamily;
-                    inlineRun.Background = Application.Current.Resources["Brush.Markup.Code"] as SolidColorBrush;
+                    inline.FontFamily = Application.Current.Resources["Text.Monospace"] as FontFamily;
+                    inline.Background = Application.Current.Resources["Brush.Markup.Code"] as SolidColorBrush;
+                    break;
+                case InlineMarkupModifiers.Spoiler:
+                    inline.Background = Application.Current.Resources["Brush.Markup.Code"] as SolidColorBrush;
+                    inline.Foreground = Application.Current.Resources["Brush.Markup.Code"] as SolidColorBrush;
+                    inline.Cursor = Cursors.Hand;
+                    inline.PreviewMouseLeftButtonDown += (_, _) =>
+                    {
+                        inline.Foreground = previousForeground;
+                        inline.Background = previousBackground;
+                        inline.Cursor = Cursors.Arrow;
+                    };
                     break;
             }
-        }   
+        }
 
-        if (inline.Foreground != null)
-        {
-            inlineRun.Foreground = new SolidColorBrush(new Color
-            {
-                A = inline.Foreground.Value.A, R = inline.Foreground.Value.R, 
-                G = inline.Foreground.Value.G, B = inline.Foreground.Value.B
-            });
-        }
-        
-        if (inline.Background != null)
-        {
-            inlineRun.Background = new SolidColorBrush(new Color
-            {
-                A = inline.Background.Value.A, R = inline.Background.Value.R, 
-                G = inline.Background.Value.G, B = inline.Background.Value.B
-            });
-        }
-        
-        return inlineRun;
+        return inline;
     }
     
     private void EditorTextBox_OnTextChanged(object? sender, EventArgs e)

@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using ICSharpCode.AvalonEdit;
 using Scribe.UI.Views.Components;
 using MessageBox = Scribe.UI.Views.Components.MessageBox;
@@ -81,6 +82,7 @@ public partial class EditorBody : UserControl
         {
             Owner = Application.Current.MainWindow,
             Title = appResources["String.Documents.Delete"] as string ?? "",
+            MessageIconPath = appResources["Drawing.QuestionMark"] as Geometry,
             Message = boxMessage,
             Options = [
                 new MessageBoxOption(
