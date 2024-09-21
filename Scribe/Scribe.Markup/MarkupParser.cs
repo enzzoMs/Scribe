@@ -10,15 +10,16 @@ namespace Scribe.Markup;
 
 public static class MarkupParser
 {
+    // Pattern for block markup. E.g. [quote], [quote]% 
     private static readonly Regex BlockMarkupPattern = new(@"(?<=^\[)[^\]]*?[^\\](?=\](%?| .*)$)", RegexOptions.Compiled);
-    private static readonly Regex BlockMultilineMarkupPattern = new(@"(?<=^\s*\[).+?(?=\]%\s*$)", RegexOptions.Compiled);
 
-    private static readonly Regex OrderedListPattern = new("[0-9][0-9]*.", RegexOptions.Compiled);
+    private static readonly Regex OrderedListPattern = new("^[0-9][0-9]*.$", RegexOptions.Compiled);
     private static readonly Regex DividerPattern = new("^-+$", RegexOptions.Compiled);
+    private static readonly Regex ImagePattern = new(@"img(\([0-9]+%\))?=(.+)", RegexOptions.Compiled);
 
     // Pattern for inline markup. E.g. {text}[b,i]
     private static readonly Regex InlineMarkupPattern = new(@"{([^}\n]+?)}(\[\]|\[([^\]\n]*?[^\\])\])", RegexOptions.Compiled);
-
+    
     private static readonly Regex InlineColorPattern = new(
         "(foreg|backg)=#(([0-9a-fA-F]{8}|[0-9a-fA-F]{6})|[a-z]+)", RegexOptions.Compiled
     );
@@ -138,14 +139,33 @@ public static class MarkupParser
 
     private static IBlockNode? GetBlockNodeFromMarkup(string markup)
     {
+        if (markup.StartsWith("quote="))
+        {
+            return new QuoteNode(author: markup[6..]);
+        }
+        
         if (OrderedListPattern.IsMatch(markup))
         {
             return new OrderedListNode(listNumber: int.Parse(markup.Trim('.')));
         }
 
-        if (markup.StartsWith("quote="))
+        var imageMatch = ImagePattern.Match(markup);
+        
+        if (imageMatch.Success)
         {
-            return new QuoteNode(author: markup[6..]);
+            var imageParts = imageMatch.Groups;
+
+            var imageScale = imageParts[1].Value.TrimStart('(').TrimEnd(')', '%');
+            var imageUri = imageParts[2].Value;
+
+            var imageNode = new ImageNode(imageUri);
+            
+            if (int.TryParse(imageScale, out var scalePercentage))
+            {
+                imageNode.Scale = scalePercentage / 100.0;
+            }
+
+            return imageNode;
         }
         
         return markup switch
@@ -156,6 +176,7 @@ public static class MarkupParser
             "*" => new UnorderedListNode(),
             "quote" => new QuoteNode(),
             "code" => new CodeNode(),
+            "toggle" => new ToggleNode(),
             "-" or "x" => new TaskListNode(isChecked: markup == "x"),
             _ => null
         };
@@ -193,7 +214,7 @@ public static class MarkupParser
 
                 if (trimmedModifier.StartsWith("link="))
                 {
-                    newInline.Uri = trimmedModifier[5..];
+                    newInline.LinkUri = trimmedModifier[5..];
                     continue;
                 }
                 

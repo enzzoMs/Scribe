@@ -10,7 +10,7 @@ public class InlineMarkup(string text)
     
     public Color? Background { get; set; }
 
-    public string? Uri { get; set; }
+    public string? LinkUri { get; set; }
 
     public ICollection<InlineMarkupModifiers> Modifiers { get; } = [];
 }

@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
@@ -12,6 +14,7 @@ using Scribe.Markup.Inlines;
 using Scribe.Markup.Nodes;
 using Scribe.Markup.Nodes.Blocks;
 using Scribe.Markup.Nodes.Leafs;
+using Path = System.Windows.Shapes.Path;
 
 namespace Scribe.UI.Views.Components;
 
@@ -27,7 +30,8 @@ public partial class MarkupEditor : UserControl
         { typeof(UnorderedListNode), "[*] " },
         { typeof(QuoteNode), "[quote] " },
         { typeof(CodeNode), "[code] " },
-        { typeof(TaskListNode), "[-] " }
+        { typeof(TaskListNode), "[-] " },
+        { typeof(ImageNode), "[img(100%)= ]" }
     };
     
     public event EventHandler<string>? EditorTextChanged;
@@ -35,54 +39,8 @@ public partial class MarkupEditor : UserControl
     public MarkupEditor()
     {
         InitializeComponent();
-        
-        EditorTextBox.TextArea.TextView.Margin = new Thickness(12, 0, 0, 0);
-        
-        EditorTextBox.GotFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, true); };
-        EditorTextBox.LostFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, false); };
-        
-        EditorTextBox.TextArea.TextView.LinkTextForegroundBrush = Brushes.Black;
-        EditorTextBox.TextArea.TextView.LinkTextUnderline = false;
-        
-        var markupColor = new XshdColor { Foreground = new SimpleHighlightingBrush(Colors.Black), FontWeight = FontWeights.Bold };
-        var markupColorReference = new XshdReference<XshdColor>(markupColor);
-        
-        // Pattern for block markup. E.g. [quote], [quote]% 
-        var markupBlockBeginRule = new XshdRule { Regex = @"(?<=^|(^[\t ]*))\[[^\]]*[^\\]\]%?", ColorReference = markupColorReference };
-        
-        // Pattern for end of block ( % )
-        var markupBlockEndRule = new XshdRule { Regex = @"(?<=^)[\t ]*%[\t\r ]*(?=$)", ColorReference = markupColorReference };
-
-        // Pattern for inline markup. E.g. {text}[b,i]
-        var markupInlineBeginRule = new XshdRule { Regex = @"{(?=[^}\n]+?}(\[\]|\[[^\]\n]*?[^\\]\]))", ColorReference = markupColorReference };
-        var markupInlineEndRule = new XshdRule { Regex = @"(?<={[^}\n]+?)}(\[\]|\[[^\]\n]*?[^\\]\])", ColorReference = markupColorReference };
-        
-        // Pattern for dividers. E.g. "-----" 
-        var dividerRule = new XshdRule { Regex = @"^[\t ]*-+[\t\r ]*(?=$)", ColorReference = markupColorReference };
-
-        var keywords = new XshdKeywords();
-        keywords.Words.Add("///");
-        keywords.Words.Add(@"\/");
-        keywords.Words.Add(@"\[");
-        keywords.Words.Add(@"\]");
-        keywords.Words.Add(@"\{");
-        keywords.Words.Add(@"\}");
-        keywords.Words.Add(@"\%");
-        keywords.Words.Add(@"\\");
-        keywords.ColorReference = markupColorReference;
-        
-        var mainRuleSet = new XshdRuleSet();
-        mainRuleSet.Elements.Add(markupBlockBeginRule);
-        mainRuleSet.Elements.Add(markupBlockEndRule);
-        mainRuleSet.Elements.Add(markupInlineBeginRule);
-        mainRuleSet.Elements.Add(markupInlineEndRule);
-        mainRuleSet.Elements.Add(dividerRule);
-        mainRuleSet.Elements.Add(keywords);
-
-        var syntaxDefinition = new XshdSyntaxDefinition();
-        syntaxDefinition.Elements.Add(mainRuleSet);
-        
-        EditorTextBox.SyntaxHighlighting = HighlightingLoader.Load(syntaxDefinition, HighlightingManager.Instance);
+        ConfigureEditorTextBox();        
+        ConfigureSyntaxHighlighting();
     }
     
     public string EditorText
@@ -130,6 +88,51 @@ public partial class MarkupEditor : UserControl
         {
             EditorTextBox.TextArea.Document.Insert(EditorTextBox.CaretOffset, markupText);
         }
+    }
+
+    private void ConfigureEditorTextBox()
+    {
+        EditorTextBox.TextArea.TextView.Margin = new Thickness(12, 0, 0, 0);
+        
+        EditorTextBox.GotFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, true); };
+        EditorTextBox.LostFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, false); };
+        
+        EditorTextBox.TextArea.TextView.LinkTextForegroundBrush = Brushes.Black;
+        EditorTextBox.TextArea.TextView.LinkTextUnderline = false;
+    }
+
+    private void ConfigureSyntaxHighlighting()
+    {
+        var markupColor = new XshdColor { Foreground = new SimpleHighlightingBrush(Colors.Black), FontWeight = FontWeights.Bold };
+        var markupColorReference = new XshdReference<XshdColor>(markupColor);
+        
+        var keywords = new XshdKeywords
+        {
+            Words = { "///", @"\/", @"\[" , @"\]", @"\{", @"\}", @"\%", @"\\" },
+            ColorReference = markupColorReference
+        };
+        
+        var mainRuleSet = new XshdRuleSet
+        {
+            Elements =
+            {
+                keywords,
+                // Pattern for block markup. E.g. [quote], [quote]% 
+                new XshdRule { Regex = @"(?<=^|(^[\t ]*))\[[^\]]*[^\\]\]%?", ColorReference = markupColorReference },
+                // Pattern for end of block ( % )
+                new XshdRule { Regex = @"(?<=^)[\t ]*%[\t\r ]*(?=$)", ColorReference = markupColorReference },
+                // Pattern for inline markup. E.g. {text}[b,i]
+                new XshdRule { Regex = @"{(?=[^}\n]+?}(\[\]|\[[^\]\n]*?[^\\]\]))", ColorReference = markupColorReference },
+                new XshdRule { Regex = @"(?<={[^}\n]+?)}(\[\]|\[[^\]\n]*?[^\\]\])", ColorReference = markupColorReference },
+                // Pattern for dividers. E.g. "-----"
+                new XshdRule { Regex = @"^[\t ]*-+[\t\r ]*(?=$)", ColorReference = markupColorReference },
+            }
+        };
+        
+        var syntaxDefinition = new XshdSyntaxDefinition();
+        syntaxDefinition.Elements.Add(mainRuleSet);
+        
+        EditorTextBox.SyntaxHighlighting = HighlightingLoader.Load(syntaxDefinition, HighlightingManager.Instance);
     }
     
     private static void OnPreviewModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -225,6 +228,34 @@ public partial class MarkupEditor : UserControl
         blockGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         blockGrid.ColumnDefinitions.Add(new ColumnDefinition());
         
+        var childrenList = new ItemsControl();
+        blockGrid.Children.Add(childrenList);
+        Grid.SetColumn(childrenList, 1);
+
+        foreach (var childNode in blockNode.Children)
+        {
+            var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
+            nodeView.VerticalAlignment = VerticalAlignment.Center;
+
+            if (childNode != blockNode.Children.First())
+            {
+                nodeView.Margin = new Thickness(0, top: MarkupViewMargin, 0, 0);
+            }
+
+            childrenList.Items.Add(nodeView); 
+        }
+        
+        AddSpecialBlockElements(blockNode, blockGrid, childrenList, markupEditor);
+        
+        if (blockNode is not CodeNode) return blockGrid;
+        
+        blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CodeBlock.Text.Style"]);
+        return new Border { Child = blockGrid, Style = markupEditor.Resources["CodeBlock.Border.Style"] as Style };
+    }
+
+    private static void AddSpecialBlockElements(
+        IBlockNode blockNode, Grid blockGrid, ItemsControl childrenList, MarkupEditor markupEditor)
+    { 
         switch (blockNode)
         {   
             case HeaderNode headerNode:
@@ -248,62 +279,92 @@ public partial class MarkupEditor : UserControl
                     Style = markupEditor.Resources["ListIndicator.Style"] as Style
                 });
                 break;
-            case QuoteNode:
+            case QuoteNode quoteNode:
                 blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["QuoteBlock.Text.Style"] as Style);
                 blockGrid.Children.Add(new Rectangle { Style = markupEditor.Resources["QuoteBlock.Indicator.Style"] as Style });
+
+                if (quoteNode.Author != null)
+                {
+                    var authorBlock = new TextBlock();
+                    authorBlock.Inlines.Add(new Run($"\n- {quoteNode.Author}") { FontWeight = FontWeights.Bold });
+                    childrenList.Items.Add(authorBlock);
+                }
                 break;
             case TaskListNode taskListNode:
                 if (taskListNode.IsChecked)
                 {
                     blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CheckBox.Checked.Text.Style"]);
                 }
-                
                 blockGrid.Children.Add(new CheckBox { IsChecked = taskListNode.IsChecked });
                 break;
-        }
-        
-        var childrenList = new ItemsControl();
-        blockGrid.Children.Add(childrenList);
-        Grid.SetColumn(childrenList, 1);
-        
-        foreach (var childNode in blockNode.Children)
-        {
-            var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
-            nodeView.VerticalAlignment = VerticalAlignment.Center;
+            case ToggleNode:
+                var toggleIndicator = new Path();
+                var toggleBorder = new Border
+                {
+                    Style = markupEditor.Resources["Toggle.Button.Style"] as Style,
+                    Child = toggleIndicator
+                };
+                blockGrid.Children.Add(toggleBorder);
 
-            if (childNode != blockNode.Children.First())
-            {
-                nodeView.Margin = new Thickness(0, top: MarkupViewMargin, 0, 0);
-            }
+                toggleBorder.PreviewMouseLeftButtonDown += OnToggleClicked;
+                
+                for (var i = 1; i < childrenList.Items.Count; i++)
+                {
+                    if (childrenList.Items[i] is not FrameworkElement childrenView) continue;
+                    childrenView.Visibility = Visibility.Collapsed;
+                }
+                break;
 
-            childrenList.Items.Add(nodeView); 
-        }
+                void OnToggleClicked(object o, MouseButtonEventArgs mouseButtonEventArgs)
+                {
+                    for (var i = 1; i < childrenList.Items.Count; i++)
+                    {
+                        if (childrenList.Items[i] is FrameworkElement childrenView)
+                        {
+                            childrenView.Visibility = childrenView.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                        }
+                    }
 
-        if (blockNode is QuoteNode { Author: not null } quoteNode)
-        {
-            var authorBlock = new TextBlock();
-            authorBlock.Inlines.Add(new Run($"\n- {quoteNode.Author}") { FontWeight = FontWeights.Bold });
-            childrenList.Items.Add(authorBlock);
-        } 
-        
-        if (blockNode is CodeNode)
-        {
-            blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CodeBlock.Text.Style"]);
-            return new Border { Child = blockGrid, Style = markupEditor.Resources["CodeBlock.Border.Style"] as Style };     
+                    var downArrow = Application.Current.Resources["Drawing.DownArrow"] as Geometry;
+                    var rightArrow = Application.Current.Resources["Drawing.RightArrow"] as Geometry;
+
+                    toggleIndicator.Data = toggleIndicator.Data == downArrow ? rightArrow : downArrow;
+                }
+            case ImageNode imageNode:
+                if (TryLoadImage(imageNode.SourceUri, out var image))
+                {
+                    image!.Width = image.Source.Width * imageNode.Scale;
+                    image.Height = image.Source.Height * imageNode.Scale;
+                    image.HorizontalAlignment = HorizontalAlignment.Left;
+                    childrenList.Items.Insert(0, image);
+                }
+                else
+                {
+                    var errorMessage = string.Format(
+                        Application.Current.Resources["String.Markup.Image.Error"] as string ?? "",
+                        imageNode.SourceUri
+                    );
+                    
+                    childrenList.Items.Insert(0, new TextBlock
+                    {
+                        Text = errorMessage,
+                        Foreground = Brushes.Red, 
+                        Margin = new Thickness(0, 0, 0, bottom: MarkupViewMargin)
+                    });
+                }
+                break;
         }
-        
-        return blockGrid;
     }
     
     private static Run GetRunFromInline(InlineMarkup inlineMarkup, double paragraphFontSize)
     {
         var inline = new Run(inlineMarkup.Text);
 
-        if (inlineMarkup.Uri != null)
+        if (inlineMarkup.LinkUri != null)
         {
             inline.TextDecorations.Add(TextDecorations.Underline);
 
-            Uri.TryCreate(inlineMarkup.Uri, UriKind.Absolute, out var uri);
+            Uri.TryCreate(inlineMarkup.LinkUri, UriKind.Absolute, out var uri);
             
             if (uri != null && uri.Scheme is "http" or "https" or "file")
             {
@@ -313,14 +374,13 @@ public partial class MarkupEditor : UserControl
                 {
                     try
                     {
-                        Process.Start(new ProcessStartInfo { FileName = inlineMarkup.Uri, UseShellExecute = true });
+                        Process.Start(new ProcessStartInfo { FileName = inlineMarkup.LinkUri, UseShellExecute = true });
                     }
-                    catch
+                    catch (InvalidOperationException)
                     {
                         var uriErrorMessage = string.Format(
-                            Application.Current.Resources["String.Error.OpenLink"] as string ?? "", inlineMarkup.Uri
+                            Application.Current.Resources["String.Error.OpenLink"] as string ?? "", inlineMarkup.LinkUri
                         );
-                        
                         new MessageBox
                         {
                             Owner = Application.Current.MainWindow,
@@ -393,7 +453,10 @@ public partial class MarkupEditor : UserControl
                     inline.PreviewMouseLeftButtonDown += (_, _) =>
                     {
                         inline.Foreground = previousForeground;
-                        inline.Background = previousBackground;
+                        if (modifier != InlineMarkupModifiers.Code)
+                        {
+                            inline.Background = previousBackground;
+                        }
                         inline.Cursor = Cursors.Arrow;
                     };
                     break;
@@ -401,6 +464,27 @@ public partial class MarkupEditor : UserControl
         }
 
         return inline;
+    }
+
+    private static bool TryLoadImage(string uriText, out Image? image)
+    {
+        image = null;
+        
+        if (!Uri.TryCreate(uriText, UriKind.Absolute, out var uri) || uri.Scheme != "file") return false;
+        try
+        {
+            var bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.UriSource = uri;
+            bitmapImage.EndInit();
+            
+            image = new Image { Source = bitmapImage };
+            return true;
+        }
+        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException) { }
+        
+        return false;
     }
     
     private void EditorTextBox_OnTextChanged(object? sender, EventArgs e)
