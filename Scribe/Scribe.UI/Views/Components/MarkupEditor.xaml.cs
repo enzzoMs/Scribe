@@ -31,7 +31,9 @@ public partial class MarkupEditor : UserControl
         { typeof(QuoteNode), "[quote] " },
         { typeof(CodeNode), "[code] " },
         { typeof(TaskListNode), "[-] " },
-        { typeof(ImageNode), "[img(100%)= ]" }
+        { typeof(ImageNode), "[img(100%)= ]" },
+        { typeof(ToggleListNode), "[toggle]" },
+        { typeof(CalloutNode), "[::callout]" }
     };
     
     public event EventHandler<string>? EditorTextChanged;
@@ -246,28 +248,35 @@ public partial class MarkupEditor : UserControl
         }
         
         AddSpecialBlockElements(blockNode, blockGrid, childrenList, markupEditor);
-        
-        if (blockNode is not CodeNode) return blockGrid;
-        
-        blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CodeBlock.Text.Style"]);
-        return new Border { Child = blockGrid, Style = markupEditor.Resources["CodeBlock.Border.Style"] as Style };
-    }
 
+        switch (blockNode)
+        {
+            case CodeNode:
+                blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CodeBlock.Text.Style"]);
+                return new Border { Child = blockGrid, Style = markupEditor.Resources["CodeBlock.Border.Style"] as Style };
+            case CalloutNode calloutNode:
+                var calloutIcon = new Path();
+                blockGrid.Children.Add(calloutIcon);
+                
+                var calloutBorder = new Border { Child = blockGrid };
+                
+                if (markupEditor.Resources[$"Callout.{calloutNode.Type}.Style"] is Style calloutStyle)
+                {
+                    calloutBorder.Style = calloutStyle;
+                }
+                return calloutBorder;
+        }
+
+        return blockGrid;
+    }
+    
     private static void AddSpecialBlockElements(
         IBlockNode blockNode, Grid blockGrid, ItemsControl childrenList, MarkupEditor markupEditor)
     { 
         switch (blockNode)
         {   
             case HeaderNode headerNode:
-                if (markupEditor.Resources[$"Header{headerNode.Level}.Style"] is Style headerStyle)
-                {
-                    blockGrid.Resources.Add(typeof(TextBlock), headerStyle); 
-                }
-                blockGrid.Children.Add(new TextBlock
-                {
-                    Text = new string('#', headerNode.Level), 
-                    Margin = new Thickness(0, 0, right: 8, 0)
-                });
+                AddHeaderElements(headerNode, blockGrid, markupEditor);
                 break;
             case UnorderedListNode:
                 blockGrid.Children.Add(new Ellipse { Style = markupEditor.Resources["BulletIndicator.Style"] as Style });
@@ -280,15 +289,7 @@ public partial class MarkupEditor : UserControl
                 });
                 break;
             case QuoteNode quoteNode:
-                blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["QuoteBlock.Text.Style"] as Style);
-                blockGrid.Children.Add(new Rectangle { Style = markupEditor.Resources["QuoteBlock.Indicator.Style"] as Style });
-
-                if (quoteNode.Author != null)
-                {
-                    var authorBlock = new TextBlock();
-                    authorBlock.Inlines.Add(new Run($"\n- {quoteNode.Author}") { FontWeight = FontWeights.Bold });
-                    childrenList.Items.Add(authorBlock);
-                }
+                AddQuoteElements(quoteNode, blockGrid, childrenList, markupEditor);
                 break;
             case TaskListNode taskListNode:
                 if (taskListNode.IsChecked)
@@ -297,63 +298,122 @@ public partial class MarkupEditor : UserControl
                 }
                 blockGrid.Children.Add(new CheckBox { IsChecked = taskListNode.IsChecked });
                 break;
-            case ToggleNode:
-                var toggleIndicator = new Path();
-                var toggleBorder = new Border
-                {
-                    Style = markupEditor.Resources["Toggle.Button.Style"] as Style,
-                    Child = toggleIndicator
-                };
-                blockGrid.Children.Add(toggleBorder);
-
-                toggleBorder.PreviewMouseLeftButtonDown += OnToggleClicked;
-                
-                for (var i = 1; i < childrenList.Items.Count; i++)
-                {
-                    if (childrenList.Items[i] is not FrameworkElement childrenView) continue;
-                    childrenView.Visibility = Visibility.Collapsed;
-                }
+            case ToggleListNode:
+                AddToggleElements(blockGrid, childrenList, markupEditor);
                 break;
-
-                void OnToggleClicked(object o, MouseButtonEventArgs mouseButtonEventArgs)
-                {
-                    for (var i = 1; i < childrenList.Items.Count; i++)
-                    {
-                        if (childrenList.Items[i] is FrameworkElement childrenView)
-                        {
-                            childrenView.Visibility = childrenView.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-                        }
-                    }
-
-                    var downArrow = Application.Current.Resources["Drawing.DownArrow"] as Geometry;
-                    var rightArrow = Application.Current.Resources["Drawing.RightArrow"] as Geometry;
-
-                    toggleIndicator.Data = toggleIndicator.Data == downArrow ? rightArrow : downArrow;
-                }
             case ImageNode imageNode:
-                if (TryLoadImage(imageNode.SourceUri, out var image))
-                {
-                    image!.Width = image.Source.Width * imageNode.Scale;
-                    image.Height = image.Source.Height * imageNode.Scale;
-                    image.HorizontalAlignment = HorizontalAlignment.Left;
-                    childrenList.Items.Insert(0, image);
-                }
-                else
-                {
-                    var errorMessage = string.Format(
-                        Application.Current.Resources["String.Markup.Image.Error"] as string ?? "",
-                        imageNode.SourceUri
-                    );
-                    
-                    childrenList.Items.Insert(0, new TextBlock
-                    {
-                        Text = errorMessage,
-                        Foreground = Brushes.Red, 
-                        Margin = new Thickness(0, 0, 0, bottom: MarkupViewMargin)
-                    });
-                }
+                AddImageElements(imageNode, childrenList);
                 break;
         }
+    }
+
+    private static void AddHeaderElements(HeaderNode headerNode, Grid blockGrid, MarkupEditor markupEditor)
+    {
+        if (markupEditor.Resources[$"Header{headerNode.Level}.Style"] is Style headerStyle)
+        {
+            blockGrid.Resources.Add(typeof(TextBlock), headerStyle); 
+        }
+        blockGrid.Children.Add(new TextBlock
+        {
+            Text = new string('#', headerNode.Level), 
+            Margin = new Thickness(0, 0, right: 8, 0)
+        });
+    }
+
+    private static void AddQuoteElements(QuoteNode quoteNode, Grid blockGrid, ItemsControl childrenList, MarkupEditor markupEditor)
+    {
+        blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["QuoteBlock.Text.Style"] as Style);
+        blockGrid.Children.Add(new Rectangle { Style = markupEditor.Resources["QuoteBlock.Indicator.Style"] as Style });
+
+        if (quoteNode.Author != null)
+        {
+            var authorBlock = new TextBlock();
+            authorBlock.Inlines.Add(new Run($"\n- {quoteNode.Author}") { FontWeight = FontWeights.Bold });
+            childrenList.Items.Add(authorBlock);
+        }
+    }
+
+    private static void AddToggleElements(Grid blockGrid, ItemsControl childrenList, MarkupEditor markupEditor)
+    {
+        var toggleIndicator = new Path();
+        var toggleBorder = new Border
+        {
+            Style = markupEditor.Resources["Toggle.Button.Style"] as Style,
+            Child = toggleIndicator
+        };
+        blockGrid.Children.Add(toggleBorder);
+
+        toggleBorder.PreviewMouseLeftButtonDown += OnToggleClicked;
+                
+        for (var i = 1; i < childrenList.Items.Count; i++)
+        {
+            if (childrenList.Items[i] is not FrameworkElement childrenView) continue;
+            childrenView.Visibility = Visibility.Collapsed;
+        }
+
+        return;
+        
+        void OnToggleClicked(object o, MouseButtonEventArgs mouseButtonEventArgs)
+        {
+            for (var i = 1; i < childrenList.Items.Count; i++)
+            {
+                if (childrenList.Items[i] is FrameworkElement childrenView)
+                {
+                    childrenView.Visibility = childrenView.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                }
+            }
+
+            var downArrow = Application.Current.Resources["Drawing.DownArrow"] as Geometry;
+            var rightArrow = Application.Current.Resources["Drawing.RightArrow"] as Geometry;
+
+            toggleIndicator.Data = toggleIndicator.Data == downArrow ? rightArrow : downArrow;
+        }
+    }
+    
+    private static void AddImageElements(ImageNode imageNode, ItemsControl childrenList)
+    {
+        if (TryLoadImage(imageNode.SourceUri, out var image))
+        {
+            image!.Width = image.Source.Width * imageNode.Scale;
+            image.Height = image.Source.Height * imageNode.Scale;
+            image.HorizontalAlignment = HorizontalAlignment.Left;
+            childrenList.Items.Insert(0, image);
+        }
+        else
+        {
+            var errorMessage = string.Format(
+                Application.Current.Resources["String.Markup.Image.Error"] as string ?? "",
+                imageNode.SourceUri
+            );
+                    
+            childrenList.Items.Insert(0, new TextBlock
+            {
+                Text = errorMessage,
+                Foreground = Brushes.Red, 
+                Margin = new Thickness(0, 0, 0, bottom: MarkupViewMargin)
+            });
+        }
+    }
+    
+    private static bool TryLoadImage(string uriText, out Image? image)
+    {
+        image = null;
+        
+        if (!Uri.TryCreate(uriText, UriKind.Absolute, out var uri) || uri.Scheme != "file") return false;
+        try
+        {
+            var bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.UriSource = uri;
+            bitmapImage.EndInit();
+            
+            image = new Image { Source = bitmapImage };
+            return true;
+        }
+        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException) { }
+        
+        return false;
     }
     
     private static Run GetRunFromInline(InlineMarkup inlineMarkup, double paragraphFontSize)
@@ -464,27 +524,6 @@ public partial class MarkupEditor : UserControl
         }
 
         return inline;
-    }
-
-    private static bool TryLoadImage(string uriText, out Image? image)
-    {
-        image = null;
-        
-        if (!Uri.TryCreate(uriText, UriKind.Absolute, out var uri) || uri.Scheme != "file") return false;
-        try
-        {
-            var bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapImage.UriSource = uri;
-            bitmapImage.EndInit();
-            
-            image = new Image { Source = bitmapImage };
-            return true;
-        }
-        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException) { }
-        
-        return false;
     }
     
     private void EditorTextBox_OnTextChanged(object? sender, EventArgs e)

@@ -102,6 +102,97 @@
             </Style.Resources>
         </Style>
         
+        <Style x:Key="Callout.Icon.BaseStyle" TargetType="Path">
+            <Setter Property="Width" Value="15"/>
+            <Setter Property="Height" Value="15"/>
+            <Setter Property="Margin" Value="0 4 12 0"/>
+            <Setter Property="Stretch" Value="Uniform"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
+        
+        <Style x:Key="Callout.Default.Style" TargetType="Border">
+            <Setter Property="Background" Value="#F1F1F1"/>
+            <Setter Property="Padding" Value="14"/>
+            <Style.Resources>
+                <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
+                    <Setter Property="Width" Value="17"/>
+                    <Setter Property="Height" Value="17"/>
+                    <Setter Property="Data" Value="{StaticResource Drawing.Asterisk}"/>
+                    <Setter Property="Fill" Value="DimGray"/>
+                    <Setter Property="Margin" Value="0 3 13 0"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        
+        <Style x:Key="Callout.Success.Style" TargetType="Border">
+            <Setter Property="Background" Value="#e3f1e3"/>
+            <Setter Property="Padding" Value="14"/>
+            <Style.Resources>
+                <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
+                    <Setter Property="Width" Value="17"/>
+                    <Setter Property="Height" Value="17"/>
+                    <Setter Property="Data" Value="{StaticResource Drawing.Callout.Success}"/>
+                    <Setter Property="Fill" Value="DarkGreen"/>
+                    <Setter Property="Margin" Value="0 5 11 0"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        
+        <Style x:Key="Callout.Failure.Style" TargetType="Border">
+            <Setter Property="Background" Value="#f1e3e3"/>
+            <Setter Property="Padding" Value="14"/>
+            <Style.Resources>
+                <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
+                    <Setter Property="Data" Value="{StaticResource Drawing.Callout.Failure}"/>
+                    <Setter Property="Fill" Value="DarkRed"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        
+        <Style x:Key="Callout.Warning.Style" TargetType="Border">
+            <Setter Property="Background" Value="#fff5e3"/>
+            <Setter Property="Padding" Value="14"/>
+            <Style.Resources>
+                <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
+                    <Setter Property="Data" Value="{StaticResource Drawing.Callout.Warning}"/>
+                    <Setter Property="Fill" Value="#FFCF8600"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        
+        <Style x:Key="Callout.Question.Style" TargetType="Border">
+            <Setter Property="Background" Value="#f1e3f1"/>
+            <Setter Property="Padding" Value="14"/>
+            <Style.Resources>
+                <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
+                    <Setter Property="Data" Value="{StaticResource Drawing.Callout.Question}"/>
+                    <Setter Property="Fill" Value="Purple"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        
+        <Style x:Key="Callout.Favorite.Style" TargetType="Border">
+            <Setter Property="Background" Value="#ffeff2"/>
+            <Setter Property="Padding" Value="14"/>
+            <Style.Resources>
+                <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
+                    <Setter Property="Data" Value="{StaticResource Drawing.Callout.Favorite}"/>
+                    <Setter Property="Fill" Value="DeepPink"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        
+        <Style x:Key="Callout.Note.Style" TargetType="Border">
+            <Setter Property="Background" Value="#ecf2fd"/>
+            <Setter Property="Padding" Value="14"/>
+            <Style.Resources>
+                <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
+                    <Setter Property="Data" Value="{StaticResource Drawing.Callout.Note}"/>
+                    <Setter Property="Fill" Value="Blue"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        
         <Style TargetType="{x:Type avalonEdit:TextArea}">
             <Setter Property="SelectionCornerRadius" Value="0" />
         </Style>

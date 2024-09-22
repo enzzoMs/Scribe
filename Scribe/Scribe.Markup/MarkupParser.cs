@@ -143,6 +143,23 @@ public static class MarkupParser
         {
             return new QuoteNode(author: markup[6..]);
         }
+
+        if (markup.StartsWith("::"))
+        {
+            CalloutType? calloutType = markup[2..] switch
+            {
+                "callout" => CalloutType.Default,
+                "favorite" => CalloutType.Favorite,
+                "question" => CalloutType.Question,
+                "success" => CalloutType.Success,
+                "failure" => CalloutType.Failure,
+                "warning" => CalloutType.Warning,
+                "note" => CalloutType.Note,
+                _ => null
+            };
+
+            return calloutType == null ? null : new CalloutNode(calloutType.Value);
+        }
         
         if (OrderedListPattern.IsMatch(markup))
         {
@@ -176,7 +193,7 @@ public static class MarkupParser
             "*" => new UnorderedListNode(),
             "quote" => new QuoteNode(),
             "code" => new CodeNode(),
-            "toggle" => new ToggleNode(),
+            "toggle" => new ToggleListNode(),
             "-" or "x" => new TaskListNode(isChecked: markup == "x"),
             _ => null
         };

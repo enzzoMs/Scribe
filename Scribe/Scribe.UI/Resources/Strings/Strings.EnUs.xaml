@@ -62,6 +62,8 @@
     <sys:String x:Key="String.Markup.TaskList">Task List</sys:String>
     <sys:String x:Key="String.Markup.Image">Image</sys:String>
     <sys:String x:Key="String.Markup.Image.Error">( ! )  Unable to load image &quot;{0}&quot;</sys:String>
+    <sys:String x:Key="String.Markup.ToggleList">Toggle List</sys:String>
+    <sys:String x:Key="String.Markup.Callout">Callout Block</sys:String>
 
     <sys:String x:Key="String.Error">Error</sys:String>
     <sys:String x:Key="String.Error.RequiredField">* Required</sys:String>
