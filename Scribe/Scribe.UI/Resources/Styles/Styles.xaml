@@ -31,6 +31,7 @@
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
             <Setter Property="FontFamily" Value="{StaticResource Text.Medium}"/>
             <Setter Property="FontSize" Value="{StaticResource Dimen.TextSize.Normal1}"/>
+            <Setter Property="TextAlignment" Value="Justify"/>
         </Style.Setters>
     </Style>
     

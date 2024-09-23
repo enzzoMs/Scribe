@@ -6,5 +6,5 @@ public class HeaderNode(int level) : IBlockNode
     
     public int Level { get; } = level <= 0 ? 1 : level > MaxHeaderLevel ? MaxHeaderLevel : level;
 
-    public ICollection<IMarkupNode> Children { get; } = [];
+    public List<IMarkupNode> Children { get; } = [];
 }

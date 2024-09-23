@@ -6,8 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:editorSection="clr-namespace:Scribe.UI.Views.Sections.Editor"
     xmlns:components="clr-namespace:Scribe.UI.Views.Components"
-    xmlns:nodes="clr-namespace:Scribe.Markup.Nodes;assembly=Scribe.Markup"
     xmlns:blocks="clr-namespace:Scribe.Markup.Nodes.Blocks;assembly=Scribe.Markup"
+    xmlns:leafs="clr-namespace:Scribe.Markup.Nodes.Leafs;assembly=Scribe.Markup"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance editorSection:EditorViewModel}"
     d:DesignHeight="300"
@@ -20,7 +20,7 @@
             <Setter Property="Height" Value="26"/>
             <Setter Property="Margin" Value="5"/>
             <Setter Property="IconBrush" Value="{StaticResource Brush.Icon}"/>
-            <Setter Property="IconPadding" Value="3"/>
+            <Setter Property="IconPadding" Value="4"/>
         </Style>
         
         <Thickness x:Key="Dimen.Toolbar.Divider.Margin" Left="5" Right="5" Top="6" Bottom="6"/>
@@ -34,6 +34,9 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
@@ -177,7 +180,7 @@
             Click="OnMarkupIconClicked"
             ToolTip="{DynamicResource String.Markup.Image}"
             IconGeometry="{StaticResource Drawing.Image}"
-            CommandParameter="{x:Type blocks:ImageNode}"
+            CommandParameter="{x:Type leafs:ImageNode}"
             Focusable="False"
             IsEnabled="{Binding IsTextBoxFocused, ElementName=MarkupEditor}"/>
         <components:IconButton
@@ -197,22 +200,50 @@
             IconGeometry="{StaticResource Drawing.Asterisk}"
             CommandParameter="{x:Type blocks:CalloutNode}"
             Focusable="False"
+            IsEnabled="{Binding IsTextBoxFocused, ElementName=MarkupEditor}"
+            IconPadding="5"/>
+        <components:IconButton
+            Grid.Row="0"
+            Grid.Column="16"
+            Click="OnMarkupIconClicked"
+            ToolTip="{DynamicResource String.Markup.ProgressBar}"
+            IconGeometry="{StaticResource Drawing.ProgressBar}"
+            CommandParameter="{x:Type leafs:ProgressBarNode}"
+            Focusable="False"
+            IsEnabled="{Binding IsTextBoxFocused, ElementName=MarkupEditor}"/>
+        <components:IconButton
+            Grid.Row="0"
+            Grid.Column="17"
+            Click="OnMarkupIconClicked"
+            ToolTip="{DynamicResource String.Markup.Indentation}"
+            IconGeometry="{StaticResource Drawing.Indentation}"
+            CommandParameter="{x:Type blocks:IndentedNode}"
+            Focusable="False"
+            IsEnabled="{Binding IsTextBoxFocused, ElementName=MarkupEditor}"/>
+        <components:IconButton
+            Grid.Row="0"
+            Grid.Column="18"
+            Click="OnMarkupIconClicked"
+            ToolTip="{DynamicResource String.Markup.Label}"
+            IconGeometry="{StaticResource Drawing.Bookmark}"
+            CommandParameter="{x:Type leafs:LabelNode}"
+            Focusable="False"
             IsEnabled="{Binding IsTextBoxFocused, ElementName=MarkupEditor}"/>
         
         <Rectangle
             Grid.Row="0"
-            Grid.Column="17"
+            Grid.Column="20"
             Style="{StaticResource Style.Divider.Vertical}"
             Margin="{StaticResource Dimen.Toolbar.Divider.Margin}"/>
         <components:IconButton
             Grid.Row="0"
-            Grid.Column="18"
+            Grid.Column="21"
             IconGeometry="{StaticResource Drawing.Edit}"
             ToolTip="{DynamicResource String.Button.Edit}"
             Command="{Binding EnterEditModeCommand}"/>
         <components:IconButton
             Grid.Row="0"
-            Grid.Column="19"
+            Grid.Column="22"
             ToolTip="{DynamicResource String.Button.Delete}"
             PreviewMouseLeftButtonDown="OnDeleteDocumentClicked"
             IconGeometry="{StaticResource Drawing.Delete}"/>
@@ -220,21 +251,22 @@
         <Rectangle
             Grid.Row="1"
             Grid.Column="0"
-            Grid.ColumnSpan="20"
+            Grid.ColumnSpan="23"
             Style="{StaticResource Style.Divider.Horizontal}"/>
         <ContentControl
             Grid.Row="2"
             Grid.Column="0"
-            Grid.ColumnSpan="20"
+            Grid.ColumnSpan="23"
             Content="{Binding Header, ElementName=Root}"
             Margin="0 20 0 0"/>
         <components:MarkupEditor
             x:Name="MarkupEditor"
             Grid.Row="3"
             Grid.Column="0"
-            Grid.ColumnSpan="20"
+            Grid.ColumnSpan="23"
             EditorText="{Binding SelectedDocument.EditedContent, Mode=TwoWay}"
             EditorTextChanged="OnDocumentContentChanged"
+            OpenDocumentByNameCommand="{Binding OpenDocumentByNameCommand}"
             InPreviewMode="{Binding InPreviewMode}"/>
     </Grid>
 </UserControl>

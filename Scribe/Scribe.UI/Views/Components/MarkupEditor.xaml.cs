@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,7 +34,10 @@ public partial class MarkupEditor : UserControl
         { typeof(TaskListNode), "[-] " },
         { typeof(ImageNode), "[img(100%)= ]" },
         { typeof(ToggleListNode), "[toggle]" },
-        { typeof(CalloutNode), "[::callout]" }
+        { typeof(CalloutNode), "[::callout]" },
+        { typeof(ProgressBarNode), "[ooo..]" },
+        { typeof(IndentedNode), "[>>]" },
+        { typeof(LabelNode), "@label=A" }
     };
     
     public event EventHandler<string>? EditorTextChanged;
@@ -55,6 +59,12 @@ public partial class MarkupEditor : UserControl
     {
         get => (bool) GetValue(InPreviewModeProperty);
         set => SetValue(InPreviewModeProperty, value);
+    }
+    
+    public ICommand? OpenDocumentByNameCommand
+    {
+        get => (ICommand?) GetValue(OpenDocumentByNameCommandProperty);
+        set => SetValue(OpenDocumentByNameCommandProperty, value);
     }
     
     public bool IsTextBoxFocused => (bool) GetValue(IsTextBoxFocusedPropertyKey.DependencyProperty);
@@ -82,6 +92,12 @@ public partial class MarkupEditor : UserControl
         propertyType: typeof(bool),
         ownerType: typeof(MarkupEditor),
         typeMetadata: new FrameworkPropertyMetadata()
+    );
+    
+    public static readonly DependencyProperty OpenDocumentByNameCommandProperty = DependencyProperty.Register(
+        name: nameof(OpenDocumentByNameCommand),
+        propertyType: typeof(ICommand),
+        ownerType: typeof(MarkupEditor)
     );
 
     public void InsertMarkupNode(Type markupType)
@@ -123,11 +139,11 @@ public partial class MarkupEditor : UserControl
                 new XshdRule { Regex = @"(?<=^|(^[\t ]*))\[[^\]]*[^\\]\]%?", ColorReference = markupColorReference },
                 // Pattern for end of block ( % )
                 new XshdRule { Regex = @"(?<=^)[\t ]*%[\t\r ]*(?=$)", ColorReference = markupColorReference },
+                // Pattern for labels ( @label=example )
+                new XshdRule { Regex = @"^\s*@label=.+$", ColorReference = markupColorReference },
                 // Pattern for inline markup. E.g. {text}[b,i]
                 new XshdRule { Regex = @"{(?=[^}\n]+?}(\[\]|\[[^\]\n]*?[^\\]\]))", ColorReference = markupColorReference },
-                new XshdRule { Regex = @"(?<={[^}\n]+?)}(\[\]|\[[^\]\n]*?[^\\]\])", ColorReference = markupColorReference },
-                // Pattern for dividers. E.g. "-----"
-                new XshdRule { Regex = @"^[\t ]*-+[\t\r ]*(?=$)", ColorReference = markupColorReference },
+                new XshdRule { Regex = @"(?<={[^}\n]+?)}(\[\]|\[[^\]\n]*?[^\\]\])", ColorReference = markupColorReference }
             }
         };
         
@@ -173,13 +189,16 @@ public partial class MarkupEditor : UserControl
         {
             var nodeView = GetViewFromMarkupNode(node, markupEditor);
 
-            nodeView.Margin = new Thickness(
-                left: 0,
-                top: markupEditor.MarkupViewerPanel.Items.Count == 0 ? 0 : MarkupViewMargin,
-                right: 0,
-                bottom: 0
-            );
-
+            if (node is not LabelNode)
+            {
+                nodeView.Margin = new Thickness(
+                    left: 0,
+                    top: markupEditor.MarkupViewerPanel.Items.Count == 0 ? 0 : MarkupViewMargin,
+                    right: 0,
+                    bottom: 0
+                );    
+            }
+            
             markupEditor.MarkupViewerPanel.Items.Add(nodeView);
         }
     }
@@ -188,20 +207,23 @@ public partial class MarkupEditor : UserControl
     {
         return node switch
         {
-            ParagraphNode paragraphNode => GetParagraphView(paragraphNode),
+            ParagraphNode paragraphNode => GetParagraphView(paragraphNode, markupEditor),
             DividerNode dividerNode => GetDividerView(dividerNode),
+            ImageNode imageNode => GetImageView(imageNode),
+            LabelNode labelNode => GetLabelView(labelNode),
+            ProgressBarNode progressBarNode => GetProgressBarView(progressBarNode, markupEditor),
             IBlockNode blockNode => GetViewFromBlockNode(blockNode, markupEditor),
             _ => new TextBlock { Text = "(Markup Node not implemented)" }
         };
     }
 
-    private static TextBlock GetParagraphView(ParagraphNode paragraphNode)
+    private static TextBlock GetParagraphView(ParagraphNode paragraphNode, MarkupEditor markupEditor)
     {
         var paragraphBlock = new TextBlock { TextWrapping = TextWrapping.Wrap };
 
         foreach (var inline in paragraphNode.Inlines)
         {
-            paragraphBlock.Inlines.Add(GetRunFromInline(inline, paragraphBlock.FontSize));
+            paragraphBlock.Inlines.Add(GetRunFromInline(inline, paragraphBlock.FontSize, markupEditor));
         }
 
         return paragraphBlock;
@@ -224,6 +246,52 @@ public partial class MarkupEditor : UserControl
         return dividerGrid;
     }
 
+    private static FrameworkElement GetImageView(ImageNode imageNode)
+    {
+        if (TryLoadImage(imageNode.SourceUri, out var image))
+        {
+            image!.Width = image.Source.Width * imageNode.Scale;
+            image.Height = image.Source.Height * imageNode.Scale;
+            image.HorizontalAlignment = HorizontalAlignment.Center;
+            return image;
+        }
+
+        var errorMessage = string.Format(
+            Application.Current.Resources["String.Markup.Image.Error"] as string ?? "",
+            imageNode.SourceUri
+        );
+                
+        return new TextBlock
+        {
+            Text = errorMessage,
+            Foreground = Brushes.Red, 
+            Margin = new Thickness(0, 0, 0, bottom: MarkupViewMargin)
+        };
+    }
+
+    private static StackPanel GetProgressBarView(ProgressBarNode progressBarNode, MarkupEditor markupEditor)
+    {
+        var progressBarPanel = new StackPanel { Orientation = Orientation.Horizontal };
+        for (var i = 0; i < progressBarNode.MaxLength; i++)
+        {
+            progressBarPanel.Children.Add(new Border
+            {
+                Style = markupEditor.Resources["ProgressBar.Item.Style"] as Style,
+                Background = i < progressBarNode.Length ? Brushes.Black : null
+            });
+        }
+
+        progressBarPanel.Children.Add(new TextBlock
+        {
+            Text = $"{((double)progressBarNode.Length / progressBarNode.MaxLength) * 100:0}%",
+            Margin = new Thickness(8, 0, 0, 3)
+        });
+        
+        return progressBarPanel;
+    }
+
+    private static FrameworkElement GetLabelView(LabelNode labelNode) => new() { Name = labelNode.Name };
+    
     private static FrameworkElement GetViewFromBlockNode(IBlockNode blockNode, MarkupEditor markupEditor)
     {
         var blockGrid = new Grid();
@@ -275,9 +343,6 @@ public partial class MarkupEditor : UserControl
     { 
         switch (blockNode)
         {   
-            case HeaderNode headerNode:
-                AddHeaderElements(headerNode, blockGrid, markupEditor);
-                break;
             case UnorderedListNode:
                 blockGrid.Children.Add(new Ellipse { Style = markupEditor.Resources["BulletIndicator.Style"] as Style });
                 break;
@@ -288,9 +353,6 @@ public partial class MarkupEditor : UserControl
                     Style = markupEditor.Resources["ListIndicator.Style"] as Style
                 });
                 break;
-            case QuoteNode quoteNode:
-                AddQuoteElements(quoteNode, blockGrid, childrenList, markupEditor);
-                break;
             case TaskListNode taskListNode:
                 if (taskListNode.IsChecked)
                 {
@@ -298,11 +360,17 @@ public partial class MarkupEditor : UserControl
                 }
                 blockGrid.Children.Add(new CheckBox { IsChecked = taskListNode.IsChecked });
                 break;
-            case ToggleListNode:
-                AddToggleElements(blockGrid, childrenList, markupEditor);
+            case IndentedNode:
+                childrenList.Margin = new Thickness(left: 19, 0, 0, 0);
                 break;
-            case ImageNode imageNode:
-                AddImageElements(imageNode, childrenList);
+            case HeaderNode headerNode:
+                AddHeaderElements(headerNode, blockGrid, markupEditor);
+                break;
+            case QuoteNode quoteNode:
+                AddQuoteElements(quoteNode, blockGrid, childrenList, markupEditor);
+                break;
+            case ToggleListNode:
+                AddToggleListElements(blockGrid, childrenList, markupEditor);
                 break;
         }
     }
@@ -333,7 +401,7 @@ public partial class MarkupEditor : UserControl
         }
     }
 
-    private static void AddToggleElements(Grid blockGrid, ItemsControl childrenList, MarkupEditor markupEditor)
+    private static void AddToggleListElements(Grid blockGrid, ItemsControl childrenList, MarkupEditor markupEditor)
     {
         var toggleIndicator = new Path();
         var toggleBorder = new Border
@@ -370,91 +438,13 @@ public partial class MarkupEditor : UserControl
         }
     }
     
-    private static void AddImageElements(ImageNode imageNode, ItemsControl childrenList)
-    {
-        if (TryLoadImage(imageNode.SourceUri, out var image))
-        {
-            image!.Width = image.Source.Width * imageNode.Scale;
-            image.Height = image.Source.Height * imageNode.Scale;
-            image.HorizontalAlignment = HorizontalAlignment.Left;
-            childrenList.Items.Insert(0, image);
-        }
-        else
-        {
-            var errorMessage = string.Format(
-                Application.Current.Resources["String.Markup.Image.Error"] as string ?? "",
-                imageNode.SourceUri
-            );
-                    
-            childrenList.Items.Insert(0, new TextBlock
-            {
-                Text = errorMessage,
-                Foreground = Brushes.Red, 
-                Margin = new Thickness(0, 0, 0, bottom: MarkupViewMargin)
-            });
-        }
-    }
-    
-    private static bool TryLoadImage(string uriText, out Image? image)
-    {
-        image = null;
-        
-        if (!Uri.TryCreate(uriText, UriKind.Absolute, out var uri) || uri.Scheme != "file") return false;
-        try
-        {
-            var bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapImage.UriSource = uri;
-            bitmapImage.EndInit();
-            
-            image = new Image { Source = bitmapImage };
-            return true;
-        }
-        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException) { }
-        
-        return false;
-    }
-    
-    private static Run GetRunFromInline(InlineMarkup inlineMarkup, double paragraphFontSize)
+    private static Run GetRunFromInline(InlineMarkup inlineMarkup, double paragraphFontSize, MarkupEditor markupEditor)
     {
         var inline = new Run(inlineMarkup.Text);
 
         if (inlineMarkup.LinkUri != null)
         {
-            inline.TextDecorations.Add(TextDecorations.Underline);
-
-            Uri.TryCreate(inlineMarkup.LinkUri, UriKind.Absolute, out var uri);
-            
-            if (uri != null && uri.Scheme is "http" or "https" or "file")
-            {
-                inline.Cursor = Cursors.Hand;
-                inline.Foreground = Brushes.Blue;
-                inline.PreviewMouseLeftButtonDown += (_, _) =>
-                {
-                    try
-                    {
-                        Process.Start(new ProcessStartInfo { FileName = inlineMarkup.LinkUri, UseShellExecute = true });
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        var uriErrorMessage = string.Format(
-                            Application.Current.Resources["String.Error.OpenLink"] as string ?? "", inlineMarkup.LinkUri
-                        );
-                        new MessageBox
-                        {
-                            Owner = Application.Current.MainWindow,
-                            Title = Application.Current.Resources["String.Error"] as string,
-                            MessageIconPath = Application.Current.Resources["Drawing.Exclamation"] as Geometry,
-                            Message = uriErrorMessage
-                        }.ShowDialog();
-                    }
-                };
-            }
-            else
-            {
-                inline.Foreground = Brushes.Gray;
-            }    
+            AddLinkToInline(inline, inlineMarkup.LinkUri, markupEditor.OpenDocumentByNameCommand, markupEditor);
         }
         
         if (inlineMarkup.Foreground != null)
@@ -504,11 +494,11 @@ public partial class MarkupEditor : UserControl
                     break;
                 case InlineMarkupModifiers.Code:
                     inline.FontFamily = Application.Current.Resources["Text.Monospace"] as FontFamily;
-                    inline.Background = Application.Current.Resources["Brush.Markup.Code"] as SolidColorBrush;
+                    inline.Background = Application.Current.Resources["Brush.Markup.Surface"] as SolidColorBrush;
                     break;
                 case InlineMarkupModifiers.Spoiler:
-                    inline.Background = Application.Current.Resources["Brush.Markup.Code"] as SolidColorBrush;
-                    inline.Foreground = Application.Current.Resources["Brush.Markup.Code"] as SolidColorBrush;
+                    inline.Background = Application.Current.Resources["Brush.Markup.Surface"] as SolidColorBrush;
+                    inline.Foreground = Application.Current.Resources["Brush.Markup.Surface"] as SolidColorBrush;
                     inline.Cursor = Cursors.Hand;
                     inline.PreviewMouseLeftButtonDown += (_, _) =>
                     {
@@ -524,6 +514,90 @@ public partial class MarkupEditor : UserControl
         }
 
         return inline;
+    }
+
+    private static void AddLinkToInline(Inline inline, string linkUri, ICommand? openDocumentByName, MarkupEditor markupEditor)
+    {
+        inline.TextDecorations.Add(TextDecorations.Underline);
+
+        if (linkUri.StartsWith("doc:"))
+        {
+            inline.Cursor = Cursors.Hand;
+            inline.Foreground = Brushes.Blue;
+
+            var docName = linkUri[4..];
+            inline.PreviewMouseLeftButtonDown += (_, _) =>
+            {
+                openDocumentByName?.Execute(docName);   
+            };
+        }
+        else if (linkUri.StartsWith('@'))
+        {
+            inline.Cursor = Cursors.Hand;
+            inline.Foreground = Brushes.Blue;
+            
+            var labelName = linkUri.TrimStart('@');
+            const int scrollMargin = 400;
+            inline.PreviewMouseLeftButtonDown += (_, _) =>
+            {
+                foreach (var item in markupEditor.MarkupViewerPanel.Items)
+                {
+                    if (item is not FrameworkElement labelView || labelView.Name != labelName) continue;
+                    labelView.BringIntoView(new Rect(0, 0, scrollMargin, scrollMargin));
+                    return;
+                }
+            };
+        }
+        else if (Uri.TryCreate(linkUri, UriKind.Absolute, out var uri) && uri.Scheme is "http" or "https" or "file")
+        {
+            inline.Cursor = Cursors.Hand;
+            inline.Foreground = Brushes.Blue;
+            inline.PreviewMouseLeftButtonDown += (_, _) =>
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo { FileName = linkUri, UseShellExecute = true });
+                }
+                catch (Exception e) when (e is InvalidOperationException or Win32Exception)
+                {
+                    var uriErrorMessage = string.Format(
+                        Application.Current.Resources["String.Error.OpenLink"] as string ?? "", linkUri
+                    );
+                    new MessageBox
+                    {
+                        Owner = Application.Current.MainWindow,
+                        Title = Application.Current.Resources["String.Error"] as string,
+                        MessageIconPath = Application.Current.Resources["Drawing.Exclamation"] as Geometry,
+                        Message = uriErrorMessage
+                    }.ShowDialog();
+                }
+            };
+        }
+        else
+        {
+            inline.Foreground = Brushes.Gray;
+        }
+    }
+    
+    private static bool TryLoadImage(string uriText, out Image? image)
+    {
+        image = null;
+        
+        if (!Uri.TryCreate(uriText, UriKind.Absolute, out var uri) || uri.Scheme != "file") return false;
+        try
+        {
+            var bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.UriSource = uri;
+            bitmapImage.EndInit();
+            
+            image = new Image { Source = bitmapImage };
+            return true;
+        }
+        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException) { }
+        
+        return false;
     }
     
     private void EditorTextBox_OnTextChanged(object? sender, EventArgs e)

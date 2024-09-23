@@ -56,19 +56,19 @@
             x:Name="FolderDetailsSection"
             Grid.Row="0"
             Grid.Column="2"
-            Width="250"
+            Width="225"
             DataContext="{Binding FolderDetailsViewModel}"
             Margin="20 20 20 0"/>
         <documentsSection:DocumentsSection
             Grid.Row="1"
             Grid.Column="2"
-            Width="250"
+            Width="225"
             DataContext="{Binding DocumentsViewModel}"
             Margin="20 0 20 28"/>
         <tagsSection:Tags
             Grid.Row="2"
             Grid.Column="2"
-            Width="250"
+            Width="225"
             DataContext="{Binding TagsViewModel}"
             Margin="20 0 20 0 "/>
         <Rectangle

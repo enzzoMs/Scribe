@@ -34,6 +34,13 @@ public class EditorViewModel : BaseViewModel
                 CloseDocument(docState);
             }
         });
+        OpenDocumentByNameCommand = new DelegateCommand(param =>
+        {
+            if (param is string docName)
+            {
+                _eventAggregator.Publish(new SelectDocumentByNameEvent(docName));
+            }
+        });
         SaveAndCloseDocumentCommand = new DelegateCommand(param =>
         {
             if (param is not DocumentViewState docState) return;
@@ -118,6 +125,8 @@ public class EditorViewModel : BaseViewModel
     }
     
     public ICommand CloseDocumentCommand { get; }
+
+    public ICommand OpenDocumentByNameCommand { get;  }
 
     public ICommand SaveAndCloseDocumentCommand { get; }
 

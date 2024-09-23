@@ -4,7 +4,7 @@ public class CalloutNode(CalloutType type) : IBlockNode
 {
     public CalloutType Type { get; } = type;
     
-    public ICollection<IMarkupNode> Children { get; } = [];
+    public List<IMarkupNode> Children { get; } = [];
 }
 
 public enum CalloutType

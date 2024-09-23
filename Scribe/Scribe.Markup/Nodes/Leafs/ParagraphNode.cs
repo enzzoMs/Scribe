@@ -2,7 +2,7 @@
 
 namespace Scribe.Markup.Nodes.Leafs;
 
-public class ParagraphNode : IMarkupNode
+public class ParagraphNode : ILeafNode
 {
     public string RawText { get; set; } = "";
     

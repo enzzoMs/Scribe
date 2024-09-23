@@ -2,5 +2,5 @@
 
 public interface IBlockNode : IMarkupNode
 {
-    public ICollection<IMarkupNode> Children { get; }
+    public List<IMarkupNode> Children { get; }
 }

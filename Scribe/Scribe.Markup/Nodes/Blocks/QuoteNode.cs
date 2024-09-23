@@ -4,5 +4,5 @@ public class QuoteNode(string? author = null) : IBlockNode
 {
     public string? Author { get; } = author;
     
-    public ICollection<IMarkupNode> Children { get; } = [];
+    public List<IMarkupNode> Children { get; } = [];
 }

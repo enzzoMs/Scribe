@@ -2,5 +2,5 @@
 
 public class ToggleListNode : IBlockNode
 {
-    public ICollection<IMarkupNode> Children { get; } = [];
+    public List<IMarkupNode> Children { get; } = [];
 }

@@ -1,6 +1,6 @@
 ﻿namespace Scribe.Markup.Nodes.Leafs;
 
-public class DividerNode(int length) : IMarkupNode
+public class DividerNode(int length) : ILeafNode
 {
     public const int MaxLength = 4;
 

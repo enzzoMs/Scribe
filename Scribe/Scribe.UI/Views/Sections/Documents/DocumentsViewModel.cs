@@ -38,6 +38,14 @@ public class DocumentsViewModel : BaseViewModel
             OnTagSelectionChanged(e);
             FilterDocuments();
         });
+        eventAggregator.Subscribe<SelectDocumentByNameEvent>(this, e =>
+        {
+            var document = _currentDocuments.FirstOrDefault(doc => doc.Name == e.DocumentName);
+            if (document != null)
+            {
+                eventAggregator.Publish(new DocumentSelectedEvent(document));
+            }
+        });
 
         _documentsRepository = documentsRepository;
         
@@ -51,8 +59,10 @@ public class DocumentsViewModel : BaseViewModel
         CreateDocumentCommand = new DelegateCommand(_ => CreateDocument());
         OpenDocumentCommand = new DelegateCommand(param =>
         {
-            if (param is Document doc) 
+            if (param is Document doc)
+            {
                 eventAggregator.Publish(new DocumentSelectedEvent(doc));
+            }
         });
     }
     

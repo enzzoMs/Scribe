@@ -67,6 +67,8 @@
                 <Path
                     Grid.Row="0"
                     Grid.Column="2"
+                    Width="17"
+                    Height="17"
                     Data="{StaticResource Drawing.Pin.Filled}"
                     Fill="{StaticResource Brush.Icon}"
                     VerticalAlignment="Center">
