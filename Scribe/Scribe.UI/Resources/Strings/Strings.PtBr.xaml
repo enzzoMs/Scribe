@@ -45,6 +45,7 @@
     <sys:String x:Key="String.Config.Scale.Decrease">Diminuir valor</sys:String>
     
     <sys:String x:Key="String.Button.Cancel">Cancelar</sys:String>
+    <sys:String x:Key="String.Button.Understood">Entendido</sys:String>
     <sys:String x:Key="String.Button.Edit">Editar</sys:String>
     <sys:String x:Key="String.Button.Delete">Deletar</sys:String>
     <sys:String x:Key="String.Button.Pin">Fixar</sys:String>
@@ -53,6 +54,14 @@
     <sys:String x:Key="String.Button.DontSave">Não Salvar</sys:String>
     <sys:String x:Key="String.Button.Undo">Desfazer (Ctrl + z)</sys:String>
     <sys:String x:Key="String.Button.Redo">Refazer (Ctrl + y)</sys:String>
+    <sys:String x:Key="String.Button.Export">Exportar</sys:String>
+    <sys:String x:Key="String.Markup.Bold">Negrito</sys:String>
+    <sys:String x:Key="String.Markup.Italic">Itálico</sys:String>
+    <sys:String x:Key="String.Markup.Underline">Sublinhado</sys:String>
+    <sys:String x:Key="String.Markup.Table">Tabela</sys:String>
+    <sys:String x:Key="String.Markup.Colors">Cores</sys:String>
+    <sys:String x:Key="String.Markup.Link">Link</sys:String>
+    <sys:String x:Key="String.Button.Help">Ajuda</sys:String>
 
     <sys:String x:Key="String.Markup.Header">Título</sys:String>
     <sys:String x:Key="String.Markup.List.Unordered">Lista Não Ordenada</sys:String>

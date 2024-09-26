@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using ICSharpCode.AvalonEdit.Search;
 using Scribe.Markup;
 using Scribe.Markup.Inlines;
 using Scribe.Markup.Nodes;
@@ -24,7 +25,7 @@ public partial class MarkupEditor : UserControl
     private const int MarkupViewMargin = 14;
     private const double SubAndSuperscriptFontSizePct = 0.85;
     
-    private static readonly Dictionary<Type, string> MarkupDictionary = new()
+    private static readonly Dictionary<Type, string> MarkupBlockDictionary = new()
     {
         { typeof(HeaderNode), "[#] " },
         { typeof(OrderedListNode), "[1.] " },
@@ -37,7 +38,8 @@ public partial class MarkupEditor : UserControl
         { typeof(CalloutNode), "[::callout]" },
         { typeof(ProgressBarNode), "[ooo..]" },
         { typeof(IndentedNode), "[>>]" },
-        { typeof(LabelNode), "@label=A" }
+        { typeof(LabelNode), "@label=A" },
+        { typeof(TableNode), "[table]%\n\t[cell] Table\n\t=====\n\t[cell] \n%"}
     };
     
     public event EventHandler<string>? EditorTextChanged;
@@ -100,14 +102,46 @@ public partial class MarkupEditor : UserControl
         ownerType: typeof(MarkupEditor)
     );
 
-    public void InsertMarkupNode(Type markupType)
+    public void InsertBlockNode(Type markupType)
     {
-        if (MarkupDictionary.TryGetValue(markupType, out var markupText))
+        if (MarkupBlockDictionary.TryGetValue(markupType, out var markupText))
         {
             EditorTextBox.TextArea.Document.Insert(EditorTextBox.CaretOffset, markupText);
         }
     }
 
+    public void InsertInlineModifier(InlineMarkupModifiers modifier)
+    {
+        var modifierText = modifier switch
+        {
+            InlineMarkupModifiers.Bold => "b",
+            InlineMarkupModifiers.Italic => "i",
+            InlineMarkupModifiers.Underline => "u",
+            InlineMarkupModifiers.Strikethrough => "s",
+            InlineMarkupModifiers.Superscript => "super",
+            InlineMarkupModifiers.Subscript => "sub",
+            InlineMarkupModifiers.Code => "code",
+            InlineMarkupModifiers.Spoiler => "spoiler",
+            _ => ""
+        };
+        InsertMarkupModifier(modifierText);
+    }
+
+    public void InsertLinkModifier() => InsertMarkupModifier("link=");
+    
+    public void InsertColorModifier() => InsertMarkupModifier("foreg=#blue");
+    
+    private void InsertMarkupModifier(string modifier)
+    {
+        if (EditorTextBox.TextArea.Selection.IsEmpty)
+        {
+            EditorTextBox.TextArea.Document.Insert(EditorTextBox.CaretOffset, $"{{}}{modifier}");
+            return;
+        }
+        var textSelection = EditorTextBox.TextArea.Selection;
+        textSelection.ReplaceSelectionWithText($"{{{textSelection.GetText()}}}[{modifier}]");
+    }
+    
     private void ConfigureEditorTextBox()
     {
         EditorTextBox.TextArea.TextView.Margin = new Thickness(12, 0, 0, 0);
@@ -117,6 +151,7 @@ public partial class MarkupEditor : UserControl
         
         EditorTextBox.TextArea.TextView.LinkTextForegroundBrush = Brushes.Black;
         EditorTextBox.TextArea.TextView.LinkTextUnderline = false;
+        SearchPanel.Install(EditorTextBox);
     }
 
     private void ConfigureSyntaxHighlighting()
@@ -141,6 +176,8 @@ public partial class MarkupEditor : UserControl
                 new XshdRule { Regex = @"(?<=^)[\t ]*%[\t\r ]*(?=$)", ColorReference = markupColorReference },
                 // Pattern for labels ( @label=example )
                 new XshdRule { Regex = @"^\s*@label=.+$", ColorReference = markupColorReference },
+                // Pattern for progress bars ( (ooo...) )
+                new XshdRule { Regex = @"^[\t ]*\(((o+\.*)|(o*\.+))\)[\t ]*$", ColorReference = markupColorReference },
                 // Pattern for inline markup. E.g. {text}[b,i]
                 new XshdRule { Regex = @"{(?=[^}\n]+?}(\[\]|\[[^\]\n]*?[^\\]\]))", ColorReference = markupColorReference },
                 new XshdRule { Regex = @"(?<={[^}\n]+?)}(\[\]|\[[^\]\n]*?[^\\]\])", ColorReference = markupColorReference }
@@ -209,9 +246,9 @@ public partial class MarkupEditor : UserControl
         {
             ParagraphNode paragraphNode => GetParagraphView(paragraphNode, markupEditor),
             DividerNode dividerNode => GetDividerView(dividerNode),
-            ImageNode imageNode => GetImageView(imageNode),
             LabelNode labelNode => GetLabelView(labelNode),
             ProgressBarNode progressBarNode => GetProgressBarView(progressBarNode, markupEditor),
+            TableNode tableNode => GetTableView(tableNode, markupEditor),
             IBlockNode blockNode => GetViewFromBlockNode(blockNode, markupEditor),
             _ => new TextBlock { Text = "(Markup Node not implemented)" }
         };
@@ -245,30 +282,7 @@ public partial class MarkupEditor : UserControl
         
         return dividerGrid;
     }
-
-    private static FrameworkElement GetImageView(ImageNode imageNode)
-    {
-        if (TryLoadImage(imageNode.SourceUri, out var image))
-        {
-            image!.Width = image.Source.Width * imageNode.Scale;
-            image.Height = image.Source.Height * imageNode.Scale;
-            image.HorizontalAlignment = HorizontalAlignment.Center;
-            return image;
-        }
-
-        var errorMessage = string.Format(
-            Application.Current.Resources["String.Markup.Image.Error"] as string ?? "",
-            imageNode.SourceUri
-        );
-                
-        return new TextBlock
-        {
-            Text = errorMessage,
-            Foreground = Brushes.Red, 
-            Margin = new Thickness(0, 0, 0, bottom: MarkupViewMargin)
-        };
-    }
-
+    
     private static StackPanel GetProgressBarView(ProgressBarNode progressBarNode, MarkupEditor markupEditor)
     {
         var progressBarPanel = new StackPanel { Orientation = Orientation.Horizontal };
@@ -291,6 +305,97 @@ public partial class MarkupEditor : UserControl
     }
 
     private static FrameworkElement GetLabelView(LabelNode labelNode) => new() { Name = labelNode.Name };
+
+    private static ScrollViewer GetTableView(TableNode tableNode, MarkupEditor markupEditor)
+    {
+        var tableGrid = new Grid();
+        var tableView = new ScrollViewer
+        {
+            Content = tableGrid,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
+        
+        var tableCells = tableNode.Children.OfType<TableCellNode>().ToList();
+        if (tableCells.Count == 0) return tableView;
+        
+        var numOfRows = tableCells.Select(c => c.RowNumber).Max() + 1;
+        var numOfColumns = tableCells.Select(c => c.ColumnNumber).Max() + 1;
+        
+        for (var i = numOfRows; i > 0; i--)
+        {
+            tableGrid.RowDefinitions.Add(new RowDefinition());
+        }
+        for (var i = numOfColumns; i > 0; i--)
+        {
+            tableGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        }
+
+        var filledCells = new HashSet<(int Row, int Column)>();
+        
+        foreach (var cell in tableCells)
+        {
+            var cellView = GetTableCellView(
+                markupEditor, numOfRows, numOfColumns, cell.RowNumber, cell.ColumnNumber, cell
+            );
+            Grid.SetRow(cellView, cell.RowNumber);
+            Grid.SetColumn(cellView, cell.ColumnNumber);
+            tableGrid.Children.Add(cellView);
+
+            filledCells.Add((cell.RowNumber, cell.ColumnNumber));
+        }
+
+        for (var row = 0; row < numOfRows; row++)
+        {
+            for (var column = 0; column < numOfColumns; column++)
+            {
+                if (filledCells.Contains((row, column))) continue;
+                
+                var emptyCellView = GetTableCellView(markupEditor, numOfRows, numOfColumns, row, column);
+                Grid.SetRow(emptyCellView, row);
+                Grid.SetColumn(emptyCellView, column);
+                tableGrid.Children.Add(emptyCellView);
+            }
+        }
+        
+        return tableView;
+    }
+    
+    private static Border GetTableCellView(
+        MarkupEditor markupEditor, int numOfRows, int numOfColumns,
+        int cellRow, int cellColumn, TableCellNode? cell = null
+    )
+    {
+        var cellView = cell == null ? null : GetViewFromBlockNode(cell, markupEditor);
+        var cellBorder = new Border
+        {
+            Style = markupEditor.Resources["TableCell.Style"] as Style,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Child = cellView
+        };
+
+        if (cellColumn == numOfColumns - 1)
+        {
+            cellBorder.BorderThickness = cellBorder.BorderThickness with { Right = 1.3 };
+        }
+
+        if (cellRow == numOfRows - 1)
+        {
+            cellBorder.BorderThickness = cellBorder.BorderThickness with { Bottom = 1.3 };
+        }
+
+        if (cellRow == 0)
+        {
+            if (cellView != null)
+            {
+                cellView.HorizontalAlignment = HorizontalAlignment.Center;
+            }
+            cellBorder.Background = Application.Current.Resources["Brush.Markup.Surface"] as SolidColorBrush;
+        }
+        
+        return cellBorder;
+    }
     
     private static FrameworkElement GetViewFromBlockNode(IBlockNode blockNode, MarkupEditor markupEditor)
     {
@@ -372,6 +477,9 @@ public partial class MarkupEditor : UserControl
             case ToggleListNode:
                 AddToggleListElements(blockGrid, childrenList, markupEditor);
                 break;
+            case ImageNode imageNode:
+                AddImageElements(imageNode, childrenList);
+                break;
         }
     }
 
@@ -436,6 +544,39 @@ public partial class MarkupEditor : UserControl
 
             toggleIndicator.Data = toggleIndicator.Data == downArrow ? rightArrow : downArrow;
         }
+    }
+    
+    private static void AddImageElements(ImageNode imageNode, ItemsControl childrenList)
+    {
+        if (TryLoadImage(imageNode.SourceUri, out var image))
+        {
+            image!.Width = image.Source.Width * imageNode.Scale;
+            image.Height = image.Source.Height * imageNode.Scale;
+            image.Margin = new Thickness(0, 0, 0, bottom: MarkupViewMargin);
+            
+            childrenList.Items.Insert(0, image);
+
+            foreach (var item in childrenList.Items)
+            {
+                if (item is not FrameworkElement view) continue;
+                view.HorizontalAlignment = HorizontalAlignment.Center;
+            }
+            return;
+        }
+
+        var errorMessage = string.Format(
+            Application.Current.Resources["String.Markup.Image.Error"] as string ?? "",
+            imageNode.SourceUri
+        );
+                
+        var errorText = new TextBlock
+        {
+            Text = errorMessage,
+            Foreground = Brushes.Red, 
+            Margin = new Thickness(0, 0, 0, bottom: MarkupViewMargin)
+        };
+
+        childrenList.Items.Insert(0, errorText);
     }
     
     private static Run GetRunFromInline(InlineMarkup inlineMarkup, double paragraphFontSize, MarkupEditor markupEditor)
@@ -560,15 +701,15 @@ public partial class MarkupEditor : UserControl
                 }
                 catch (Exception e) when (e is InvalidOperationException or Win32Exception)
                 {
-                    var uriErrorMessage = string.Format(
-                        Application.Current.Resources["String.Error.OpenLink"] as string ?? "", linkUri
-                    );
+                    var appResources = Application.Current.Resources;
+                    var uriErrorMessage = string.Format(appResources["String.Error.OpenLink"] as string ?? "", linkUri);
                     new MessageBox
                     {
                         Owner = Application.Current.MainWindow,
-                        Title = Application.Current.Resources["String.Error"] as string,
-                        MessageIconPath = Application.Current.Resources["Drawing.Exclamation"] as Geometry,
-                        Message = uriErrorMessage
+                        Title = appResources["String.Error"] as string,
+                        MessageIconPath = appResources["Drawing.Exclamation"] as Geometry,
+                        Message = uriErrorMessage,
+                        Options = [new MessageBoxOption(appResources["String.Button.Understood"] as string ?? "")]
                     }.ShowDialog();
                 }
             };

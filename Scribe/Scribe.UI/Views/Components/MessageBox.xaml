@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     mc:Ignorable="d"
-    MinWidth="500"
+    MinWidth="450"
     SizeToContent="WidthAndHeight"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
@@ -81,7 +81,6 @@
             Margin="14"/>
         
         <TextBlock
-            Name="MessageBlock"
             Grid.Row="0"
             Grid.Column="1"
             Text="{Binding Message, ElementName=Root}"
@@ -90,13 +89,12 @@
             TextAlignment="Center"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Margin="32 10 32 10"/>
+            Margin="32 10 32 20"/>
         <Rectangle
-            Name="MessageDivider"
             Grid.Row="1"
             Grid.Column="1"
             Style="{StaticResource Style.Divider.Horizontal}"
-            Margin="32 10 32 0"/>
+            Margin="32 0 32 0"/>
         <UniformGrid
             Name="OptionsGrid"
             Grid.Row="2"

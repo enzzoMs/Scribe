@@ -3,7 +3,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit;
+using Scribe.Markup.Inlines;
 using Scribe.UI.Views.Components;
+using Color = System.Drawing.Color;
 using MessageBox = Scribe.UI.Views.Components.MessageBox;
 
 namespace Scribe.UI.Views.Sections.Editor;
@@ -96,7 +98,53 @@ public partial class EditorBody : UserControl
 
     private void OnMarkupIconClicked(object sender, RoutedEventArgs e)
     {
-        var nodeType = (Type) ((IconButton) sender).CommandParameter;
-        MarkupEditor.InsertMarkupNode(nodeType);
+        var markupIcon = (IconButton) sender;
+
+        if (markupIcon.CommandParameter is InlineMarkupModifiers inlineModifier)
+        {
+            MarkupEditor.InsertInlineModifier(inlineModifier);
+        }
+        else if (markupIcon.CommandParameter is Type markupType)
+        {
+            if (markupType == typeof(Uri))
+            {
+                MarkupEditor.InsertLinkModifier();
+            }
+            else if (markupType == typeof(Color))
+            {
+                MarkupEditor.InsertColorModifier();
+            }
+            else
+            {
+                MarkupEditor.InsertBlockNode(markupType);
+            }
+        }
+    }
+
+    private void OnToolbarSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (!e.WidthChanged) return;
+        
+        var newWidth = (int) e.NewSize.Width;
+
+        const int markupIconButtonSize = 36;
+        
+        var numOfIcons = newWidth / markupIconButtonSize;
+        numOfIcons = numOfIcons < 0 ? 0 : numOfIcons;
+
+        foreach (var view in MarkupIconsGrid.Children)
+        {
+            if (view is not IconButton iconButton) continue;
+
+            if (numOfIcons > 0)
+            {
+                iconButton.Visibility = Visibility.Visible;
+                numOfIcons--;
+            }
+            else
+            {
+                iconButton.Visibility = Visibility.Collapsed;
+            }
+        }
     }
 }

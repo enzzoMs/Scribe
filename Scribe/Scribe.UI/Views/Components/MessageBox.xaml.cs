@@ -69,10 +69,6 @@ public partial class MessageBox : Window
             messageBox.OptionsGrid.Columns += 1;
             messageBox.OptionsGrid.Children.Add(optionButton);
         }
-        
-        messageBox.OptionsGrid.Visibility = messageBox.Options.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-        messageBox.MessageDivider.Visibility = messageBox.Options.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-        Grid.SetRowSpan(messageBox.MessageBlock,  messageBox.Options.Count == 0 ? 3 : 1);
     }
 
     private void OnOptionClicked(object sender, RoutedEventArgs e)

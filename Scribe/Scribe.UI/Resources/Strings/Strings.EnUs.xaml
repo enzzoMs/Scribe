@@ -45,6 +45,7 @@
     <sys:String x:Key="String.Config.Scale.Decrease">Decrease value</sys:String>
     
     <sys:String x:Key="String.Button.Cancel">Cancel</sys:String>
+    <sys:String x:Key="String.Button.Understood">Understood</sys:String>
     <sys:String x:Key="String.Button.Edit">Edit</sys:String>
     <sys:String x:Key="String.Button.Delete">Delete</sys:String>
     <sys:String x:Key="String.Button.Pin">Pin</sys:String>
@@ -53,7 +54,9 @@
     <sys:String x:Key="String.Button.DontSave">Don't Save</sys:String>
     <sys:String x:Key="String.Button.Undo">Undo (Ctrl + z)</sys:String>
     <sys:String x:Key="String.Button.Redo">Redo (Ctrl + y)</sys:String>
-    
+    <sys:String x:Key="String.Button.Export">Export</sys:String>
+    <sys:String x:Key="String.Button.Help">Help</sys:String>
+
     <sys:String x:Key="String.Markup.Header">Header</sys:String>
     <sys:String x:Key="String.Markup.List.Unordered">Unordered List</sys:String>
     <sys:String x:Key="String.Markup.List.Ordered">Ordered List</sys:String>
@@ -67,6 +70,12 @@
     <sys:String x:Key="String.Markup.ProgressBar">Progress Bar</sys:String>
     <sys:String x:Key="String.Markup.Indentation">Indentation Block</sys:String>
     <sys:String x:Key="String.Markup.Label">Label</sys:String>
+    <sys:String x:Key="String.Markup.Bold">Bold</sys:String>
+    <sys:String x:Key="String.Markup.Italic">Italic</sys:String>
+    <sys:String x:Key="String.Markup.Underline">Underline</sys:String>
+    <sys:String x:Key="String.Markup.Table">Table</sys:String>
+    <sys:String x:Key="String.Markup.Colors">Colors</sys:String>
+    <sys:String x:Key="String.Markup.Link">Link</sys:String>
 
     <sys:String x:Key="String.Error">Error</sys:String>
     <sys:String x:Key="String.Error.RequiredField">* Required</sys:String>

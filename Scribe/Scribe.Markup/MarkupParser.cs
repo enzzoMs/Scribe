@@ -22,8 +22,8 @@ public static class MarkupParser
     // Pattern for images. E.g. img(50%)=imgLink, img=imgLink 
     private static readonly Regex ImagePattern = new(@"img(\([0-9]+%\))?=(.+)", RegexOptions.Compiled);
     
-    // Pattern for progress bar. E.g. oooo.....
-    private static readonly Regex ProgressBarPattern = new(@"^((o+\.*)|(o*\.+))$", RegexOptions.Compiled);
+    // Pattern for progress bar. E.g. (oooo.....)
+    private static readonly Regex ProgressBarPattern = new(@"^\(((o+\.*)|(o*\.+))\)$", RegexOptions.Compiled);
 
     // Pattern for label. E.g. @label=example
     private static readonly Regex LabelPattern = new("^@label=(.+)$", RegexOptions.Compiled);
@@ -48,13 +48,17 @@ public static class MarkupParser
         }
         
         ParagraphNode? openParagraph = null;
-        var openBlocks = new List<IBlockNode> { documentRoot };
-        
         var paragraphs = new List<ParagraphNode>();
+
+        var openBlocks = new Stack<IBlockNode>();
+        openBlocks.Push(documentRoot);
+        
+        var tablesGridConfiguration = new Stack<(int Row, int Column)>();
 
         foreach (var docLine in documentText.Split("\n"))
         {
-            var inCodeBlock = openBlocks.Last() is CodeNode;
+            var inCodeBlock = openBlocks.Peek() is CodeNode;
+            var inTableBlock = openBlocks.Peek() is TableNode;
 
             if (!inCodeBlock && string.IsNullOrWhiteSpace(docLine))
             {
@@ -66,54 +70,81 @@ public static class MarkupParser
 
             if (openBlocks.Count > 1 && lineWithoutMarkup == "%")
             {
-                openBlocks.RemoveAt(openBlocks.Count - 1);
+                if (openBlocks.Peek() is TableNode)
+                {
+                    tablesGridConfiguration.Pop();
+                }
+                openBlocks.Pop();
                 continue;
             }
             
-            if (!inCodeBlock && DividerPattern.IsMatch(lineWithoutMarkup))
+            var newLeafNode = inCodeBlock ? null : GetLeafNodeFromMarkup(lineWithoutMarkup);
+            if (newLeafNode != null)
             {
-                openBlocks.Last().Children.Add(new DividerNode(length: lineWithoutMarkup.Length));    
-                openParagraph = null;
-                continue;
-            }
-
-            var labelMatch = LabelPattern.Match(lineWithoutMarkup);
-
-            if (!inCodeBlock && labelMatch.Success)
-            {
-                var newLabelNode = new LabelNode(name: labelMatch.Groups[1].Value);
-                if (openBlocks.Count > 1)
+                if (newLeafNode is LabelNode)
                 {
-                    documentRoot.Children.Insert(documentRoot.Children.Count - 1, newLabelNode);
+                    if (openBlocks.Count > 1)
+                    {
+                        documentRoot.Children.Insert(documentRoot.Children.Count - 1, newLeafNode);
+                    }
+                    else
+                    {
+                        documentRoot.Children.Add(newLeafNode);
+                    }
+                }
+                else if (inTableBlock && newLeafNode is DividerNode)
+                {
+                    var (currentRow, _) = tablesGridConfiguration.Pop();
+                    tablesGridConfiguration.Push((Row: currentRow + 1, Column: 0));
                 }
                 else
                 {
-                    documentRoot.Children.Add(newLabelNode);
+                    openBlocks.Peek().Children.Add(newLeafNode);    
                 }
-                continue;
+                
+                openParagraph = null;
+                continue;  
             }
             
             var nodeMatch = MarkupNodePattern.Match(lineWithoutMarkup);
 
-            var newLeafNode = GetLeafNodeFromMarkup(nodeMatch.Value);
-            
-            if (!inCodeBlock && newLeafNode != null)
+            IBlockNode? newBlockNode;
+
+            if (nodeMatch.Value == "cell")
             {
-                openBlocks.Last().Children.Add(newLeafNode);    
-                openParagraph = null;
+                var currentTableConfiguration = tablesGridConfiguration.Pop();
+                newBlockNode = new TableCellNode(currentTableConfiguration.Row, currentTableConfiguration.Column);
+                tablesGridConfiguration.Push(currentTableConfiguration with
+                {
+                    Column = currentTableConfiguration.Column + 1
+                });
+            }
+            else
+            {
+                newBlockNode = GetBlockNodeFromMarkup(nodeMatch.Value.Trim());
+            }
+
+            if (newBlockNode is TableNode)
+            {
+                tablesGridConfiguration.Push((Row: 0, Column: 0));
+            }
+            else if (!inTableBlock && newBlockNode is TableCellNode)
+            {
+                newBlockNode = null;
+            } 
+            else if (inTableBlock && newBlockNode is not null and not TableCellNode)
+            {
                 continue;
             }
-            
-            var newBlockNode = GetBlockNodeFromMarkup(nodeMatch.Value.Trim());
         
             if (!inCodeBlock && newBlockNode != null)
             {
-                openBlocks.Last().Children.Add(newBlockNode);    
+                openBlocks.Peek().Children.Add(newBlockNode);    
                 openParagraph = null;
             
                 if (lineWithoutMarkup.Last() == '%')
                 {
-                    openBlocks.Add(newBlockNode);
+                    openBlocks.Push(newBlockNode);
                     continue;
                 }
                 
@@ -154,9 +185,9 @@ public static class MarkupParser
                 {
                     newBlockNode.Children.Add(newParagraphNode);
                 }
-                else
+                else if (openBlocks.Peek() is not TableNode)
                 {
-                    openBlocks.Last().Children.Add(newParagraphNode);
+                    openBlocks.Peek().Children.Add(newParagraphNode);
                 }
                 
                 openParagraph = newParagraphNode;
@@ -201,6 +232,25 @@ public static class MarkupParser
             return new OrderedListNode(listNumber: int.Parse(markup.Trim('.')));
         }
         
+        var imageMatch = ImagePattern.Match(markup);
+
+        if (imageMatch.Success)
+        {
+            var imageParts = imageMatch.Groups;
+
+            var imageScale = imageParts[1].Value.TrimStart('(').TrimEnd(')', '%');
+            var imageUri = imageParts[2].Value;
+
+            var imageNode = new ImageNode(imageUri);
+            
+            if (int.TryParse(imageScale, out var scalePercentage))
+            {
+                imageNode.Scale = scalePercentage / 100.0;
+            }
+
+            return imageNode;
+        }
+        
         return markup switch
         {
             "#" or "##" or "###" or "####" or "#####" or "######" => new HeaderNode(
@@ -211,6 +261,7 @@ public static class MarkupParser
             "code" => new CodeNode(),
             "toggle" => new ToggleListNode(),
             ">>" => new IndentedNode(),
+            "table" => new TableNode(),
             "-" or "x" => new TaskListNode(isChecked: markup == "x"),
             _ => null
         };
@@ -220,28 +271,21 @@ public static class MarkupParser
     {
         if (ProgressBarPattern.IsMatch(markup))
         {
+            var barInnerText = markup.Trim('(', ')');
+            
             return new ProgressBarNode(
-                maxLength: markup.Length, length: markup.TakeWhile(c => c == 'o').Count()
+                maxLength: barInnerText.Length, length: barInnerText.TakeWhile(c => c == 'o').Count()
             );
         }
-            
-        var imageMatch = ImagePattern.Match(markup);
 
-        if (!imageMatch.Success) return null;
-        
-        var imageParts = imageMatch.Groups;
-
-        var imageScale = imageParts[1].Value.TrimStart('(').TrimEnd(')', '%');
-        var imageUri = imageParts[2].Value;
-
-        var imageNode = new ImageNode(imageUri);
-            
-        if (int.TryParse(imageScale, out var scalePercentage))
+        if (DividerPattern.IsMatch(markup))
         {
-            imageNode.Scale = scalePercentage / 100.0;
+            return new DividerNode(length: markup.Length);
         }
 
-        return imageNode;
+        var labelMatch = LabelPattern.Match(markup);
+
+        return labelMatch.Success ? new LabelNode(name: labelMatch.Groups[1].Value) : null;
     }
 
     private static void ParseInlines(ParagraphNode paragraphNode)
