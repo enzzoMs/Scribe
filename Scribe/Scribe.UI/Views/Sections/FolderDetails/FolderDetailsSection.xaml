@@ -8,7 +8,8 @@
     xmlns:components="clr-namespace:Scribe.UI.Views.Components"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance folderDetailsSection:FolderDetailsViewModel}"
-    d:DesignHeight="600">
+    d:DesignHeight="600"
+    Loaded="OnFolderDetailsSectionLoaded">
     
     <UserControl.Style>
         <Style TargetType="UserControl">
@@ -21,20 +22,6 @@
         </Style>
     </UserControl.Style>
     
-    <UserControl.Resources>
-        <Style TargetType="components:IconButton">
-            <Setter Property="Width" Value="30"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="IconBrush" Value="{DynamicResource Brush.Text.Primary}"/>
-            <Setter Property="IconPadding" Value="4"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding InEditMode}" Value="True">
-                    <Setter Property="Visibility" Value="Collapsed"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Resources>
-    
     <Grid Width="225">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -45,13 +32,14 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
         <Path
             Grid.Row="0"
             Grid.Column="0"
-            Width="26"
-            Height="26"
+            Width="22"
+            Height="22"
             Data="{StaticResource Drawing.Folder.Closed}"
             Fill="{DynamicResource Brush.Text.Primary}"
             Stretch="Uniform"
@@ -60,43 +48,116 @@
             Grid.Row="0"
             Grid.Column="1"
             Text="{Binding Folder.Name, FallbackValue=#}"
-            FontSize="{StaticResource Dimen.TextSize.Normal2}"
+            FontSize="15"
             OnEditMode="{Binding InEditMode, Mode=TwoWay}"
             ConfirmChangesCommand="{Binding UpdateFolderNameCommand}"
             VerticalAlignment="Center"
             Margin="8 0 0 0">
             <components:EditableTextBlock.Style>
                 <Style TargetType="components:EditableTextBlock">
+                    <Setter Property="Grid.ColumnSpan" Value="3"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding InEditMode}" Value="True">
-                            <Setter Property="Grid.ColumnSpan" Value="3"/>
+                            <Setter Property="Grid.ColumnSpan" Value="4"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </components:EditableTextBlock.Style>
         </components:EditableTextBlock>
         
-        <components:IconButton
+        <Button
+            Name="FolderActionsButton"
             Grid.Row="0"
-            Grid.Column="2"
-            IconGeometry="{StaticResource Drawing.Edit}"
-            ToolTip="{DynamicResource String.Button.Edit}"
-            Command="{Binding EnterEditModeCommand}"
+            Grid.Column="4"
             VerticalAlignment="Center"
-            Margin="5 0 1 0"/>
-        <components:IconButton
-            Grid.Row="0"
-            Grid.Column="3"
-            PreviewMouseLeftButtonDown="OnDeleteFolderClicked"
-            IconGeometry="{StaticResource Drawing.Delete}"
-            ToolTip="{DynamicResource String.Button.Delete}"
-            VerticalAlignment="Center"/>
-        
+            HorizontalAlignment="Center">
+            <Button.Template>
+                <ControlTemplate>
+                    <Border
+                        PreviewMouseLeftButtonDown="OnFolderActionsButtonClicked"
+                        Background="Transparent"
+                        Cursor="Hand"
+                        Padding="4 8">
+                        <Path
+                            Width="14"
+                            Height="14"
+                            Fill="{DynamicResource Brush.Icon}"
+                            Stretch="Uniform"
+                            Data="{StaticResource Drawing.More.Vertical}"/>
+                    </Border>
+                </ControlTemplate>
+            </Button.Template>
+            <Button.ContextMenu>
+                <ContextMenu>
+                    <MenuItem
+                        Header="{DynamicResource String.Button.Edit}"
+                        Command="{Binding EnterEditModeCommand}">
+                        <MenuItem.Icon>
+                            <Path 
+                                Width="18"
+                                Height="18"
+                                Data="{StaticResource Drawing.Edit}"
+                                Fill="{DynamicResource Brush.Icon}"
+                                Stretch="Uniform"
+                                HorizontalAlignment="Center"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Click="OnDeleteFolderClicked"
+                        Header="{DynamicResource String.Button.Delete}">
+                        <MenuItem.Icon>
+                            <Path 
+                                Width="18"
+                                Height="18"
+                                Data="{StaticResource Drawing.Delete}"
+                                Fill="{DynamicResource Brush.Icon}"
+                                Stretch="Uniform"
+                                HorizontalAlignment="Center"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Click="OnExportFolderClicked"
+                        Header="{DynamicResource String.Button.Export}">
+                        <MenuItem.Icon>
+                            <Path 
+                                Width="14"
+                                Height="14"
+                                Data="{StaticResource Drawing.Export}"
+                                Fill="{DynamicResource Brush.Icon}"
+                                Stretch="Uniform"
+                                HorizontalAlignment="Center"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Click="OnImportDocumentsClicked"
+                        Header="{DynamicResource String.Button.Import}">
+                        <MenuItem.Icon>
+                            <Path 
+                                Width="15"
+                                Height="15"
+                                Data="{StaticResource Drawing.Import}"
+                                Fill="{DynamicResource Brush.Icon}"
+                                Stretch="Uniform"
+                                HorizontalAlignment="Center"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </Button.ContextMenu>
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding InEditMode}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
         <Path
             Grid.Row="1"
             Grid.Column="0"
-            Width="14"
-            Height="14"
+            Width="12"
+            Height="12"
             Data="{StaticResource Drawing.Asterisk}"
             Fill="{DynamicResource Brush.Text.Secondary}"
             Stretch="Uniform"
@@ -112,7 +173,7 @@
         <components:IncrementalNumberBox
             Grid.Row="1"
             Grid.Column="2"
-            Grid.ColumnSpan="2"
+            Grid.ColumnSpan="3"
             TextSize="{StaticResource Dimen.TextSize.Normal1}"
             CurrentValue="{Binding FolderNavigationPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             MinValue="1"

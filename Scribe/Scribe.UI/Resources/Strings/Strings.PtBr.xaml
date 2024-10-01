@@ -45,6 +45,7 @@
     <sys:String x:Key="String.Config.Scale.Decrease">Diminuir valor</sys:String>
     
     <sys:String x:Key="String.Button.Cancel">Cancelar</sys:String>
+    <sys:String x:Key="String.Button.Confirm">Confirmar</sys:String>
     <sys:String x:Key="String.Button.Understood">Entendido</sys:String>
     <sys:String x:Key="String.Button.Edit">Editar</sys:String>
     <sys:String x:Key="String.Button.Delete">Deletar</sys:String>
@@ -55,12 +56,7 @@
     <sys:String x:Key="String.Button.Undo">Desfazer (Ctrl + z)</sys:String>
     <sys:String x:Key="String.Button.Redo">Refazer (Ctrl + y)</sys:String>
     <sys:String x:Key="String.Button.Export">Exportar</sys:String>
-    <sys:String x:Key="String.Markup.Bold">Negrito</sys:String>
-    <sys:String x:Key="String.Markup.Italic">Itálico</sys:String>
-    <sys:String x:Key="String.Markup.Underline">Sublinhado</sys:String>
-    <sys:String x:Key="String.Markup.Table">Tabela</sys:String>
-    <sys:String x:Key="String.Markup.Colors">Cores</sys:String>
-    <sys:String x:Key="String.Markup.Link">Link</sys:String>
+    <sys:String x:Key="String.Button.Import">Importar</sys:String>
     <sys:String x:Key="String.Button.Help">Ajuda</sys:String>
 
     <sys:String x:Key="String.Markup.Header">Título</sys:String>
@@ -70,16 +66,26 @@
     <sys:String x:Key="String.Markup.Code">Código</sys:String>
     <sys:String x:Key="String.Markup.TaskList">Tarefa</sys:String>
     <sys:String x:Key="String.Markup.Image">Imagem</sys:String>
-    <sys:String x:Key="String.Markup.Image.Error">( ! )  Não foi possível carregar a imagem &quot;{0}&quot;</sys:String>
+    <sys:String x:Key="String.Markup.Image.Error">
+        ( ! )  Não foi possível carregar a imagem &quot;{0}&quot; (Arquivo ou diretório não encontrado)
+    </sys:String>
     <sys:String x:Key="String.Markup.ToggleList">Lista de Alternância</sys:String>
     <sys:String x:Key="String.Markup.Callout">Bloco de Chamada</sys:String>
     <sys:String x:Key="String.Markup.ProgressBar">Barra de Progresso</sys:String>
     <sys:String x:Key="String.Markup.Indentation">Bloco de Indentação</sys:String>
     <sys:String x:Key="String.Markup.Label">Rótulo</sys:String>
-
+    <sys:String x:Key="String.Markup.Bold">Negrito</sys:String>
+    <sys:String x:Key="String.Markup.Italic">Itálico</sys:String>
+    <sys:String x:Key="String.Markup.Underline">Sublinhado</sys:String>
+    <sys:String x:Key="String.Markup.Table">Tabela</sys:String>
+    <sys:String x:Key="String.Markup.Colors">Cores</sys:String>
+    
     <sys:String x:Key="String.Error">Erro</sys:String>
     <sys:String x:Key="String.Error.RequiredField">* Obrigatório</sys:String>
-    <sys:String x:Key="String.Error.OpenLink">Erro ao abrir link &quot;{0}&quot;</sys:String>
+    <sys:String x:Key="String.Error.OpenLink" xml:space="preserve">Erro ao abrir link &quot;{0}&quot;&#13;(Verifique se o caminho existe)</sys:String>
+    <sys:String x:Key="String.Error.ExportDocument" xml:space="preserve">Erro ao exportar documento!&#13;(Verifique se o diretório existe e você tem&#13;privilégios de acesso)</sys:String>
+    <sys:String x:Key="String.Error.ImportPathError" xml:space="preserve">Erro ao importar documento &quot;{0}&quot;!&#13;(Verifique se o diretório ou arquivo existe e você tem privilégios de acesso)</sys:String>
+    <sys:String x:Key="String.Error.ImportFileFormatError" xml:space="preserve">Erro ao importar documento &quot;{0}&quot; devido ao formato inválido!&#13;(Verifique se o arquivo não foi modificado ou corrompido)</sys:String>
     
     <sys:String x:Key="String.ClosableTabControl.Close.Tooltip">Fechar Aba</sys:String>
 
@@ -87,7 +93,4 @@
     <sys:String x:Key="String.PagedList.Button.PreviousPage">Página Anterior</sys:String>
     <sys:String x:Key="String.PagedList.Button.SkipForward">Pular algumas páginas</sys:String>
     <sys:String x:Key="String.PagedList.Button.SkipBackwards">Voltar algumas páginas</sys:String>
-    
-    <sys:String x:Key="String.MessageBox.Button.Confirm">Confirmar</sys:String>
-    <sys:String x:Key="String.MessageBox.Button.Cancel">Cancelar</sys:String>
 </ResourceDictionary>

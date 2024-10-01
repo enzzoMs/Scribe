@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Scribe.UI.Views.Components;
@@ -58,7 +59,7 @@ public partial class DropDownBox : Button
         contextMenu.IsOpen = true;
     }
 
-    private void ContextMenu_OnOpened(object sender, RoutedEventArgs e)
+    private void OnContextMenuOpened(object sender, RoutedEventArgs e)
     {
         if (sender is not ContextMenu contextMenu) return;
         

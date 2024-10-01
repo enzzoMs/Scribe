@@ -3,8 +3,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit;
+using Scribe.Data.Model;
 using Scribe.Markup.Inlines;
+using Scribe.UI.Command;
 using Scribe.UI.Views.Components;
+using Scribe.UI.Views.Errors;
 using Color = System.Drawing.Color;
 using MessageBox = Scribe.UI.Views.Components.MessageBox;
 
@@ -12,10 +15,28 @@ namespace Scribe.UI.Views.Sections.Editor;
 
 public partial class EditorBody : UserControl
 {
+    private readonly ICommand _exportDocumentProxyCommand;
+    
     public EditorBody()
     {
         InitializeComponent();
         UpdateUndoRedoButtons();
+
+        _exportDocumentProxyCommand = new DelegateCommand(param =>
+        {
+            if (param is not ValueTuple<string, string> (object chosenOption, var directoryPath)) return;
+
+            var documentFileFormat = (string) chosenOption;
+            
+            if (documentFileFormat == DocumentFileFormats.Json.ToString())
+            {
+                ((EditorViewModel) DataContext).ExportDocumentAsJson(directoryPath);
+            } 
+            else if (documentFileFormat == DocumentFileFormats.Pdf.ToString())
+            {
+                ((EditorViewModel) DataContext).ExportDocumentAsPdf(directoryPath, MarkupEditor.GetMarkupAsImage());
+            }
+        });
     }
 
     public object Header
@@ -29,6 +50,27 @@ public partial class EditorBody : UserControl
         propertyType: typeof(object),
         ownerType: typeof(EditorBody)
     );
+    
+    private void OnEditorBodyLoaded(object sender, RoutedEventArgs e)
+    {
+        ((EditorViewModel) DataContext).ViewModelError += OnViewModelError;
+    }
+
+    private static void OnViewModelError(object? sender, IViewModelError error)
+    {
+        var appResources = Application.Current.Resources;
+        
+        if (error is not DocumentExportError) return;
+        
+        new MessageBox
+        {
+            Owner = Application.Current.MainWindow,
+            Title = appResources["String.Error"] as string,
+            MessageIconPath = appResources["Drawing.Exclamation"] as Geometry,
+            Message = appResources["String.Error.ExportDocument"] as string ?? "",
+            Options = [new MessageBoxOption(appResources["String.Button.Understood"] as string ?? "")]
+        }.ShowDialog();
+    }
     
     private void UpdateUndoRedoButtons()
     {
@@ -96,6 +138,21 @@ public partial class EditorBody : UserControl
         }.ShowDialog();
     }
 
+    private void OnExportDocumentClicked(object sender, RoutedEventArgs e)
+    {
+        var appResources = Application.Current.Resources;
+        var exportMessage = appResources["String.Button.Export"] as string;
+        
+        new PathChooserBox
+        {
+            Owner = Application.Current.MainWindow,
+            Title = exportMessage,
+            Options = Enum.GetNames<DocumentFileFormats>().Cast<object>().ToList(),
+            ConfirmActionMessage = exportMessage,
+            ConfirmActionCommand = _exportDocumentProxyCommand
+        }.ShowDialog();
+    }
+
     private void OnMarkupIconClicked(object sender, RoutedEventArgs e)
     {
         var markupIcon = (IconButton) sender;
@@ -106,11 +163,7 @@ public partial class EditorBody : UserControl
         }
         else if (markupIcon.CommandParameter is Type markupType)
         {
-            if (markupType == typeof(Uri))
-            {
-                MarkupEditor.InsertLinkModifier();
-            }
-            else if (markupType == typeof(Color))
+            if (markupType == typeof(Color))
             {
                 MarkupEditor.InsertColorModifier();
             }
@@ -125,14 +178,25 @@ public partial class EditorBody : UserControl
     {
         if (!e.WidthChanged) return;
         
+        // Showing or hiding toolbar icons based on the available space
+
         var newWidth = (int) e.NewSize.Width;
 
-        const int markupIconButtonSize = 36;
+        if (MarkupIconsPanel.Children[0] is not IconButton sampleIcon) return;
         
-        var numOfIcons = newWidth / markupIconButtonSize;
-        numOfIcons = numOfIcons < 0 ? 0 : numOfIcons;
+        var iconSizeWithMargins = (int) (sampleIcon.ActualWidth + (sampleIcon.Margin.Right * 2));
+        
+        var numOfIcons = newWidth / iconSizeWithMargins;
+        var remainingWidth = newWidth % iconSizeWithMargins;
 
-        foreach (var view in MarkupIconsGrid.Children)
+        if (remainingWidth > sampleIcon.ActualWidth)
+        {
+            numOfIcons++;
+        }
+        
+        numOfIcons = numOfIcons < 1 ? 1 : numOfIcons;
+        
+        foreach (var view in MarkupIconsPanel.Children)
         {
             if (view is not IconButton iconButton) continue;
 
@@ -143,7 +207,7 @@ public partial class EditorBody : UserControl
             }
             else
             {
-                iconButton.Visibility = Visibility.Collapsed;
+                iconButton.Visibility = Visibility.Hidden;
             }
         }
     }

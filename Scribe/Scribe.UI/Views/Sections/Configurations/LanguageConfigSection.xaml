@@ -60,6 +60,8 @@
                     CommandParameter="{x:Static model:LanguageConfiguration.PtBr}">
                     <MenuItem.Icon>
                         <Path 
+                            Width="16"
+                            Height="16"
                             Data="{StaticResource Drawing.Globe}"
                             Fill="{DynamicResource Brush.Text.Primary}"
                             Stretch="Uniform"/>
@@ -71,6 +73,8 @@
                     CommandParameter="{x:Static model:LanguageConfiguration.EnUs}">
                     <MenuItem.Icon>
                         <Path 
+                            Width="16"
+                            Height="16"
                             Data="{StaticResource Drawing.Globe}"
                             Fill="{DynamicResource Brush.Text.Primary}"
                             Stretch="Uniform"/>

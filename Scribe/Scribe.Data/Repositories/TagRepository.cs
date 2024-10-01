@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using Scribe.Data.Database;
 using Scribe.Data.Model;
 
@@ -6,14 +7,17 @@ namespace Scribe.Data.Repositories;
 
 public class TagRepository : IRepository<Tag>
 {
-    public async Task<Tag> Add(Tag tag)
+    private static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = true };
+
+    public async Task<List<Tag>> Add(Tag[] tags)
     {
         await using var context = new ScribeContext();
-        
-        var addedTag = context.Add(tag);
+
+        var addedTags = tags.Select(tag => context.Add(tag).Entity).ToList();
+
         await context.SaveChangesAsync();
         
-        return addedTag.Entity;
+        return addedTags;
     }
 
     public async Task Update(params Tag[] tags)
@@ -38,5 +42,25 @@ public class TagRepository : IRepository<Tag>
     {
         using var context = new ScribeContext();
         return context.Tags.ToListAsync();
+    }
+    
+    public Task ExportToFile(string directoryPath, Tag tag)
+    {
+        return File.WriteAllTextAsync(directoryPath, JsonSerializer.Serialize(tag, SerializerOptions));
+    }
+    
+    public async Task<Tag> ImportFromFile(string filePath)
+    {
+        var tagJson = await File.ReadAllTextAsync(filePath);
+        try
+        {
+            return JsonSerializer.Deserialize<Tag>(tagJson, SerializerOptions)!;
+        }
+        catch (JsonException e)
+        {
+            throw new FormatException(
+                $"Failed to import entity from file '{filePath}' due to invalid format.", e
+            );
+        }
     }
 }

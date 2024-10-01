@@ -62,6 +62,8 @@
                     CommandParameter="{x:Static model:ThemeConfiguration.Light}">
                     <MenuItem.Icon>
                         <Path 
+                            Width="16"
+                            Height="16"
                             Data="{StaticResource Drawing.Contrast}"
                             Fill="{DynamicResource Brush.Text.Primary}"
                             Stretch="Fill"/>
@@ -73,6 +75,8 @@
                     CommandParameter="{x:Static model:ThemeConfiguration.Dark}">
                     <MenuItem.Icon>
                         <Path 
+                            Width="16"
+                            Height="16"
                             Data="{StaticResource Drawing.Contrast}"
                             Fill="{DynamicResource Brush.Text.Primary}"
                             Stretch="Uniform"/>

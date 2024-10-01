@@ -24,17 +24,17 @@
                     <Path
                         Width="24"
                         Height="24"
-                        Data="{StaticResource Drawing.Folder.Opened}"
+                        Data="{StaticResource Drawing.Folder.Opened.Filled}"
                         Fill="White"
                         Stretch="Uniform"
                         VerticalAlignment="Center"/>
                     <TextBlock
                         Grid.Column="1"
                         Text="{Binding Name}"
-                        TextTrimming="WordEllipsis"
+                        TextTrimming="CharacterEllipsis"
                         Foreground="White"
                         FontWeight="SemiBold"
-                        Margin="12 0"
+                        Margin="14 0 0 0"
                         VerticalAlignment="Center"/>
                 </Grid>
             </Border>
@@ -60,9 +60,9 @@
                     <TextBlock
                         Grid.Column="1"
                         Text="{Binding Name}"
-                        TextTrimming="WordEllipsis"
+                        TextTrimming="CharacterEllipsis"
                         FontWeight="SemiBold"
-                        Margin="12 0"
+                        Margin="14 0 0 0"
                         VerticalAlignment="Center"/>
                 </Grid>
             </Border>

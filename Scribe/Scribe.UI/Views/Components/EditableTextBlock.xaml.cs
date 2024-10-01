@@ -50,7 +50,6 @@ public partial class EditableTextBlock : UserControl
     {
         if (OnEditMode && TextErrorField.Visibility == Visibility.Collapsed)
         {
-            MainTextBlock.Text = TextEditBox.Text;
             ConfirmChangesCommand.Execute(TextEditBox.Text);
         }
     }

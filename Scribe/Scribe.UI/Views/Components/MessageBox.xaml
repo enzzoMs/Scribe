@@ -13,48 +13,6 @@
     Icon="../../Resources/Images/scribe_logo.ico"
     Name="Root">
     
-    <Window.Resources>
-        <ControlTemplate x:Key="ButtonTemplate" TargetType="Button">
-            <Border 
-                Padding="14 6"
-                Background="Transparent"
-                BorderBrush="{StaticResource Brush.Item.Selected.Background}"
-                BorderThickness="2">
-                <TextBlock
-                    Text="{TemplateBinding Content}"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center"/>
-            </Border>
-        </ControlTemplate>
-        
-        <ControlTemplate x:Key="ButtonOnHoverTemplate" TargetType="Button">
-            <Border 
-                RenderOptions.EdgeMode="Aliased"
-                Padding="14 6"
-                Background="{StaticResource Brush.Item.Selected.Background}"
-                BorderBrush="{StaticResource Brush.Item.Selected.Background}"
-                BorderThickness="2">
-                <TextBlock
-                    Text="{TemplateBinding Content}"
-                    Foreground="{StaticResource Brush.Item.Selected.Foreground}"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center"/>
-            </Border>
-        </ControlTemplate>
-        
-        <Style TargetType="Button">
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="14 6"/>
-            <Setter Property="Template" Value="{StaticResource ButtonTemplate}"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Template" Value="{StaticResource ButtonOnHoverTemplate}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
-    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>

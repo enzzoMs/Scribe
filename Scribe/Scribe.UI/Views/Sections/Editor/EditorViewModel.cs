@@ -1,9 +1,12 @@
 ﻿using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows.Input;
 using Scribe.Data.Model;
 using Scribe.Data.Repositories;
 using Scribe.UI.Command;
 using Scribe.UI.Events;
+using Scribe.UI.Helpers;
+using Scribe.UI.Views.Errors;
 using Scribe.UI.Views.Sections.Editor.State;
 
 namespace Scribe.UI.Views.Sections.Editor;
@@ -29,17 +32,14 @@ public class EditorViewModel : BaseViewModel
         
         CloseDocumentCommand = new DelegateCommand(param =>
         {
-            if (param is DocumentViewState docState)
-            {
-                CloseDocument(docState);
-            }
+            if (param is not DocumentViewState docState) return;
+            CloseDocument(docState);
         });
         OpenDocumentByNameCommand = new DelegateCommand(param =>
         {
-            if (param is string docName)
-            {
-                _eventAggregator.Publish(new SelectDocumentByNameEvent(docName));
-            }
+            if (param is not string docName) return;
+            _eventAggregator.Publish(new SelectDocumentByNameEvent(docName));
+            
         });
         SaveAndCloseDocumentCommand = new DelegateCommand(param =>
         {
@@ -63,24 +63,18 @@ public class EditorViewModel : BaseViewModel
         EnterEditModeCommand = new DelegateCommand(_ => InEditMode = true);
         AddTagCommand = new DelegateCommand(param =>
         {
-            if (param is string tagName)
-            {
-                AddTag(tagName.Trim());
-            }
+            if (param is not string tagName) return;
+            AddTag(tagName.Trim());
         });
         RemoveTagCommand = new DelegateCommand(param =>
         {
-            if (param is Tag tag)
-            {
-                RemoveTag(tag);
-            }
+            if (param is not Tag tag) return;
+            RemoveTag(tag);
         });
         SetInPreviewModeCommand = new DelegateCommand(param =>
         {
-            if (param is bool onPreviewMode)
-            {
-                InPreviewMode = onPreviewMode;
-            }
+            if (param is not bool onPreviewMode) return;
+            InPreviewMode = onPreviewMode;
         });
     }
     
@@ -101,6 +95,7 @@ public class EditorViewModel : BaseViewModel
             InEditMode = false;
             
             RaisePropertyChanged();
+            RaisePropertyChanged(nameof(DocumentTimestamp));
         }
     }
 
@@ -114,6 +109,11 @@ public class EditorViewModel : BaseViewModel
         }
     }
 
+    public string? DocumentTimestamp =>
+        _selectedDocument == null ? null : 
+            $"{_selectedDocument.Document.CreatedTimestamp.ToShortDateString()} - " +
+            _selectedDocument.Document.LastModifiedTimestamp.ToShortDateString();
+
     public bool InEditMode
     {
         get => _inEditMode;
@@ -124,10 +124,20 @@ public class EditorViewModel : BaseViewModel
         }
     }
     
+    public bool InPreviewMode
+    {
+        get => _inPreviewMode;
+        set
+        {
+            _inPreviewMode = value;
+            RaisePropertyChanged();
+        }
+    }
+    
     public ICommand CloseDocumentCommand { get; }
 
-    public ICommand OpenDocumentByNameCommand { get;  }
-
+    public ICommand OpenDocumentByNameCommand { get; }
+    
     public ICommand SaveAndCloseDocumentCommand { get; }
 
     public ICommand SaveSelectedDocumentCommand { get; }
@@ -143,18 +153,34 @@ public class EditorViewModel : BaseViewModel
     public ICommand AddTagCommand { get; }
 
     public ICommand RemoveTagCommand { get; }
-
-    public bool InPreviewMode
-    {
-        get => _inPreviewMode;
-        set
-        {
-            _inPreviewMode = value;
-            RaisePropertyChanged();
-        }
-    }
     
     public ICommand SetInPreviewModeCommand { get; }
+    
+    public async void ExportDocumentAsJson(string directoryPath)
+    {
+        if (_selectedDocument == null) return;
+        try
+        {
+            await _documentsRepository.ExportToFile(directoryPath, _selectedDocument.Document);
+        }
+        catch (Exception e) when (e is DirectoryNotFoundException or UnauthorizedAccessException)
+        {
+            RaiseViewModelError(new DocumentExportError());
+        }
+    }
+
+    public void ExportDocumentAsPdf(string directoryPath, byte[] markupAsImage)
+    {
+        if (_selectedDocument == null) return;
+        try
+        {
+            PdfHelper.ExportImageAsPdf(directoryPath, _selectedDocument.Document.Name, markupAsImage);   
+        }
+        catch (Exception e) when (e is DirectoryNotFoundException or UnauthorizedAccessException)
+        {
+            RaiseViewModelError(new DocumentExportError());
+        }
+    }
     
     private void CloseDocument(DocumentViewState documentViewState)
     {
@@ -180,11 +206,14 @@ public class EditorViewModel : BaseViewModel
         if (documentViewState.Document.Content != documentViewState.EditedContent)
         {
             documentViewState.Document.Content = documentViewState.EditedContent;
+            documentViewState.Document.LastModifiedTimestamp = DateTime.Now;
         
             await _documentsRepository.Update(documentViewState.Document);
         }
 
         documentViewState.HasUnsavedChanges = false;
+        
+        RaisePropertyChanged(nameof(DocumentTimestamp));
     }
     
     private async void DeleteSelectedDocument()
@@ -211,6 +240,8 @@ public class EditorViewModel : BaseViewModel
         await _documentsRepository.Update(_selectedDocument.Document);
         
         _eventAggregator.Publish(new DocumentUpdatedEvent());
+        
+        RaisePropertyChanged(nameof(SelectedDocument));
     }
 
     private async void ToggleSelectedDocumentPinnedStatus()

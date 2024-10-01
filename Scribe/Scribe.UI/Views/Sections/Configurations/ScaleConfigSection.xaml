@@ -33,7 +33,8 @@
             Grid.Column="2"
             CurrentValue="{Binding CurrentScale, Mode=TwoWay}"
             IncrementStep="0.05"
-            MinValue="0.05"
+            MinValue="0.7"
+            MaxValue="1.5"
             TextSize="{StaticResource Dimen.TextSize.Normal2}"
             ShowDecimalPlaces="{StaticResource True}"/>
     </Grid>

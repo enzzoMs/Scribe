@@ -140,10 +140,10 @@ public class NavigationViewModel : BaseViewModel
     {
         var folderName = Application.Current?.TryFindResource("String.Folders.DefaultName") as string ?? "New Folder";
         
-        var newFolder = await _foldersRepository.Add(new Folder(
+        var newFolder = (await _foldersRepository.Add(new Folder(
             name: folderName,
             navigationIndex: _allFolders.Count
-        ));
+        ))).First();
         
         _allFolders.Add(newFolder);
         ShowAllFolders();
@@ -200,7 +200,7 @@ public class NavigationViewModel : BaseViewModel
     {
         var createdTag = tagEvent.CreatedTag;
         
-        var associatedFolder = _allFolders.Find(f => f.Id == createdTag.FolderId);
+        var associatedFolder = _allFolders.Find(folder => folder.Id == createdTag.FolderId);
 
         if (associatedFolder == null || associatedFolder.Tags.Any(tag => tag.Name == createdTag.Name)) return;
 

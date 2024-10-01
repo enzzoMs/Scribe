@@ -60,6 +60,7 @@ public partial class MessageBox : Window
         {
             var optionButton = new Button
             {
+                Style = Application.Current.Resources["Button.Primary.Style"] as Style,
                 Content = option.OptionText,
                 Command = option.Command,
                 CommandParameter = option.CommandParameter

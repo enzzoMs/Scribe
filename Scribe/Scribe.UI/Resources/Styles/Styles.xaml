@@ -26,6 +26,80 @@
         <Setter Property="Margin" Value="0 0 0 8"/>
     </Style>
     
+    <ControlTemplate x:Key="Button.Primary.Template" TargetType="Button">
+        <Border 
+            Padding="14 6"
+            Background="Transparent"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="2">
+            <TextBlock
+                Text="{TemplateBinding Content}"
+                Foreground="{TemplateBinding Foreground}"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"/>
+        </Border>
+    </ControlTemplate>
+        
+    <ControlTemplate x:Key="Button.Primary.OnHover.Template" TargetType="Button">
+        <Border 
+            RenderOptions.EdgeMode="Aliased"
+            Padding="14 6"
+            Background="{StaticResource Brush.Item.Selected.Background}"
+            BorderBrush="{StaticResource Brush.Item.Selected.Background}"
+            BorderThickness="2">
+            <TextBlock
+                Text="{TemplateBinding Content}"
+                Foreground="{StaticResource Brush.Item.Selected.Foreground}"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"/>
+        </Border>
+    </ControlTemplate>
+        
+    <Style x:Key="Button.Primary.Style" TargetType="Button">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Item.Selected.Background}"></Setter>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="14 6"/>
+        <Setter Property="Template" Value="{StaticResource Button.Primary.Template}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Template" Value="{StaticResource Button.Primary.OnHover.Template}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Divider}"/>
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    <Style x:Key="Button.Secondary.Style" TargetType="Button">
+        <Setter Property="Background" Value="#dfdfdf"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border 
+                        Padding="10 6"
+                        Background="{TemplateBinding Background}">
+                        <ContentPresenter 
+                            TextElement.Foreground="{TemplateBinding Foreground}"
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#c0c0c0"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="#eaeaea"/>
+                <Setter Property="Foreground" Value="{DynamicResource Brush.BackgroundText}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
     <Style TargetType="TextBlock">
         <Style.Setters>
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
@@ -73,6 +147,60 @@
                 </Setter.Value>
             </Setter>
         </Style.Setters>
+    </Style>
+    
+    <Style TargetType="MenuItem">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type MenuItem}">
+                    <Border 
+                        x:Name="MenuItemBackground"
+                        Padding="8,4" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        Background="{TemplateBinding Background}" 
+                        SnapsToDevicePixels="True">
+                        <StackPanel Orientation="Horizontal">
+                            <ContentPresenter 
+                                Content="{TemplateBinding Icon}" 
+                                Margin="0 0 12 0" 
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                VerticalAlignment="Center"/>
+                            <ContentPresenter 
+                                Content="{TemplateBinding Header}" 
+                                ContentSource="Header" 
+                                RecognizesAccessKey="True" 
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter Property="Background" TargetName="MenuItemBackground" Value="#dfdfdf"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style TargetType="ContextMenu">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ContextMenu}">
+                    <Border 
+                        Background="White" 
+                        BorderBrush="{DynamicResource Brush.Divider}" 
+                        BorderThickness="2">
+                        <StackPanel 
+                            ClipToBounds="True" 
+                            Orientation="Vertical" 
+                            IsItemsHost="True" 
+                            Margin="5,4,5,4"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
     
     <Style x:Key="Style.ScrollViewer.TopHorizontal" TargetType="{x:Type ScrollViewer}">

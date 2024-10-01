@@ -101,7 +101,31 @@ public partial class MarkupEditor : UserControl
         propertyType: typeof(ICommand),
         ownerType: typeof(MarkupEditor)
     );
+    
+    /// <returns>The image bytes</returns>
+    public byte[] GetMarkupAsImage()
+    {
+        ScrollViewer.ScrollToTop();
+        ScrollViewer.UpdateLayout();
 
+        const int rightMargin = 40;
+        const int bottomMargin = 50;
+        
+        var panelWidth = (int) MarkupViewerPanel.ActualWidth + rightMargin;
+        var panelHeight = (int) MarkupViewerPanel.ActualHeight + bottomMargin;
+
+        var renderBitmap = new RenderTargetBitmap(panelWidth, panelHeight, 96d, 96d, PixelFormats.Pbgra32);
+        renderBitmap.Render(MarkupViewerPanel);
+
+        using var outStream = new MemoryStream();
+        
+        var encoder = new PngBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+        encoder.Save(outStream);
+
+        return outStream.ToArray();
+    }
+    
     public void InsertBlockNode(Type markupType)
     {
         if (MarkupBlockDictionary.TryGetValue(markupType, out var markupText))
@@ -126,8 +150,6 @@ public partial class MarkupEditor : UserControl
         };
         InsertMarkupModifier(modifierText);
     }
-
-    public void InsertLinkModifier() => InsertMarkupModifier("link=");
     
     public void InsertColorModifier() => InsertMarkupModifier("foreg=#blue");
     

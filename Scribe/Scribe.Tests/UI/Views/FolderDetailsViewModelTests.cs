@@ -9,11 +9,13 @@ namespace Scribe.Tests.UI.Views;
 public class FolderDetailsViewModelTests
 {
     private readonly EventAggregator _eventAggregator = new();
+    private readonly IRepository<Document> _documentsRepositoryMock = Substitute.For<IRepository<Document>>();
     private readonly IRepository<Folder> _foldersRepositoryMock = Substitute.For<IRepository<Folder>>();
     private readonly FolderDetailsViewModel _folderDetailsViewModel;
 
-    public FolderDetailsViewModelTests() =>
-        _folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, _foldersRepositoryMock);
+    public FolderDetailsViewModelTests() => _folderDetailsViewModel = new FolderDetailsViewModel(
+        _eventAggregator, _foldersRepositoryMock, _documentsRepositoryMock
+    );
 
     [Fact]
     public void FolderSelectedEvent_Sets_FolderProperty()

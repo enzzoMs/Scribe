@@ -27,14 +27,13 @@
         </Grid.ColumnDefinitions>
         
         <TextBlock
-            Name="MainTextBlock"
             Grid.Column="0"
             Text="{Binding Text, ElementName=Root}"
             FontSize="{Binding FontSize, ElementName=Root}"
-            TextTrimming="WordEllipsis"
             VerticalAlignment="Center">
             <TextBlock.Style>
                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
                     <Setter Property="Visibility" Value="Visible"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding OnEditMode, ElementName=Root}" Value="True">

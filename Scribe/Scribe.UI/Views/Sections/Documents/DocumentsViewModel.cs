@@ -31,6 +31,7 @@ public class DocumentsViewModel : BaseViewModel
         eventAggregator.Subscribe<FolderSelectedEvent>(this, OnFolderSelected);
         eventAggregator.Subscribe<DocumentDeletedEvent>(this, OnDocumentDeleted);
         eventAggregator.Subscribe<DocumentUpdatedEvent>(this, OnDocumentUpdated);
+        eventAggregator.Subscribe<DocumentCreatedEvent>(this, OnDocumentCreated);
         eventAggregator.Subscribe<TagAddedEvent>(this, e => OnTagAddedOrRemoved(e.CreatedTag.Name));
         eventAggregator.Subscribe<TagRemovedEvent>(this, e => OnTagAddedOrRemoved(e.RemovedTag.Name));
         eventAggregator.Subscribe<TagSelectionChangedEvent>(this, e =>
@@ -141,12 +142,19 @@ public class DocumentsViewModel : BaseViewModel
 
         var createdTimestamp = DateTime.Now;
 
-        var newDocument = await _documentsRepository.Add(new Document(
+        var newDocument = (await _documentsRepository.Add(new Document(
             folderId: _associatedFolder.Id,
             createdTimestamp: createdTimestamp,
             lastModifiedTimestamp: createdTimestamp,
             name: documentName
-        ));
+        ))).First();
+
+        _eventAggregator.Publish(new DocumentCreatedEvent(newDocument));
+    }
+
+    private void OnDocumentCreated(DocumentCreatedEvent documentEvent)
+    {
+        if (_associatedFolder == null) return;
 
         foreach (var tagName in _selectedTagNames.ToList())
         {
@@ -155,12 +163,12 @@ public class DocumentsViewModel : BaseViewModel
         
         ShowAllDocuments();
 
-        _associatedFolder.Documents.Add(newDocument);
-        _allDocuments.Add(newDocument);
+        _associatedFolder.Documents.Add(documentEvent.Document);
+        _allDocuments.Add(documentEvent.Document);
 
         if (_selectedTagNames.Count == 0)
         {
-            CurrentDocuments.Add(newDocument);
+            CurrentDocuments.Add(documentEvent.Document);
         }
     }
 

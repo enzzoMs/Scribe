@@ -14,13 +14,14 @@
     Name="Root">
     
     <Button.ContextMenu>
-        <ContextMenu Opened="ContextMenu_OnOpened"/>
+        <ContextMenu Opened="OnContextMenuOpened"/>
     </Button.ContextMenu>
     
     <Button.Template>
-        <ControlTemplate>
+        <ControlTemplate TargetType="Button">
             <StackPanel 
-                Orientation="Horizontal"    
+                Orientation="Horizontal"   
+                Background="{TemplateBinding Background}"
                 DataContext="{Binding ElementName=Root}">
                 <TextBlock 
                     Name="DropDownLabel"

@@ -39,7 +39,7 @@ public class WindowViewModelTests
         var tagsViewModel = new TagsViewModel(_eventAggregator);
         var configurationsViewModel = new ConfigurationsViewModel(configurationsRepositoryMock, resourcesManagerMock);
         var navigationViewModel = new NavigationViewModel(_eventAggregator, foldersRepositoryMock, tagsRepositoryMock, configurationsViewModel);
-        var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, foldersRepositoryMock);
+        var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, foldersRepositoryMock, documentsRepositoryMock);
         var editorViewModel = new EditorViewModel(_eventAggregator, documentsRepositoryMock);
         var documentsViewModel = new DocumentsViewModel(_eventAggregator, documentsRepositoryMock);
         var mainViewModel = new MainViewModel(
@@ -54,7 +54,7 @@ public class WindowViewModelTests
     public void SplashIsFirstViewModel() => Assert.IsType<SplashViewModel>(_windowViewModel.CurrentViewModel);
 
     [Fact]
-    public async Task NavigatesToEditorWhenSplashFinishes()
+    public async Task NavigatesToEditor_When_SplashFinishes()
     {
         await _splashViewModel.Load();
         _splashViewModel.FinishLogoAnimation();

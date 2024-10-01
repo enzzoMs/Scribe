@@ -126,19 +126,24 @@
                 <Path
                     Grid.Row="0"
                     Grid.Column="0"
-                    Style="{StaticResource DocumentIconStyle}"
+                    Width="20"
+                    Height="20"
+                    Fill="{DynamicResource Brush.Text.Primary}"
+                    Stretch="Uniform"
                     Data="{StaticResource Drawing.Add}"
                     VerticalAlignment="Center"/>
                 <TextBlock
                     Grid.Row="0"
                     Grid.Column="1"
                     Text="{DynamicResource String.Documents.Create}"
+                    Margin="8 0 0 0"
                     VerticalAlignment="Center"/>
                 <Rectangle
                     Name="NewDocumentDivider"
                     Grid.Row="1"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
+                    Margin="0 6 0 0"
                     Style="{StaticResource Style.Divider.Horizontal}"/>
             </Grid>
         </ControlTemplate>
@@ -172,10 +177,6 @@
             Grid.Row="1"
             Command="{Binding CreateDocumentCommand}"
             Cursor="Hand"
-            Background="Transparent"
-            Padding="0"
-            BorderThickness="0"
-            HorizontalContentAlignment="Stretch"
             Template="{StaticResource NewDocumentButtonTemplate}"/>
         <components:PagedList
             Grid.Row="2"

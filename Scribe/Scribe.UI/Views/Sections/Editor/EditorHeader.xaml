@@ -96,7 +96,7 @@
         </ControlTemplate>
     </UserControl.Resources>
     
-    <Grid 
+    <Grid
         DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=TabControl}}"
         d:DataContext="{d:DesignInstance editorSection:EditorViewModel}">
         <Grid.RowDefinitions>
@@ -124,7 +124,6 @@
         <ItemsControl
             Grid.Row="0"
             Grid.Column="1"
-            Grid.ColumnSpan="3"
             BorderThickness="0"
             VerticalAlignment="Center">
             <ItemsControl.ItemsPanel>
@@ -149,6 +148,26 @@
                 </CompositeCollection>
             </ItemsControl.ItemsSource>
         </ItemsControl>
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="2"
+            Grid.ColumnSpan="2"
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
+            Margin="12 0 20 0">
+            <Path
+                Width="20"
+                Height="20"
+                Stretch="Uniform"
+                Fill="{DynamicResource Brush.Text.Secondary}"
+                Data="{StaticResource Drawing.Clock}"
+                Margin="0 0 14 0"
+                VerticalAlignment="Center"/>
+            <TextBlock
+                Text="{Binding DocumentTimestamp, FallbackValue=#}"
+                Foreground="{DynamicResource Brush.Text.Secondary}"
+                VerticalAlignment="Center"/>
+        </StackPanel>
         <Path
             Grid.Row="1"
             Grid.Column="0"
@@ -175,6 +194,7 @@
             Text="Design"
             Cursor="Hand"
             VerticalAlignment="Center"
+            HorizontalAlignment="Center"
             Margin="30 5 30 0">
             <TextBlock.InputBindings>
                 <MouseBinding 
@@ -198,7 +218,8 @@
             Text="Preview"
             Cursor="Hand"
             Margin="30 5 50 0"
-            VerticalAlignment="Center">
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center">
             <TextBlock.InputBindings>
                 <MouseBinding 
                     MouseAction="LeftClick"

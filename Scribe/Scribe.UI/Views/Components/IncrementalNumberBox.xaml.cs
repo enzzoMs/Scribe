@@ -25,10 +25,16 @@ public partial class IncrementalNumberBox : UserControl
         set => SetValue(IncrementStepProperty, value);
     }
     
-    public double MinValue
+    public double? MinValue
     {
-        get => (double) GetValue(MinValueProperty);
+        get => (double?) GetValue(MinValueProperty);
         set => SetValue(MinValueProperty, value);
+    }
+    
+    public double? MaxValue
+    {
+        get => (double?) GetValue(MaxValueProperty);
+        set => SetValue(MaxValueProperty, value);
     }
     
     public bool ShowDecimalPlaces
@@ -57,7 +63,13 @@ public partial class IncrementalNumberBox : UserControl
     
     public static readonly DependencyProperty MinValueProperty = DependencyProperty.Register(
         name: nameof(MinValue),
-        propertyType: typeof(double),
+        propertyType: typeof(double?),
+        ownerType: typeof(IncrementalNumberBox)
+    );
+    
+    public static readonly DependencyProperty MaxValueProperty = DependencyProperty.Register(
+        name: nameof(MaxValue),
+        propertyType: typeof(double?),
         ownerType: typeof(IncrementalNumberBox)
     );
     
@@ -73,11 +85,27 @@ public partial class IncrementalNumberBox : UserControl
         ownerType: typeof(IncrementalNumberBox)
     );
 
-    private void IncreaseValue() => CurrentValue += IncrementStep;
+    private void IncreaseValue()
+    {
+        var newValue = CurrentValue + IncrementStep;
+        if (MaxValue == null)
+        {
+            CurrentValue = newValue;
+            return;
+        }
+
+        CurrentValue = newValue > MaxValue.Value ? MaxValue.Value : newValue;
+    }
     
     private void DecreaseValue()
     {
         var newValue = CurrentValue - IncrementStep;
-        CurrentValue = newValue < MinValue ? MinValue : newValue;
+        if (MinValue == null)
+        {
+            CurrentValue = newValue;
+            return;
+        }
+        
+        CurrentValue = newValue < MinValue.Value ? MinValue.Value : newValue;
     }
 }

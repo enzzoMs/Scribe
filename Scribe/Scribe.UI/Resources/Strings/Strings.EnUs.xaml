@@ -45,6 +45,7 @@
     <sys:String x:Key="String.Config.Scale.Decrease">Decrease value</sys:String>
     
     <sys:String x:Key="String.Button.Cancel">Cancel</sys:String>
+    <sys:String x:Key="String.Button.Confirm">Confirm</sys:String>
     <sys:String x:Key="String.Button.Understood">Understood</sys:String>
     <sys:String x:Key="String.Button.Edit">Edit</sys:String>
     <sys:String x:Key="String.Button.Delete">Delete</sys:String>
@@ -55,8 +56,9 @@
     <sys:String x:Key="String.Button.Undo">Undo (Ctrl + z)</sys:String>
     <sys:String x:Key="String.Button.Redo">Redo (Ctrl + y)</sys:String>
     <sys:String x:Key="String.Button.Export">Export</sys:String>
+    <sys:String x:Key="String.Button.Import">Import</sys:String>
     <sys:String x:Key="String.Button.Help">Help</sys:String>
-
+    
     <sys:String x:Key="String.Markup.Header">Header</sys:String>
     <sys:String x:Key="String.Markup.List.Unordered">Unordered List</sys:String>
     <sys:String x:Key="String.Markup.List.Ordered">Ordered List</sys:String>
@@ -64,7 +66,9 @@
     <sys:String x:Key="String.Markup.Code">Code</sys:String>
     <sys:String x:Key="String.Markup.TaskList">Task List</sys:String>
     <sys:String x:Key="String.Markup.Image">Image</sys:String>
-    <sys:String x:Key="String.Markup.Image.Error">( ! )  Unable to load image &quot;{0}&quot;</sys:String>
+    <sys:String x:Key="String.Markup.Image.Error">
+        ( ! )  Unable to load image &quot;{0}&quot; (File or directory not found)
+    </sys:String>
     <sys:String x:Key="String.Markup.ToggleList">Toggle List</sys:String>
     <sys:String x:Key="String.Markup.Callout">Callout Block</sys:String>
     <sys:String x:Key="String.Markup.ProgressBar">Progress Bar</sys:String>
@@ -75,11 +79,13 @@
     <sys:String x:Key="String.Markup.Underline">Underline</sys:String>
     <sys:String x:Key="String.Markup.Table">Table</sys:String>
     <sys:String x:Key="String.Markup.Colors">Colors</sys:String>
-    <sys:String x:Key="String.Markup.Link">Link</sys:String>
 
     <sys:String x:Key="String.Error">Error</sys:String>
     <sys:String x:Key="String.Error.RequiredField">* Required</sys:String>
-    <sys:String x:Key="String.Error.OpenLink">Error opening link &quot;{0}&quot;</sys:String>
+    <sys:String x:Key="String.Error.OpenLink" xml:space="preserve">Error opening link &quot;{0}&quot;&#13;(Check if the path exists)</sys:String>
+    <sys:String x:Key="String.Error.ExportDocument" xml:space="preserve">Error exporting document!&#13;(Make sure the directory exists and you have&#13;access privileges)</sys:String>
+    <sys:String x:Key="String.Error.ImportPathError" xml:space="preserve">Error importing document &quot;{0}&quot;!&#13;(Make sure the directory or file exists and you have access privileges)</sys:String>
+    <sys:String x:Key="String.Error.ImportFileFormatError" xml:space="preserve">Error importing document &quot;{0}&quot; due to invalid format!&#13;(Make sure the file was not modified or corrupted)</sys:String>
 
     <sys:String x:Key="String.ClosableTabControl.Close.Tooltip">Close Tab</sys:String>
     
@@ -87,7 +93,4 @@
     <sys:String x:Key="String.PagedList.Button.PreviousPage">Previous Page</sys:String>
     <sys:String x:Key="String.PagedList.Button.SkipForward">Skip Forward</sys:String>
     <sys:String x:Key="String.PagedList.Button.SkipBackwards">Skip Backwards</sys:String>
-    
-    <sys:String x:Key="String.MessageBox.Button.Confirm">Confirm</sys:String>
-    <sys:String x:Key="String.MessageBox.Button.Cancel">Cancel</sys:String>
 </ResourceDictionary>

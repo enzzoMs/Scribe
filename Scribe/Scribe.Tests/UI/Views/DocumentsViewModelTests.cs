@@ -84,7 +84,7 @@ public class DocumentsViewModelTests
         
         _eventAggregator.Publish(new FolderSelectedEvent(folder));
 
-        _documentsRepositoryMock.Add(Arg.Any<Document>()).Returns(newDocument);
+        _documentsRepositoryMock.Add(Arg.Any<Document>()).Returns([newDocument]);
         
         _documentsViewModel.CreateDocumentCommand.Execute(null);
         

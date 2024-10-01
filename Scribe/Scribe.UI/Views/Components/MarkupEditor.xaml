@@ -247,6 +247,7 @@
         </avalonEdit:TextEditor>
         
         <ScrollViewer
+            Name="ScrollViewer"
             Visibility="{Binding
                 InPreviewMode,
                 ElementName=Root,

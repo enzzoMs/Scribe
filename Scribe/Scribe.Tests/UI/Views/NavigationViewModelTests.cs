@@ -100,7 +100,7 @@ public class NavigationViewModelTests
     {
         var newFolder = new Folder("NewFolder", 0);
 
-        _folderRepositoryMock.Add(Arg.Any<Folder>()).Returns(newFolder);
+        _folderRepositoryMock.Add(Arg.Any<Folder>()).Returns([newFolder]);
         
         _navigationViewModel.CreateFolderCommand.Execute(null);
 

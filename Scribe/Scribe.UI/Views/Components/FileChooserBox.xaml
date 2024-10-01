@@ -1,0 +1,137 @@
+﻿<Window 
+    x:Class="Scribe.UI.Views.Components.FileChooserBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:sys="clr-namespace:System;assembly=mscorelib"
+    mc:Ignorable="d"
+    SizeToContent="WidthAndHeight"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    Icon="../../Resources/Images/scribe_logo.ico"
+    Name="Root">
+    
+    <Window.Resources>
+        <Thickness x:Key="Dimen.ScrollBar.Vertical.OuterMargin">0</Thickness>
+        <sys:Double x:Key="Dimen.ScrollBar.Vertical.Size">9</sys:Double>
+        <Thickness x:Key="Dimen.ScrollBar.Vertical.Margin">0</Thickness>
+        
+        <Style x:Key="BoxButtonStyle" TargetType="Button" BasedOn="{StaticResource Button.Secondary.Style}">
+            <Setter Property="Margin" Value="10 20 10 4"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Items.Count, ElementName=ChosenFilePathsList}" Value="0">
+                    <Setter Property="IsEnabled" Value="False"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+    <Grid Margin="18 14 18 18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <ListView
+            Name="ChosenFilePathsList"
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Height="180"
+            Width="420"
+            BorderBrush="{DynamicResource Brush.Divider}"
+            BorderThickness="2"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <TextBlock
+                                    Text="{TemplateBinding Content}"
+                                    Foreground="{DynamicResource Brush.Text.Secondary}"
+                                    Margin="10 2"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+        <Button
+            Click="OnChooseFilesClicked"
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Cursor="Hand"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Visibility" Value="Hidden"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Items.Count, ElementName=ChosenFilePathsList}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+            <Button.Template>
+                <ControlTemplate>
+                    <StackPanel Background="Transparent">
+                        <Path
+                            Width="30"
+                            Height="30"
+                            Stretch="Uniform"
+                            Fill="{DynamicResource Brush.BackgroundIcon}"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center">
+                            <Path.Style>
+                                <Style TargetType="Path">
+                                    <Setter Property="Data" Value="{StaticResource Drawing.Folder.Closed}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding 
+                                        RelativeSource={RelativeSource AncestorType=Button,AncestorLevel=1}, 
+                                        Path=IsMouseOver}" Value="True" >
+                                            <Setter Property="Data" Value="{StaticResource Drawing.Folder.Opened.Empty}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Path.Style>
+                        </Path>
+                        <TextBlock
+                            Text="Escolher arquivos"
+                            Foreground="{DynamicResource Brush.BackgroundText}"
+                            Margin="0 8 0 0"/>
+                    </StackPanel>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+        <Button
+            Grid.Row="1"
+            Grid.Column="0"
+            Click="OnCancelClicked"
+            Style="{StaticResource BoxButtonStyle}">
+            <TextBlock 
+                Text="{DynamicResource String.Button.Cancel}"
+                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button,AncestorLevel=1}}"/>
+        </Button>
+        <Button
+            Grid.Row="1"
+            Grid.Column="1"
+            Click="OnConfirmActionClicked"
+            Style="{StaticResource BoxButtonStyle}">
+            <TextBlock
+                Text="{DynamicResource String.Button.Confirm}"
+                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button,AncestorLevel=1}}"/>
+        </Button>
+    </Grid>
+</Window>
