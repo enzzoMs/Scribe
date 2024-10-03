@@ -40,7 +40,7 @@ public class WindowViewModelTests
         var configurationsViewModel = new ConfigurationsViewModel(configurationsRepositoryMock, resourcesManagerMock);
         var navigationViewModel = new NavigationViewModel(_eventAggregator, foldersRepositoryMock, tagsRepositoryMock, configurationsViewModel);
         var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, foldersRepositoryMock, documentsRepositoryMock);
-        var editorViewModel = new EditorViewModel(_eventAggregator, documentsRepositoryMock);
+        var editorViewModel = new EditorViewModel(_eventAggregator, documentsRepositoryMock, configurationsRepositoryMock);
         var documentsViewModel = new DocumentsViewModel(_eventAggregator, documentsRepositoryMock);
         var mainViewModel = new MainViewModel(
             navigationViewModel, folderDetailsViewModel, documentsViewModel, tagsViewModel, editorViewModel

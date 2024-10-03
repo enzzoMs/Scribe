@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Input;
+using Scribe.Data.Configurations;
 using Scribe.Data.Model;
 using Scribe.Data.Repositories;
 using Scribe.UI.Command;
@@ -15,17 +16,22 @@ public class EditorViewModel : BaseViewModel
 {
     private readonly IEventAggregator _eventAggregator; 
     private readonly IRepository<Document> _documentsRepository;
-    
+    private readonly IConfigurationsRepository _configurationsRepository;
+
     private DocumentViewState? _selectedDocument;
     private ObservableCollection<Tag>? _documentTags;
     
     private bool _inEditMode;
     private bool _inPreviewMode;
     
-    public EditorViewModel(IEventAggregator eventAggregator, IRepository<Document> documentsRepository)
+    public EditorViewModel(
+        IEventAggregator eventAggregator, 
+        IRepository<Document> documentsRepository, 
+        IConfigurationsRepository configurationsRepository)
     {
         _documentsRepository = documentsRepository;
         _eventAggregator = eventAggregator;
+        _configurationsRepository = configurationsRepository;
         
         _eventAggregator.Subscribe<DocumentSelectedEvent>(this, OnDocumentSelected);
         _eventAggregator.Subscribe<FolderDeletedEvent>(this, OnFolderDeleted);
@@ -133,6 +139,8 @@ public class EditorViewModel : BaseViewModel
             RaisePropertyChanged();
         }
     }
+
+    public LanguageConfiguration CurrentLanguage => _configurationsRepository.GetAllConfigurations().Language; 
     
     public ICommand CloseDocumentCommand { get; }
 

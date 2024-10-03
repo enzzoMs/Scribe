@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -53,7 +54,10 @@ public partial class EditorBody : UserControl
     
     private void OnEditorBodyLoaded(object sender, RoutedEventArgs e)
     {
-        ((EditorViewModel) DataContext).ViewModelError += OnViewModelError;
+        if (DataContext is EditorViewModel editorViewModel)
+        {
+            editorViewModel.ViewModelError += OnViewModelError;
+        }
     }
 
     private static void OnViewModelError(object? sender, IViewModelError error)
@@ -172,6 +176,52 @@ public partial class EditorBody : UserControl
                 MarkupEditor.InsertBlockNode(markupType);
             }
         }
+    }
+
+    private void OnHelpIconClicked(object sender, RoutedEventArgs eventArgs)
+    {
+        if (DataContext is not EditorViewModel editorViewModel) return;
+
+        var currentLanguage = editorViewModel.CurrentLanguage;
+        var tutorialUri = new Uri($"/Resources/Tutorials/Tutorial_{currentLanguage}.txt", UriKind.Relative);
+
+        string tutorialText;
+        
+        try
+        {
+            var tutorialResourceStream = Application.GetResourceStream(tutorialUri);
+
+            if (tutorialResourceStream == null)
+            {
+                ShowTutorialErrorMessage();
+                return;
+            }
+            
+            using var reader = new StreamReader(tutorialResourceStream.Stream);
+            tutorialText = reader.ReadToEnd();
+        }
+        catch (Exception e) when (e is IOException or FormatException)
+        {
+            ShowTutorialErrorMessage();
+            return;
+        }
+        
+        editorViewModel.InPreviewMode = true;
+        MarkupEditor.RenderTextAsMarkup(tutorialText);
+    }
+
+    private void ShowTutorialErrorMessage()
+    {
+        var appResources = Application.Current.Resources;
+        
+        new MessageBox
+        {
+            Owner = Application.Current.MainWindow,
+            Title = appResources["String.Error"] as string ?? "",
+            MessageIconPath = appResources["Drawing.Exclamation"] as Geometry,
+            Message = appResources["String.Error.Tutorial"] as string ?? "",
+            Options = [new MessageBoxOption(appResources["String.Button.Understood"] as string ?? "")]
+        }.ShowDialog();
     }
 
     private void OnToolbarSizeChanged(object sender, SizeChangedEventArgs e)

@@ -19,12 +19,8 @@
     </ItemGroup>
     
     <ItemGroup>
-        <None Remove="Resources\Images\scribe_logo.png" />
-        <None Include="bin\Debug\net8.0-windows\scribe_database.db" />
-        <Resource Include="Resources\Images\scribe_logo.ico">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Resource>
-        
-        <Resource Include="Resources\Fonts\*.ttf"/>
+        <Resource Include="./Resources/Images/scribe_logo.ico"/>
+        <Resource Include="./Resources/Fonts/*.ttf"/>
+        <Resource Include="./Resources/Tutorials/*.txt"/>
     </ItemGroup>
 </Project>

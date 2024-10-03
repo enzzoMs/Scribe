@@ -33,7 +33,10 @@ public partial class FolderDetailsSection : UserControl
 
     private void OnFolderDetailsSectionLoaded(object sender, RoutedEventArgs e)
     {
-        ((FolderDetailsViewModel) DataContext).ViewModelError += OnViewModelError;
+        if (DataContext is FolderDetailsViewModel folderDetailsViewModel)
+        {
+            folderDetailsViewModel.ViewModelError += OnViewModelError;
+        }
     }
 
     private static void OnViewModelError(object? sender, IViewModelError error)

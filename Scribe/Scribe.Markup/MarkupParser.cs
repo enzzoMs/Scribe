@@ -11,32 +11,37 @@ namespace Scribe.Markup;
 public static class MarkupParser
 {
     // Pattern for a markup node. E.g. [quote], [quote]% 
-    private static readonly Regex MarkupNodePattern = new(@"(?<=^\[)[^\]]*?[^\\](?=\](%?| .*)$)", RegexOptions.Compiled);
+    private static readonly Regex MarkupNodePattern = new(@"(?<=^\$?\[)[^\]]+?(?=\](%?| .*)$)", RegexOptions.Compiled);
     
     // Pattern for ordered lists. E.g. 1., 20., 360.
     private static readonly Regex OrderedListPattern = new("^[0-9][0-9]*.$", RegexOptions.Compiled);
     
     // Pattern for divider. E.g. =====
-    private static readonly Regex DividerPattern = new("^=+$", RegexOptions.Compiled);
+    private static readonly Regex DividerPattern = new(@"^\$?=+$", RegexOptions.Compiled);
     
     // Pattern for images. E.g. img(50%)=imgLink, img=imgLink 
     private static readonly Regex ImagePattern = new(@"img(\([0-9]+%\))?=(.+)", RegexOptions.Compiled);
     
     // Pattern for progress bar. E.g. (oooo.....)
-    private static readonly Regex ProgressBarPattern = new(@"^\(((o+\.*)|(o*\.+))\)$", RegexOptions.Compiled);
+    private static readonly Regex ProgressBarPattern = new(@"^\$?\(((o+\.*)|(o*\.+))\)$", RegexOptions.Compiled);
 
     // Pattern for label. E.g. @label=example
-    private static readonly Regex LabelPattern = new("^@label=(.+)$", RegexOptions.Compiled);
+    private static readonly Regex LabelPattern = new(@"^\$?@label=(.+)$", RegexOptions.Compiled);
 
     // Pattern for inline markup. E.g. {text}[b,i]
-    private static readonly Regex InlineMarkupPattern = new(@"{([^}\n]+?)}(\[\]|\[([^\]\n]*?[^\\])\])", RegexOptions.Compiled);
+    private static readonly Regex InlineMarkupPattern = new(@"\$?{([^}\n]*?)}\[([^\]\n]*?)\]", RegexOptions.Compiled);
     
     // Pattern for inline colors. E.g. (foreg=#123456), (backg=#FF123456)
     private static readonly Regex InlineColorPattern = new(
         "(foreg|backg)=#(([0-9a-fA-F]{8}|[0-9a-fA-F]{6})|[a-z]+)", RegexOptions.Compiled
     );
 
+    // Pattern for new lines ( /// )
+    private static readonly Regex NewLineMarkupPattern = new(@"(?<!\$)\/\/\/", RegexOptions.Compiled);
+
     private static readonly Regex EmptySpacePattern = new(@"\s+", RegexOptions.Compiled);
+
+    private static readonly Regex IgnoreMarkupPattern = new(@"(?<!\$)\$(?!\$)", RegexOptions.Compiled);
 
     public static DocumentNode ParseText(string documentText)
     {
@@ -66,19 +71,20 @@ public static class MarkupParser
                 continue;
             }
 
-            var lineWithoutMarkup = EmptySpacePattern.Replace(docLine, " ").Trim();
-
-            if (openBlocks.Count > 1 && lineWithoutMarkup == "%")
+            var trimmedLine = EmptySpacePattern.Replace(docLine, " ").Trim();
+            
+            if (openBlocks.Count > 1 && trimmedLine == "%")
             {
                 if (openBlocks.Peek() is TableNode)
                 {
                     tablesGridConfiguration.Pop();
                 }
                 openBlocks.Pop();
+                openParagraph = null;
                 continue;
             }
             
-            var newLeafNode = inCodeBlock ? null : GetLeafNodeFromMarkup(lineWithoutMarkup);
+            var newLeafNode = inCodeBlock ? null : GetLeafNodeFromMarkup(trimmedLine);
             if (newLeafNode != null)
             {
                 if (newLeafNode is LabelNode)
@@ -106,80 +112,64 @@ public static class MarkupParser
                 continue;  
             }
             
-            var nodeMatch = MarkupNodePattern.Match(lineWithoutMarkup);
+            var lineWithoutMarkup = trimmedLine;
 
-            IBlockNode? newBlockNode;
+            IBlockNode? newBlockNode = null;
+            var blockNodeMatch = MarkupNodePattern.Match(trimmedLine);
 
-            if (nodeMatch.Value == "cell")
+            if (!inCodeBlock && blockNodeMatch.Success && !trimmedLine.StartsWith('$'))
             {
-                var currentTableConfiguration = tablesGridConfiguration.Pop();
-                newBlockNode = new TableCellNode(currentTableConfiguration.Row, currentTableConfiguration.Column);
-                tablesGridConfiguration.Push(currentTableConfiguration with
+                if (inTableBlock && blockNodeMatch.Value == "cell")
                 {
-                    Column = currentTableConfiguration.Column + 1
-                });
-            }
-            else
-            {
-                newBlockNode = GetBlockNodeFromMarkup(nodeMatch.Value.Trim());
-            }
-
-            if (newBlockNode is TableNode)
-            {
-                tablesGridConfiguration.Push((Row: 0, Column: 0));
-            }
-            else if (!inTableBlock && newBlockNode is TableCellNode)
-            {
-                newBlockNode = null;
-            } 
-            else if (inTableBlock && newBlockNode is not null and not TableCellNode)
-            {
-                continue;
-            }
-        
-            if (!inCodeBlock && newBlockNode != null)
-            {
-                openBlocks.Peek().Children.Add(newBlockNode);    
-                openParagraph = null;
-            
-                if (lineWithoutMarkup.Last() == '%')
+                    var currentTableConfiguration = tablesGridConfiguration.Pop();
+                    newBlockNode = new TableCellNode(currentTableConfiguration.Row, currentTableConfiguration.Column);
+                    tablesGridConfiguration.Push(currentTableConfiguration with
+                    {
+                        Column = currentTableConfiguration.Column + 1
+                    });
+                }
+                else
                 {
-                    openBlocks.Push(newBlockNode);
+                    newBlockNode = GetBlockNodeFromMarkup(blockNodeMatch.Value.Trim());
+                }
+
+                if (newBlockNode is TableNode)
+                {
+                    tablesGridConfiguration.Push((Row: 0, Column: 0));
+                }
+                else if (inTableBlock && newBlockNode is not null and not TableCellNode)
+                {
                     continue;
                 }
+        
+                if (newBlockNode != null)
+                {
+                    openBlocks.Peek().Children.Add(newBlockNode);    
+                    openParagraph = null;
+            
+                    if (trimmedLine.Last() == '%')
+                    {
+                        openBlocks.Push(newBlockNode);
+                        continue;
+                    }
                 
-                lineWithoutMarkup = lineWithoutMarkup[(nodeMatch.Length + 2)..].Trim();
+                    lineWithoutMarkup = trimmedLine[(blockNodeMatch.Length + 2)..].Trim();
+                    
+                    if (string.IsNullOrWhiteSpace(lineWithoutMarkup)) continue;
+                }
             }
             
-            if (string.IsNullOrWhiteSpace(lineWithoutMarkup)) continue;
+            var paragraphText = inCodeBlock ? 
+                docLine.TrimEnd('\r').Replace("\t", "    ") : lineWithoutMarkup;
             
-            var lineWithoutEscapeCharacters = new StringBuilder(lineWithoutMarkup)
-                .Replace(@"\\", @"\")
-                .Replace(@"\]", "]")
-                .Replace(@"\[", "[")
-                .Replace(@"\}", "}")
-                .Replace(@"\{", "{")
-                .Replace(@"\/", "/")
-                .Replace(@"\%", "%");
-            
-            if (!inCodeBlock)
-            {
-                lineWithoutEscapeCharacters.Replace("///", "\n");
-            }
-
-            lineWithoutMarkup = lineWithoutEscapeCharacters.ToString();
-                
             if (openParagraph != null)
             {
-                openParagraph.RawText += inCodeBlock ? $"\n{docLine.TrimEnd('\r')}" : 
-                    (openParagraph.RawText.Last() == '\n' ? "" : " ") + lineWithoutMarkup;
+                openParagraph.RawText += inCodeBlock ? $"\n{paragraphText}" : 
+                    (openParagraph.RawText.Last() == '\n' ? "" : " ") + paragraphText;
             }
             else
             {
-                var newParagraphNode = new ParagraphNode
-                {
-                    RawText = inCodeBlock ? docLine.TrimEnd('\r') : lineWithoutMarkup
-                };
+                var newParagraphNode = new ParagraphNode { RawText = paragraphText };
 
                 if (newBlockNode != null)
                 {
@@ -269,6 +259,8 @@ public static class MarkupParser
 
     private static ILeafNode? GetLeafNodeFromMarkup(string markup)
     {
+        if (markup.StartsWith('$')) return null;
+        
         if (ProgressBarPattern.IsMatch(markup))
         {
             var barInnerText = markup.Trim('(', ')');
@@ -294,7 +286,7 @@ public static class MarkupParser
         
         if (inlineMatches.Count == 0)
         {
-            paragraphNode.Inlines.Add(new InlineMarkup(paragraphNode.RawText));
+            paragraphNode.Inlines.Add(new InlineMarkup(RemoveSpecialCharactersFromText(paragraphNode.RawText)));
             return;
         }
 
@@ -304,15 +296,26 @@ public static class MarkupParser
         {
             if (previousInline?.Index != currentInline.Index)
             {
-                paragraphNode.Inlines.Add(new InlineMarkup(
+                var inlineText = RemoveSpecialCharactersFromText(
                     paragraphNode.RawText[(previousInline?.Index + previousInline?.Length ?? 0)..currentInline.Index]
-                ));
+                );
+                paragraphNode.Inlines.Add(new InlineMarkup(inlineText));
+            }
+            
+            if (currentInline.Value.StartsWith('$'))
+            {
+                var inlineText = RemoveSpecialCharactersFromText(paragraphNode.RawText[
+                    (currentInline.Index + 1)..(currentInline.Index + currentInline.Length)
+                ]);
+                paragraphNode.Inlines.Add(new InlineMarkup(inlineText));
+                previousInline = currentInline;
+                continue;
             }
 
-            var inlineText = currentInline.Groups[1].Value;
-            var modifiers = currentInline.Groups[3].Value.Split(',');
+            var inlineInnerText = currentInline.Groups[1].Value;
+            var modifiers = currentInline.Groups[2].Value.Split(',');
             
-            var newInline = new InlineMarkup(inlineText);
+            var newInline = new InlineMarkup(RemoveSpecialCharactersFromText(inlineInnerText));
             
             foreach (var modifier in modifiers)
             {
@@ -394,9 +397,18 @@ public static class MarkupParser
         if (inlineEndIndex != null && inlineEndIndex != paragraphNode.RawText.Length)
         {
             paragraphNode.Inlines.Add(new InlineMarkup(
-                paragraphNode.RawText[inlineEndIndex.Value..]
+                RemoveSpecialCharactersFromText(paragraphNode.RawText[inlineEndIndex.Value..])
             ));
         }
+    }
+
+    private static string RemoveSpecialCharactersFromText(string text)
+    {
+        var textWithoutSpecialChars = NewLineMarkupPattern.Replace(text, "\n");
+        textWithoutSpecialChars = IgnoreMarkupPattern.Replace(textWithoutSpecialChars, "");
+        textWithoutSpecialChars = textWithoutSpecialChars.Replace("$$", "$");
+
+        return textWithoutSpecialChars;
     }
 
     private static Color? GetColorByName(string colorName) => colorName switch

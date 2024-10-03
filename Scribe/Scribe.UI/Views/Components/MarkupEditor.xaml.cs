@@ -22,7 +22,7 @@ namespace Scribe.UI.Views.Components;
 
 public partial class MarkupEditor : UserControl
 {
-    private const int MarkupViewMargin = 14;
+    private const int MarkupViewMargin = 18;
     private const double SubAndSuperscriptFontSizePct = 0.85;
     
     private static readonly Dictionary<Type, string> MarkupBlockDictionary = new()
@@ -105,8 +105,8 @@ public partial class MarkupEditor : UserControl
     /// <returns>The image bytes</returns>
     public byte[] GetMarkupAsImage()
     {
-        ScrollViewer.ScrollToTop();
-        ScrollViewer.UpdateLayout();
+        MarkupScrollViewer.ScrollToTop();
+        MarkupScrollViewer.UpdateLayout();
 
         const int rightMargin = 40;
         const int bottomMargin = 50;
@@ -153,16 +153,7 @@ public partial class MarkupEditor : UserControl
     
     public void InsertColorModifier() => InsertMarkupModifier("foreg=#blue");
     
-    private void InsertMarkupModifier(string modifier)
-    {
-        if (EditorTextBox.TextArea.Selection.IsEmpty)
-        {
-            EditorTextBox.TextArea.Document.Insert(EditorTextBox.CaretOffset, $"{{}}{modifier}");
-            return;
-        }
-        var textSelection = EditorTextBox.TextArea.Selection;
-        textSelection.ReplaceSelectionWithText($"{{{textSelection.GetText()}}}[{modifier}]");
-    }
+    public void RenderTextAsMarkup(string text) => RenderDocumentNode(MarkupParser.ParseText(text));
     
     private void ConfigureEditorTextBox()
     {
@@ -181,19 +172,12 @@ public partial class MarkupEditor : UserControl
         var markupColor = new XshdColor { Foreground = new SimpleHighlightingBrush(Colors.Black), FontWeight = FontWeights.Bold };
         var markupColorReference = new XshdReference<XshdColor>(markupColor);
         
-        var keywords = new XshdKeywords
-        {
-            Words = { "///", @"\/", @"\[" , @"\]", @"\{", @"\}", @"\%", @"\\" },
-            ColorReference = markupColorReference
-        };
-        
         var mainRuleSet = new XshdRuleSet
         {
             Elements =
             {
-                keywords,
                 // Pattern for block markup. E.g. [quote], [quote]% 
-                new XshdRule { Regex = @"(?<=^|(^[\t ]*))\[[^\]]*[^\\]\]%?", ColorReference = markupColorReference },
+                new XshdRule { Regex = @"(?<=^|(^[\t ]*))\[[^\]]+\]%?", ColorReference = markupColorReference },
                 // Pattern for end of block ( % )
                 new XshdRule { Regex = @"(?<=^)[\t ]*%[\t\r ]*(?=$)", ColorReference = markupColorReference },
                 // Pattern for labels ( @label=example )
@@ -201,8 +185,12 @@ public partial class MarkupEditor : UserControl
                 // Pattern for progress bars ( (ooo...) )
                 new XshdRule { Regex = @"^[\t ]*\(((o+\.*)|(o*\.+))\)[\t ]*$", ColorReference = markupColorReference },
                 // Pattern for inline markup. E.g. {text}[b,i]
-                new XshdRule { Regex = @"{(?=[^}\n]+?}(\[\]|\[[^\]\n]*?[^\\]\]))", ColorReference = markupColorReference },
-                new XshdRule { Regex = @"(?<={[^}\n]+?)}(\[\]|\[[^\]\n]*?[^\\]\])", ColorReference = markupColorReference }
+                new XshdRule { Regex = @"(?<!\$){(?=[^}\n]+?}\[[^\]\n]*?\])", ColorReference = markupColorReference },
+                new XshdRule { Regex = @"(?<=(?<!\$){[^}\n]+?)}\[[^\]\n]*?\]", ColorReference = markupColorReference },
+                // Pattern for new lines ( '///' )
+                new XshdRule { Regex = @"(?<!\$)\/\/\/", ColorReference = markupColorReference },
+                // Pattern for the ignore command ( '$' )
+                new XshdRule { Regex = @"\$+", ColorReference = markupColorReference }
             }
         };
         
@@ -212,13 +200,29 @@ public partial class MarkupEditor : UserControl
         EditorTextBox.SyntaxHighlighting = HighlightingLoader.Load(syntaxDefinition, HighlightingManager.Instance);
     }
     
+    private void InsertMarkupModifier(string modifier)
+    {
+        if (EditorTextBox.TextArea.Selection.IsEmpty)
+        {
+            EditorTextBox.TextArea.Document.Insert(EditorTextBox.CaretOffset, $"{{}}{modifier}");
+            return;
+        }
+        var textSelection = EditorTextBox.TextArea.Selection;
+        textSelection.ReplaceSelectionWithText($"{{{textSelection.GetText()}}}[{modifier}]");
+    }
+    
+    private void EditorTextBox_OnTextChanged(object? sender, EventArgs e)
+    {
+        EditorTextChanged?.Invoke(this, EditorTextBox.Text);
+    }
+    
     private static void OnPreviewModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var markupEditor = (MarkupEditor) d;
         
         if (markupEditor.InPreviewMode)
         {
-            RenderMarkup(MarkupParser.ParseText(markupEditor.EditorTextBox.Text), markupEditor);
+            markupEditor.RenderTextAsMarkup(markupEditor.EditorTextBox.Text);
         }
     }
     
@@ -236,59 +240,59 @@ public partial class MarkupEditor : UserControl
 
         if (markupEditor.InPreviewMode)
         {
-            RenderMarkup(MarkupParser.ParseText(markupEditor.EditorText), markupEditor);
+            markupEditor.RenderTextAsMarkup(markupEditor.EditorText);
         }
     }
 
-    private static void RenderMarkup(DocumentNode documentRoot, MarkupEditor markupEditor)
+    private void RenderDocumentNode(DocumentNode documentRoot)
     {
-        markupEditor.MarkupViewerPanel.Items.Clear();
+        MarkupViewerPanel.Items.Clear();
         
         foreach (var node in documentRoot.Children)
         {
-            var nodeView = GetViewFromMarkupNode(node, markupEditor);
+            var nodeView = GetViewFromMarkupNode(node);
 
             if (node is not LabelNode)
             {
                 nodeView.Margin = new Thickness(
                     left: 0,
-                    top: markupEditor.MarkupViewerPanel.Items.Count == 0 ? 0 : MarkupViewMargin,
+                    top: MarkupViewerPanel.Items.Count == 0 ? 0 : MarkupViewMargin,
                     right: 0,
                     bottom: 0
                 );    
             }
             
-            markupEditor.MarkupViewerPanel.Items.Add(nodeView);
+            MarkupViewerPanel.Items.Add(nodeView);
         }
     }
 
-    private static FrameworkElement GetViewFromMarkupNode(IMarkupNode node, MarkupEditor markupEditor)
+    private FrameworkElement GetViewFromMarkupNode(IMarkupNode node)
     {
         return node switch
         {
-            ParagraphNode paragraphNode => GetParagraphView(paragraphNode, markupEditor),
+            ParagraphNode paragraphNode => GetParagraphView(paragraphNode),
             DividerNode dividerNode => GetDividerView(dividerNode),
             LabelNode labelNode => GetLabelView(labelNode),
-            ProgressBarNode progressBarNode => GetProgressBarView(progressBarNode, markupEditor),
-            TableNode tableNode => GetTableView(tableNode, markupEditor),
-            IBlockNode blockNode => GetViewFromBlockNode(blockNode, markupEditor),
+            ProgressBarNode progressBarNode => GetProgressBarView(progressBarNode),
+            TableNode tableNode => GetTableView(tableNode),
+            IBlockNode blockNode => GetViewFromBlockNode(blockNode),
             _ => new TextBlock { Text = "(Markup Node not implemented)" }
         };
     }
 
-    private static TextBlock GetParagraphView(ParagraphNode paragraphNode, MarkupEditor markupEditor)
+    private TextBlock GetParagraphView(ParagraphNode paragraphNode)
     {
         var paragraphBlock = new TextBlock { TextWrapping = TextWrapping.Wrap };
 
         foreach (var inline in paragraphNode.Inlines)
         {
-            paragraphBlock.Inlines.Add(GetRunFromInline(inline, paragraphBlock.FontSize, markupEditor));
+            paragraphBlock.Inlines.Add(GetRunFromInline(inline, paragraphBlock.FontSize));
         }
 
         return paragraphBlock;
     }
 
-    private static Grid GetDividerView(DividerNode dividerNode)
+    private Grid GetDividerView(DividerNode dividerNode)
     {
         var dividerGrid = new Grid();
         dividerGrid.ColumnDefinitions.Add(new ColumnDefinition {             
@@ -305,14 +309,14 @@ public partial class MarkupEditor : UserControl
         return dividerGrid;
     }
     
-    private static StackPanel GetProgressBarView(ProgressBarNode progressBarNode, MarkupEditor markupEditor)
+    private StackPanel GetProgressBarView(ProgressBarNode progressBarNode)
     {
         var progressBarPanel = new StackPanel { Orientation = Orientation.Horizontal };
         for (var i = 0; i < progressBarNode.MaxLength; i++)
         {
             progressBarPanel.Children.Add(new Border
             {
-                Style = markupEditor.Resources["ProgressBar.Item.Style"] as Style,
+                Style = Resources["ProgressBar.Item.Style"] as Style,
                 Background = i < progressBarNode.Length ? Brushes.Black : null
             });
         }
@@ -326,9 +330,9 @@ public partial class MarkupEditor : UserControl
         return progressBarPanel;
     }
 
-    private static FrameworkElement GetLabelView(LabelNode labelNode) => new() { Name = labelNode.Name };
+    private FrameworkElement GetLabelView(LabelNode labelNode) => new() { Tag = labelNode.Name };
 
-    private static ScrollViewer GetTableView(TableNode tableNode, MarkupEditor markupEditor)
+    private ScrollViewer GetTableView(TableNode tableNode)
     {
         var tableGrid = new Grid();
         var tableView = new ScrollViewer
@@ -338,6 +342,7 @@ public partial class MarkupEditor : UserControl
             VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
             HorizontalAlignment = HorizontalAlignment.Center
         };
+        tableView.PreviewMouseWheel += OnTableViewScrolled;
         
         var tableCells = tableNode.Children.OfType<TableCellNode>().ToList();
         if (tableCells.Count == 0) return tableView;
@@ -359,7 +364,7 @@ public partial class MarkupEditor : UserControl
         foreach (var cell in tableCells)
         {
             var cellView = GetTableCellView(
-                markupEditor, numOfRows, numOfColumns, cell.RowNumber, cell.ColumnNumber, cell
+                numOfRows, numOfColumns, cell.RowNumber, cell.ColumnNumber, cell
             );
             Grid.SetRow(cellView, cell.RowNumber);
             Grid.SetColumn(cellView, cell.ColumnNumber);
@@ -374,7 +379,7 @@ public partial class MarkupEditor : UserControl
             {
                 if (filledCells.Contains((row, column))) continue;
                 
-                var emptyCellView = GetTableCellView(markupEditor, numOfRows, numOfColumns, row, column);
+                var emptyCellView = GetTableCellView(numOfRows, numOfColumns, row, column);
                 Grid.SetRow(emptyCellView, row);
                 Grid.SetColumn(emptyCellView, column);
                 tableGrid.Children.Add(emptyCellView);
@@ -382,17 +387,33 @@ public partial class MarkupEditor : UserControl
         }
         
         return tableView;
+        
+        static void OnTableViewScrolled(object sender, MouseWheelEventArgs e)
+        {
+            var tableScrollViewer = (ScrollViewer) sender;
+
+            FrameworkElement? currentView = tableScrollViewer;
+            while (currentView != null)
+            {
+                currentView = VisualTreeHelper.GetParent(currentView) as FrameworkElement;
+
+                if (currentView?.Name != "MarkupScrollViewer" || currentView is not ScrollViewer markupScrollViewer) continue;
+            
+                markupScrollViewer.ScrollToVerticalOffset(markupScrollViewer.VerticalOffset - e.Delta);
+                e.Handled = true;
+                return;
+            }
+        }
     }
-    
-    private static Border GetTableCellView(
-        MarkupEditor markupEditor, int numOfRows, int numOfColumns,
-        int cellRow, int cellColumn, TableCellNode? cell = null
+
+    private Border GetTableCellView(
+        int numOfRows, int numOfColumns, int cellRow, int cellColumn, TableCellNode? cell = null
     )
     {
-        var cellView = cell == null ? null : GetViewFromBlockNode(cell, markupEditor);
+        var cellView = cell == null ? null : GetViewFromBlockNode(cell);
         var cellBorder = new Border
         {
-            Style = markupEditor.Resources["TableCell.Style"] as Style,
+            Style = Resources["TableCell.Style"] as Style,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             Child = cellView
         };
@@ -419,7 +440,7 @@ public partial class MarkupEditor : UserControl
         return cellBorder;
     }
     
-    private static FrameworkElement GetViewFromBlockNode(IBlockNode blockNode, MarkupEditor markupEditor)
+    private FrameworkElement GetViewFromBlockNode(IBlockNode blockNode)
     {
         var blockGrid = new Grid();
         blockGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -431,7 +452,7 @@ public partial class MarkupEditor : UserControl
 
         foreach (var childNode in blockNode.Children)
         {
-            var nodeView = GetViewFromMarkupNode(childNode, markupEditor);
+            var nodeView = GetViewFromMarkupNode(childNode);
             nodeView.VerticalAlignment = VerticalAlignment.Center;
 
             if (childNode != blockNode.Children.First())
@@ -442,20 +463,20 @@ public partial class MarkupEditor : UserControl
             childrenList.Items.Add(nodeView); 
         }
         
-        AddSpecialBlockElements(blockNode, blockGrid, childrenList, markupEditor);
+        AddSpecialBlockElements(blockNode, blockGrid, childrenList);
 
         switch (blockNode)
         {
             case CodeNode:
-                blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CodeBlock.Text.Style"]);
-                return new Border { Child = blockGrid, Style = markupEditor.Resources["CodeBlock.Border.Style"] as Style };
+                blockGrid.Resources.Add(typeof(TextBlock), Resources["CodeBlock.Text.Style"]);
+                return new Border { Child = blockGrid, Style = Resources["CodeBlock.Border.Style"] as Style };
             case CalloutNode calloutNode:
                 var calloutIcon = new Path();
                 blockGrid.Children.Add(calloutIcon);
                 
                 var calloutBorder = new Border { Child = blockGrid };
                 
-                if (markupEditor.Resources[$"Callout.{calloutNode.Type}.Style"] is Style calloutStyle)
+                if (Resources[$"Callout.{calloutNode.Type}.Style"] is Style calloutStyle)
                 {
                     calloutBorder.Style = calloutStyle;
                 }
@@ -465,25 +486,24 @@ public partial class MarkupEditor : UserControl
         return blockGrid;
     }
     
-    private static void AddSpecialBlockElements(
-        IBlockNode blockNode, Grid blockGrid, ItemsControl childrenList, MarkupEditor markupEditor)
+    private void AddSpecialBlockElements(IBlockNode blockNode, Grid blockGrid, ItemsControl childrenList)
     { 
         switch (blockNode)
         {   
             case UnorderedListNode:
-                blockGrid.Children.Add(new Ellipse { Style = markupEditor.Resources["BulletIndicator.Style"] as Style });
+                blockGrid.Children.Add(new Ellipse { Style = Resources["BulletIndicator.Style"] as Style });
                 break;
             case OrderedListNode orderedListNode:
                 blockGrid.Children.Add(new TextBlock
                 {
                     Text = $"{orderedListNode.ListNumber}.", 
-                    Style = markupEditor.Resources["ListIndicator.Style"] as Style
+                    Style = Resources["ListIndicator.Style"] as Style
                 });
                 break;
             case TaskListNode taskListNode:
                 if (taskListNode.IsChecked)
                 {
-                    blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["CheckBox.Checked.Text.Style"]);
+                    blockGrid.Resources.Add(typeof(TextBlock), Resources["CheckBox.Checked.Text.Style"]);
                 }
                 blockGrid.Children.Add(new CheckBox { IsChecked = taskListNode.IsChecked });
                 break;
@@ -491,13 +511,13 @@ public partial class MarkupEditor : UserControl
                 childrenList.Margin = new Thickness(left: 19, 0, 0, 0);
                 break;
             case HeaderNode headerNode:
-                AddHeaderElements(headerNode, blockGrid, markupEditor);
+                AddHeaderElements(headerNode, blockGrid);
                 break;
             case QuoteNode quoteNode:
-                AddQuoteElements(quoteNode, blockGrid, childrenList, markupEditor);
+                AddQuoteElements(quoteNode, blockGrid, childrenList);
                 break;
             case ToggleListNode:
-                AddToggleListElements(blockGrid, childrenList, markupEditor);
+                AddToggleListElements(blockGrid, childrenList);
                 break;
             case ImageNode imageNode:
                 AddImageElements(imageNode, childrenList);
@@ -505,9 +525,9 @@ public partial class MarkupEditor : UserControl
         }
     }
 
-    private static void AddHeaderElements(HeaderNode headerNode, Grid blockGrid, MarkupEditor markupEditor)
+    private void AddHeaderElements(HeaderNode headerNode, Grid blockGrid)
     {
-        if (markupEditor.Resources[$"Header{headerNode.Level}.Style"] is Style headerStyle)
+        if (Resources[$"Header{headerNode.Level}.Style"] is Style headerStyle)
         {
             blockGrid.Resources.Add(typeof(TextBlock), headerStyle); 
         }
@@ -518,10 +538,10 @@ public partial class MarkupEditor : UserControl
         });
     }
 
-    private static void AddQuoteElements(QuoteNode quoteNode, Grid blockGrid, ItemsControl childrenList, MarkupEditor markupEditor)
+    private void AddQuoteElements(QuoteNode quoteNode, Grid blockGrid, ItemsControl childrenList)
     {
-        blockGrid.Resources.Add(typeof(TextBlock), markupEditor.Resources["QuoteBlock.Text.Style"] as Style);
-        blockGrid.Children.Add(new Rectangle { Style = markupEditor.Resources["QuoteBlock.Indicator.Style"] as Style });
+        blockGrid.Resources.Add(typeof(TextBlock), Resources["QuoteBlock.Text.Style"] as Style);
+        blockGrid.Children.Add(new Rectangle { Style = Resources["QuoteBlock.Indicator.Style"] as Style });
 
         if (quoteNode.Author != null)
         {
@@ -531,12 +551,12 @@ public partial class MarkupEditor : UserControl
         }
     }
 
-    private static void AddToggleListElements(Grid blockGrid, ItemsControl childrenList, MarkupEditor markupEditor)
+    private void AddToggleListElements(Grid blockGrid, ItemsControl childrenList)
     {
         var toggleIndicator = new Path();
         var toggleBorder = new Border
         {
-            Style = markupEditor.Resources["Toggle.Button.Style"] as Style,
+            Style = Resources["Toggle.Button.Style"] as Style,
             Child = toggleIndicator
         };
         blockGrid.Children.Add(toggleBorder);
@@ -568,7 +588,7 @@ public partial class MarkupEditor : UserControl
         }
     }
     
-    private static void AddImageElements(ImageNode imageNode, ItemsControl childrenList)
+    private void AddImageElements(ImageNode imageNode, ItemsControl childrenList)
     {
         if (TryLoadImage(imageNode.SourceUri, out var image))
         {
@@ -601,13 +621,13 @@ public partial class MarkupEditor : UserControl
         childrenList.Items.Insert(0, errorText);
     }
     
-    private static Run GetRunFromInline(InlineMarkup inlineMarkup, double paragraphFontSize, MarkupEditor markupEditor)
+    private Run GetRunFromInline(InlineMarkup inlineMarkup, double paragraphFontSize)
     {
         var inline = new Run(inlineMarkup.Text);
 
         if (inlineMarkup.LinkUri != null)
         {
-            AddLinkToInline(inline, inlineMarkup.LinkUri, markupEditor.OpenDocumentByNameCommand, markupEditor);
+            AddLinkToInline(inline, inlineMarkup.LinkUri, OpenDocumentByNameCommand);
         }
         
         if (inlineMarkup.Foreground != null)
@@ -679,7 +699,7 @@ public partial class MarkupEditor : UserControl
         return inline;
     }
 
-    private static void AddLinkToInline(Inline inline, string linkUri, ICommand? openDocumentByName, MarkupEditor markupEditor)
+    private void AddLinkToInline(Inline inline, string linkUri, ICommand? openDocumentByName)
     {
         inline.TextDecorations.Add(TextDecorations.Underline);
 
@@ -703,9 +723,9 @@ public partial class MarkupEditor : UserControl
             const int scrollMargin = 400;
             inline.PreviewMouseLeftButtonDown += (_, _) =>
             {
-                foreach (var item in markupEditor.MarkupViewerPanel.Items)
+                foreach (var item in MarkupViewerPanel.Items)
                 {
-                    if (item is not FrameworkElement labelView || labelView.Name != labelName) continue;
+                    if (item is not FrameworkElement { Tag: string labelTag } labelView || labelTag != labelName) continue;
                     labelView.BringIntoView(new Rect(0, 0, scrollMargin, scrollMargin));
                     return;
                 }
@@ -742,7 +762,7 @@ public partial class MarkupEditor : UserControl
         }
     }
     
-    private static bool TryLoadImage(string uriText, out Image? image)
+    private bool TryLoadImage(string uriText, out Image? image)
     {
         image = null;
         
@@ -758,13 +778,8 @@ public partial class MarkupEditor : UserControl
             image = new Image { Source = bitmapImage };
             return true;
         }
-        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException) { }
+        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException) { }
         
         return false;
-    }
-    
-    private void EditorTextBox_OnTextChanged(object? sender, EventArgs e)
-    {
-        EditorTextChanged?.Invoke(this, EditorTextBox.Text);
     }
 }

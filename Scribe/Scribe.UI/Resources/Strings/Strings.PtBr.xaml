@@ -70,7 +70,7 @@
         ( ! )  Não foi possível carregar a imagem &quot;{0}&quot; (Arquivo ou diretório não encontrado)
     </sys:String>
     <sys:String x:Key="String.Markup.ToggleList">Lista de Alternância</sys:String>
-    <sys:String x:Key="String.Markup.Callout">Bloco de Chamada</sys:String>
+    <sys:String x:Key="String.Markup.Callout">Bloco de Aviso</sys:String>
     <sys:String x:Key="String.Markup.ProgressBar">Barra de Progresso</sys:String>
     <sys:String x:Key="String.Markup.Indentation">Bloco de Indentação</sys:String>
     <sys:String x:Key="String.Markup.Label">Rótulo</sys:String>
@@ -86,7 +86,8 @@
     <sys:String x:Key="String.Error.ExportDocument" xml:space="preserve">Erro ao exportar documento!&#13;(Verifique se o diretório existe e você tem&#13;privilégios de acesso)</sys:String>
     <sys:String x:Key="String.Error.ImportPathError" xml:space="preserve">Erro ao importar documento &quot;{0}&quot;!&#13;(Verifique se o diretório ou arquivo existe e você tem privilégios de acesso)</sys:String>
     <sys:String x:Key="String.Error.ImportFileFormatError" xml:space="preserve">Erro ao importar documento &quot;{0}&quot; devido ao formato inválido!&#13;(Verifique se o arquivo não foi modificado ou corrompido)</sys:String>
-    
+    <sys:String x:Key="String.Error.Tutorial">Não foi possível carregar o tutorial no idioma selecionado.</sys:String>
+
     <sys:String x:Key="String.ClosableTabControl.Close.Tooltip">Fechar Aba</sys:String>
 
     <sys:String x:Key="String.PagedList.Button.NextPage">Próxima Página</sys:String>

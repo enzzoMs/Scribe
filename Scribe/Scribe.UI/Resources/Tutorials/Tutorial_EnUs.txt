@@ -1,0 +1,635 @@
+[#] Tutorial : How to use Scribe's markup language
+
+This document provides an overview of the syntax and elements of Scribe's markup language:
+
+[*] {General Structure}[link=@general-structure]
+[>>]%
+	[*] {Paragraphs}[link=@paragraphs]
+	[*] {Blocks}[link=@blocks]
+	[*] {Multiline Blocks}[link=@multiline-blocks]
+	[*] {Inline Markup}[link=@inline-markup] 
+%
+[*] {Special Elements}[link=@special-elements]
+[*] {Other Commands}[link=@other-commands]
+
+====
+
+@label=general-structure
+[##] General Structure
+
+The language has four main types of structures: {Paragraph}[b], {Blocks}[b], 
+{Multiline blocks}[b] and {Inline Markup}[b].
+
+@label=paragraphs
+[###] Paragraphs
+
+Paragraphs are the most common elements in Scribe. A paragraph is a sequence of text
+that can be added anywhere in a document. 
+
+[*] Each paragraph can contain plain text and {inline markup}[link=@inline-markup], such as formatting styles and links.
+
+[*] You can break the text of a paragraph into several lines, as long as there is no blank space between them.
+
+[*] Tabs, leading or trailing spaces in a paragraph will be ignored
+
+[*] Sequences of spaces or tabs within a paragraph will be converted into a single space.
+
+[*] You can use “$///” to create a line break within a paragraph.
+
+[table]%
+	[cell] Formatting
+	[cell] Result
+
+	=====
+	
+	[cell]%
+		[code]%
+	Lorem ipsum ${dolor}[b] sit amet, 
+${consectetur}[i] adipiscing elit.
+
+Nullam imperdiet     mi a magna
+tincidunt, nec ornare sem.
+		%
+	%
+	[cell]%
+		Lorem ipsum {dolor}[b] sit amet, 
+		{consectetur}[i]  adipiscing elit.
+
+		Nullam imperdiet     mi a magna
+		tincidunt, nec ornare sem.
+	%
+%
+
+@label=blocks
+[###] Blocks
+
+Blocks are used to define distinct elements in the document. Each block can contain only one paragraph.
+
+[toggle]% 
+	Headers
+	
+	There are 6 levels of headers:
+
+	[code]%
+[#] h1
+[##] h2
+[###] h3
+[####] h4
+[#####] h5
+[######] h6
+	%
+	
+	[#] h1
+	[##] h2
+	[###] h3
+	[####] h4
+	[#####] h5
+	[######] h6
+%
+
+
+[toggle]%
+	Unordered lists
+	
+	Unordered lists are created with the symbol ( {*}[code] ):
+	
+	[code]%
+[*] First item
+[*] Second Item
+[*] Third item
+	%
+	
+	[*] First Item
+	[*] Second Item
+	[*] Third Item
+%
+
+
+[toggle]%
+	Ordered lists
+	
+	Ordered lists are formed by specifying a number followed by a dot:
+	
+	[code]%
+[1.] First item
+[2.] Second Item
+[3.] Third item
+	%
+	
+	[1.] First item
+	[2.] Second Item
+	[3.] Third Item
+%
+
+
+[toggle]%
+	Quotes
+	
+	Quotes are made with the word “quote”:
+	
+	[code]%
+[quote] Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis diam neque, scelerisque 
+pulvinar enim pellentesque id. 
+	%
+	
+	Result:
+	
+	[quote] Lorem ipsum dolor sit amet, consectetur adipiscing elit. nunc mollis diam neque, 
+	scelerisque pulvinar enim pellentesque id.
+	
+	You can also specify the author of a quotation in the following way:
+	
+	[code]%
+[quote=Author] Lorem ipsum dolor sit amet.
+	%
+	
+	Result:
+	
+	[quote=Author] Lorem ipsum dolor sit amet.
+	
+%
+
+
+[toggle]%
+	Code
+	
+	Code blocks will not be formatted. All spaces, tabs, lines, and commands 
+	will be interpreted literally:
+	
+	[code]%
+public int Factorial(int num)
+{
+    var result = 1;
+    while (num > 1)
+    {
+        result *= num;
+        num = num - 1;
+    }
+    return result;
+}
+	%
+	
+	Code blocks cannot contain other blocks, 
+	but they can have {inline markup}[link=@inline-markup].
+%
+
+
+[toggle]%
+	Task list
+	
+	A task can be pending:
+	
+	[code]%
+[-] Pending task
+	%
+	
+	[-] Pending task
+
+	Or complete:
+	
+	[code]%
+[x] Complete Task
+	%
+	
+	[x] Complete Task
+%
+
+
+[toggle]%
+	Images
+	
+	An image can be specified as follows:
+	
+	[code]%
+[img=file_path]
+	%
+	
+	 You can also specify the size of an image as a percentage:
+	
+	[code]%
+[img(75%)=file_path]
+	%
+%
+
+[toggle]%
+	Toggle list
+	
+	In a toggle list you can click on the triangle icon to reveal or hide
+	the list items:
+	
+	[code]%
+[toggle] List
+	%
+	
+	[toggle] List
+	
+	An empty list is not very useful. See the {Multiline Blocks}[link=@multiline-blocks] section
+	to learn how to add more than one item to a block.
+	
+	In the case of a multiline list, the first element of the block will be considered as the header
+	of the list:
+	
+	[code]%
+[toggle]%
+	List
+	
+	Item 1
+	
+	Item 2
+$%
+	%
+	
+	Result:
+	
+	[toggle]%
+		List
+		
+		Item 1
+		
+		Item 2
+	%	
+%
+
+
+[toggle]%
+	Callout blocks
+	
+	A callout block is used to highlight important information in a text. There are several
+	types of callouts, all of which are prefixed by ( {::}[code] ):
+	
+	[code]%
+[::callout] Standard callout
+[::favorite] Favorite
+[::question] Question
+[::success] Success
+[::failure] Failure
+[::warning] Danger
+[::note] Note
+	%
+	
+	Result:
+	
+	[::callout] Standard callout
+	[::favorite] Favorite
+	[::question] Question
+	[::success] Success
+	[::failure] Failure
+	[::warning] Danger
+	[::note] Note
+%
+
+
+[toggle]%
+	Indentation Block
+	
+	An indentation block simply indents its contents:
+	
+	[code]%
+[>>] Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis diam neque, 
+scelerisque pulvinar enim pellentesque id.
+	%
+	
+	Result:
+	
+	[>>] Lorem ipsum dolor sit amet, consectetur adipiscing elit. nunc mollis diam neque, 
+	scelerisque pulvinar enim pellentesque id.
+%
+
+[toggle]%
+	Tables
+	
+	Tables are a special type of block. They are the only blocks that are exclusively multiline.
+	
+	[*] A table is defined with {table}[code] block alongside with {cell}[code] blocks.
+	
+	[*] Each {cell}[code] block represents a cell of the table. Each cell is inserted into a 
+    a different column.
+	
+	[*] Use {dividers}[link=@dividers] to create a new row in the table.
+
+	[*] The first row of the table will be considered as the header of the table.
+	
+	[*] Anything inside a {table}[code] that is not a {cell}[code] block or
+	a divider will ignored.
+
+	Example:
+	
+	[code]%
+[table]%
+	[cell] Header 1
+	[cell] Header 2
+	
+	===
+	
+	[cell] Item 1.1
+	[cell] Item 1.2
+
+	===
+	
+	[cell] Item 2.1
+	[cell] Item 2.2
+$%
+	%
+	
+	Result:
+	
+	[table]%
+		[cell] Header 1
+		[cell] Header 2
+		
+		===
+		
+		[cell] Item 1.1
+		[cell] Item 2.1
+	
+		===
+		
+		[cell] Item 1.2
+		[cell] Item 2.2
+	%
+
+%
+
+
+@label=multiline-blocks
+[###] Multiline blocks
+
+Multiline blocks are an extended version of normal blocks, and can be used to include other
+blocks and paragraphs within the same element.
+
+To create a multiline block use {%}[code]:
+
+[code]%
+[*]%
+	Paragraph 1
+	
+	Paragraph 2
+
+	Paragraph 3
+$%
+%
+
+Result:
+
+	[*]%
+		Paragraph 1
+		
+		Paragraph 2
+	
+		Paragraph 3
+	%
+
+All {blocks}[link=@blocks] can be turned into multiline blocks.
+
+You can use any blocks inside a multiline block, including other multiline blocks:
+
+[code]%
+[-]%
+	Task 1:
+
+	[-]%
+		Subtask
+	
+		Text.
+	$%
+
+	Text.
+$%
+
+[-] Task 2
+%
+
+Result:
+
+	[-]%
+		Task 1:
+	
+		[-]%
+			Subtask
+		
+			Text.
+		%
+	
+		Text.
+	%
+	
+	[-] Task 2
+
+@label=inline-markup
+[###] Inline Markup
+
+With inline markup you can format the text of a paragraph.
+
+The markup follows the format:
+
+[code] ${text}[modifier1, modifier2, ...]
+
+Where the modifiers can be:
+
+[table]%
+	[cell] Modifier
+	[cell] Markup
+	[cell] Result
+	
+	====
+	
+	[cell] b
+	[cell] ${text}[b]
+	[cell] {text}[b]
+	
+	====
+	
+	[cell] i
+	[cell] ${text}[i]
+	[cell] {text}[i]
+	
+	====
+	
+	[cell] u
+	[cell] ${text}[u]
+	[cell] {text}[u]
+	
+	====
+	
+	[cell] s
+	[cell] ${text}[s]
+	[cell] {text}[s]
+	
+	====
+	
+	[cell] super
+	[cell] a${x}[super]
+	[cell] a{x}[super]
+	
+	====
+	
+	[cell] sub
+	[cell] a${x}[sub]
+	[cell] a{x}[sub]
+	
+	====
+	
+	[cell] code
+	[cell] ${text}[code]
+	[cell] {text}[code]
+	
+	====
+	
+	[cell] spoiler
+	[cell] click to reveal ${secret text}[spoiler]
+	[cell] click to reveal {secret text}[spoiler]
+%
+
+You can combine different modifiers:
+
+[code] ${text in bold, italic, and underlined}[b,i,u]
+
+Result:
+
+{text in bold, italic, and underlined}[b,i,u]
+
+There are also two types of special modifiers: {colors}[b] and {links}[b].
+
+[toggle]%
+	Colors
+	
+	To specify colors for text you can use {foreg}[code] (for {foreground}[i])
+	and {backg}[code] (for {background}[i]):
+	
+	[code]%
+${text in red}[foreg=#FF0000]
+${text with red background}[backg=#FF0000]
+	%
+	
+	{text in red}[foreg=#FF0000]
+	
+	{text with red background}[backg=#FF0000]
+	
+	You can also specify a color with transparency:
+	
+	[code] ${text with transparency}[foreg=#AAFF0000]
+	
+	{text with transparency}[foreg=#AAFF0000]
+	
+	The colors must be in hexadecimal format, but there are some predefined names
+	that you can use. These are:
+	
+	[*] {black}[code], {white}[code], {gray}[code], {orange}[code], {yellow}[code], 
+	{green}[code], {blue}[code], {purple}[code], {pink}[code] and {red}[code].
+	
+	Example:
+	
+	[code] ${text in blue}[foreg=#blue]
+	
+	{text in blue}[foreg=#blue]
+%
+
+@label=links
+[toggle]% 
+	Links
+
+	To create links you can use:
+	
+	[code] ${text with link}[link=https://example.com]
+	
+	{text with link}[link=https://example.com]
+	
+	You can create links to both files and web pages. If a link
+	cannot be created, the text will appear in gray:
+	
+	[code] ${text with wrong link}[link=httpBlaBla://example.com]
+	
+	{text with wrong link}[link=httpBlaBla://example.com]
+	
+	In addition, with a special markup you can create links to other
+	documents in the same folder or to {labels}[link=@labels].
+	
+	[code] ${link to document}[link=doc:New Document]
+	
+	{link to document}[link=doc:New Document]
+	
+	[code] ${link to label}[link=@label]
+	
+	{link to label}[link=@label]
+%
+
+@label=special-elements
+[##] Special Elements
+
+Apart from these basic elements, there are also some special elements. These are:
+
+@label=dividers
+[toggle]%
+	Dividers
+	
+    Dividers are horizontal lines that divide the content of a document.
+        
+    To create a divider, simply use a sequence of one or more {=}[code] characters on a line:
+	
+    [code] =====
+    
+    To create partial dividers use 1 to 4 characters: 
+    
+[code]%
+====
+===
+==
+=
+	%
+	
+	Result:
+	
+	====
+	===
+	==
+	=
+%
+
+[toggle]%
+	Progress Bars
+
+	Create a progress bar using the following combination:
+	
+	[code] (ooo...)
+	
+	(ooo...)
+	
+	Where the {o}[code] characters are the filled squares, and the {.}[code] characters are
+	the empty squares.
+%
+
+@label=labels
+[toggle]%
+	Labels
+	
+	Labels are invisible nodes that can be applied throughout a document. 
+	
+	[code] @label=label-example
+	
+	You can create a link to these labels, as explained in the {inline markup}[link=@links] section.
+	
+	[code] ${link to label}[link=@label-example]
+%
+
+
+@label=other-commands
+[##] Other Commands
+
+You can use the {$$}[code] character to ignore a markup, both for blocks and inlines.
+
+For example:
+
+[code] $${text}[b]
+
+The above markup will be rendered as plain text, without any formatting:
+
+$${text}[b]
+
+If the {$$}[code] character is used anywhere else, it will simply be
+ignored. If you really want to insert this character, repeat it twice:
+
+[code] $$$
+
+Result:
+
+$$ ///

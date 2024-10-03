@@ -1,0 +1,639 @@
+﻿[#] Tutorial : Como usar a linguagem de marcação do Scribe
+
+Este documento apresenta uma visão geral da sintaxe e dos elementos da linguagem de marcação
+do Scribe:
+
+[*] {Estrutura Geral}[link=@estrutura-geral]
+[>>]%
+	[*] {Parágrafos}[link=@paragrafos]
+	[*] {Blocos}[link=@blocos]
+	[*] {Blocos Multilinha}[link=@blocos-multilinha]
+	[*] {Marcações Inline}[link=@marcacoes-inlines] 
+%
+[*] {Elementos Especiais}[link=@elementos-especiais]
+[*] {Outros Comandos}[link=@outros-comandos]
+
+====
+
+@label=estrutura-geral
+[##] Estrutura Geral
+
+A linguagem possui quatro tipos principais de estruturas: {Parágrafo}[b], {Blocos}[b], 
+{Blocos Multilinha}[b] e {Marcações Inline}[b].
+
+@label=paragrafos
+[###] Parágrafos
+
+Os parágrafos são os elementos mais comuns no Scribe. Um parágrafo é simplesmente uma sequência de texto
+que pode ser adicionada em qualquer parte do documento. 
+
+[*] Cada parágrafo pode conter texto simples e {marcações inline}[link=@marcacoes-inlines], como estilos de
+formatação e links.
+
+[*] Você pode quebrar o texto de um parágrafo em várias linhas, desde que não haja um espaço em
+branco entre elas.
+
+[*] Espaços em branco ou tabs no início ou final de um parágrafo serão ignorados.
+
+[*] Espaços em branco ou tabs no meio de um parágrafo serão convertidos em um espaço único.
+
+[*] Você pode usar a sequência "$///" para criar uma quebra de linha dentro de um mesmo parágrafo.
+
+[table]%
+	[cell] Formatação
+	[cell] Resultado
+
+	=====
+	
+	[cell]%
+		[code]%
+	Lorem ipsum ${dolor}[b] sit amet, 
+${consectetur}[i]  adipiscing elit.
+
+Nullam imperdiet     mi a magna
+tincidunt, nec ornare sem.
+		%
+	%
+	[cell]%
+		Lorem ipsum {dolor}[b] sit amet, 
+		{consectetur}[i]  adipiscing elit.
+
+		Nullam imperdiet     mi a magna
+		tincidunt, nec ornare sem.
+	%
+%
+
+@label=blocos
+[###] Blocos
+
+Os blocos são usados para delimitar elementos distintos no documento. Por padrão, cada bloco pode conter
+apenas um parágrafo.
+
+[toggle]% 
+	Cabeçalhos
+	
+	Existem 6 níveis de cabeçalhos:
+
+	[code]%
+[#] h1
+[##] h2
+[###] h3
+[####] h4
+[#####] h5
+[######] h6
+	%
+	
+	[#] h1
+	[##] h2
+	[###] h3
+	[####] h4
+	[#####] h5
+	[######] h6
+%
+
+
+[toggle]%
+	Listas Não Ordenadas
+	
+	As listas não ordenadas são criadas com o símbolo ( {*}[code] ):
+	
+	[code]%
+[*] Primeiro Item
+[*] Segundo Item
+[*] Terceiro Item
+	%
+	
+	[*] Primeiro Item
+	[*] Segundo Item
+	[*] Terceiro Item
+%
+
+
+[toggle]%
+	Listas Ordenadas
+	
+	As listas ordenadas são formadas especificando um número seguido de um ponto:
+	
+	[code]%
+[1.] Primeiro Item
+[2.] Segundo Item
+[3.] Terceiro Item
+	%
+	
+	[1.] Primeiro Item
+	[2.] Segundo Item
+	[3.] Terceiro Item
+%
+
+
+[toggle]%
+	Citações
+	
+	Citações são feitas com a palavra "quote":
+	
+	[code]%
+[quote] Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis diam neque, scelerisque 
+pulvinar enim pellentesque id. 
+	%
+	
+	Resultado:
+	
+	[quote] Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis diam neque, 
+	scelerisque pulvinar enim pellentesque id.
+	
+	Você também pode especificar o autor da citação da seguinte forma:
+	
+	[code]%
+[quote=Autor] Lorem ipsum dolor sit amet.
+	%
+	
+	Resultado:
+	
+	[quote=Autor] Lorem ipsum dolor sit amet.
+	
+%
+
+
+[toggle]%
+	Código
+	
+	Os blocos de código não serão formatados, o que significa que todos os espaços, tabs, linhas
+	e comandos serão interpretados de forma literal:
+	
+	[code]%
+public int Factorial(int num)
+{
+    var result = 1;
+    while (num > 1)
+    {
+        result *= num;
+        num = num - 1;
+    }
+    return result;
+}
+	%
+	
+	Os blocos de código não podem conter outros blocos, 
+	mas podem ter {marcações inline}[link=@marcacoes-inlines].
+%
+
+
+[toggle]%
+	Lista de Tarefas
+	
+	Uma lista de tarefas pode estar pendente:
+	
+	[code]%
+[-] Tarefa Pendente
+	%
+	
+	[-] Tarefa Pendente
+
+	Ou completa:
+	
+	[code]%
+[x] Tarefa Completa
+	%
+	
+	[x] Tarefa Completa
+%
+
+
+[toggle]%
+	Imagens
+	
+	Uma imagem pode ser especificada da seguinte forma:
+	
+	[code]%
+[img=caminho_do_arquivo]
+	%
+	
+	Você também pode especificar o tamanho em porcentagem da imagem:
+	
+	[code]%
+[img(75%)=caminho_do_arquivo]
+	%
+%
+
+[toggle]%
+	Lista de Alternância
+	
+	Em uma lista de alternância você pode clicar no ícone de triângulo para revelar ou esconder
+	os items da lista:
+	
+	[code]%
+[toggle] Lista
+	%
+	
+	[toggle] Lista
+	
+	Uma lista vazia não é muito útil. Veja a secção {Blocos Multilinha}[link=@blocos-multilinha]
+	para aprender como adicionar mais de um item a um bloco.
+	
+	No caso de uma lista multilinha, o primeiro elemento do bloco será considerado como o cabeçalho
+	da lista:
+	
+	[code]%
+[toggle]%
+	Lista
+	
+	Item 1
+	
+	Item 2
+$%
+	%
+	
+	Resultado:
+	
+	[toggle]%
+		Lista
+		
+		Item 1
+		
+		Item 2
+	%	
+%
+
+
+[toggle]%
+	Blocos de Aviso
+	
+	Um bloco de aviso é usado para destacar informações importantes em um texto. Existem vários
+	tipos de avisos, todos eles são prefixados por ( {::}[code] ):
+	
+	[code]%
+[::callout] Aviso padrão
+[::favorite] Favorito
+[::question] Questão
+[::success] Sucesso
+[::failure] Fracasso
+[::warning] Perigo
+[::note] Nota
+	%
+	
+	Resultado:
+	
+	[::callout] Aviso padrão
+	[::favorite] Favorito
+	[::question] Questão
+	[::success] Sucesso
+	[::failure] Fracasso
+	[::warning] Perigo
+	[::note] Nota
+%
+
+
+[toggle]%
+	Bloco de Indentação
+	
+	Um bloco de indentação simplesmente indenta o seu conteúdo:
+	
+	[code]%
+[>>] Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis diam neque, 
+scelerisque pulvinar enim pellentesque id.
+	%
+	
+	Resultado:
+	
+	[>>] Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis diam neque, 
+	scelerisque pulvinar enim pellentesque id.
+%
+
+[toggle]%
+	Tabelas
+	
+	As tabelas são um caso especial. São os únicos blocos que são exclusivamente multilinha.
+	
+	[*] Uma tabela é definada com {table}[code] em conjunto com blocos {cell}[code].
+	
+	[*] Cada bloco {cell}[code] representa uma célula da tabela. Por padrão, cada célula é inserida em uma 
+	nova coluna.
+	
+	[*] Use {divisores}[link=@divisores] para criar uma nova linha na tabela.
+
+	[*] A primeira linha da tabela será usada para formar o cabeçalho das colunas.
+	
+	[*] Qualquer coisa que esteja dentro de um {table}[code] e que não seja um bloco {cell}[code] ou
+	um divisor será simplesmente desconsiderado.
+
+	Exemplo:
+	
+	[code]%
+[table]%
+	[cell] Cabeçalho 1
+	[cell] Cabeçalho 2
+	
+	===
+	
+	[cell] Item 1.1
+	[cell] Item 1.2
+
+	===
+	
+	[cell] Item 2.1
+	[cell] Item 2.2
+$%
+	%
+	
+	Resultado:
+	
+	[table]%
+		[cell] Cabeçalho 1
+		[cell] Cabeçalho 2
+		
+		===
+		
+		[cell] Item 1.1
+		[cell] Item 2.1
+	
+		===
+		
+		[cell] Item 1.2
+		[cell] Item 2.2
+	%
+
+%
+
+
+@label=blocos-multilinha
+[###] Blocos Multilinha
+
+Os blocos multilinha são uma versão extendida dos blocos normais, e podem ser usados para incluir outros
+blocos e paragráfos dentro de um mesmo elemento.
+
+Para criar um bloco multilinha use {%}[code]:
+
+[code]%
+[*]%
+	Parágrafo 1
+	
+	Parágrafo 2
+
+	Parágrafo 3
+$%
+%
+
+Resultado:
+
+	[*]%
+		Parágrafo 1
+		
+		Parágrafo 2
+	
+		Parágrafo 3
+	%
+
+Todos os {blocos}[link=@blocos] podem ser transformados em blocos multilinha.
+
+Você pode usar quaisquer blocos dentro de um bloco multilinha, inclusive outros blocos multilinha:
+
+[code]%
+[-]%
+	Tarefa 1:
+
+	[-]%
+		Subtarefa
+	
+		Texto.
+	$%
+
+	Texto.
+$%
+
+[-] Tarefa 2
+%
+
+Resultado:
+
+	[-]%
+		Tarefa 1:
+	
+		[-]%
+			Subtarefa
+		
+			Texto.
+		%
+	
+		Texto.
+	%
+	
+	[-] Tarefa 2
+
+@label=marcacoes-inlines
+[###] Marcações Inline
+
+Com marcações inline você pode formatar o texto de um parágrafo.
+
+As marcações seguem o formato:
+
+[code] ${texto}[modificador1, modificador2, ...]
+
+Onde os modificadores podem ser:
+
+[table]%
+	[cell] Modificador
+	[cell] Marcação
+	[cell] Resultado
+	
+	====
+	
+	[cell] b
+	[cell] ${texto}[b]
+	[cell] {texto}[b]
+	
+	====
+	
+	[cell] i
+	[cell] ${texto}[i]
+	[cell] {texto}[i]
+	
+	====
+	
+	[cell] u
+	[cell] ${texto}[u]
+	[cell] {texto}[u]
+	
+	====
+	
+	[cell] s
+	[cell] ${texto}[s]
+	[cell] {texto}[s]
+	
+	====
+	
+	[cell] super
+	[cell] a${x}[super]
+	[cell] a{x}[super]
+	
+	====
+	
+	[cell] sub
+	[cell] a${x}[sub]
+	[cell] a{x}[sub]
+	
+	====
+	
+	[cell] code
+	[cell] ${texto}[code]
+	[cell] {texto}[code]
+	
+	====
+	
+	[cell] spoiler
+	[cell] clique para revelar ${texto secreto}[spoiler]
+	[cell] clique para revelar {texto secreto}[spoiler]
+%
+
+Naturalmente, você pode combinar diferentes modificadores:
+
+[code] ${texto em negrito, itálico e sublinhado}[b,i,u]
+
+Resultado:
+
+{texto em negrito, itálico e sublinhado}[b,i,u]
+
+Existem ainda dois tipos de modificadores especiais: {cores}[b] e {links}[b].
+
+[toggle]%
+	Cores
+	
+	Para especificar cores para o texto você pode usar o {foreg}[code] (de {foreground}[i])
+	e o {backg}[code] (de {background}[i]):
+	
+	[code]%
+	${texto em vermelho}[foreg=#FF0000]
+	${texto com fundo vermelho}[backg=#FF0000]
+	%
+	
+	{texto em vermelho}[foreg=#FF0000]
+	
+	{texto com fundo vermelho}[backg=#FF0000]
+	
+	Você também pode especificar uma cor com transparência:
+	
+	[code] ${texto com transparência}[foreg=#AAFF0000]
+	
+	{texto com transparência}[foreg=#AAFF0000]
+	
+	As cores devem estar no formato hexadecimal, mas existem alguns nomes pré-definidos
+	que você pode usar. São eles:
+	
+	[*] {black}[code], {white}[code], {gray}[code], {orange}[code], {yellow}[code], 
+	{green}[code], {blue}[code], {purple}[code], {pink}[code] e {red}[code].
+	
+	Exemplo:
+	
+	[code] ${texto em azul}[foreg=#blue]
+	
+	{texto em azul}[foreg=#blue]
+%
+
+@label=links
+[toggle]% 
+	Links
+
+	Para criar links você pode usar:
+	
+	[code] ${texto com link}[link=https://exemplo.com]
+	
+	{texto com link}[link=https://exemplo.com]
+	
+	Você pode criar links tanto para arquivos quanto para páginas web. Caso não
+	seja possível criar o link, o texto aparecerá em cinza:
+	
+	[code] ${texto com link errado}[link=httpBlaBla://exemplo.com]
+	
+	{texto com link errado}[link=httpBlaBla://exemplo.com]
+	
+	Além disso, com uma marcação especial você pode criar links para outros
+	documentos na mesma pasta ou então para {labels}[link=@labels]
+	
+	[code] ${link para documento}[link=doc:Novo Documento]
+	
+	{link para documento}[link=doc:Novo Documento]
+	
+	[code] ${link para label}[link=@label]
+	
+	{link para label}[link=@label]
+%
+
+@label=elementos-especiais
+[##] Elementos Especiais
+
+Fora esses elementos básicos, ainda existem alguns elementos especiais. São eles:
+
+@label=divisores
+[toggle]%
+	Divisores
+	
+	Divisores são linhas horizontais que dividem o conteúdo de um documento.
+	
+	Para criar um divisor basta usar uma sequência de um ou mais {=}[code] em uma linha:
+	
+	[code] =====
+	
+	Para criar divisores parciais use de 1 a 4 caracteres:
+	
+	[code]%
+====
+===
+==
+=
+	%
+	
+	Resultado:
+	
+	====
+	===
+	==
+	=
+%
+
+[toggle]%
+	Barras de Progresso
+
+	Crie uma barra de progresso usando a seguinte combinação:
+	
+	[code] (ooo...)
+	
+	(ooo...)
+	
+	Onde os {o}[code] são os quadrados preenchidos, e os {.}[code] são
+	os quadrados vazios.
+%
+
+@label=labels
+[toggle]%
+	Labels
+	
+	Labels são rótulos invisíveis que podem ser aplicados ao longo de um documento. 
+	
+	[code] @label=exemplo-de-label
+	
+	Você pode criar um link para esses rótulos, como explicado na seção de {marcações inline}[link=@links].
+	
+	[code] ${link para label}[link=@exemplo-de-label]
+%
+
+
+@label=outros-comandos
+[##] Outros Comandos
+
+Você pode usar o caractere {$$}[code] para ignorar uma marcação, tanto de blocos como de inlines.
+
+Por exemplo:
+
+[code] $$${texto}[b]
+
+A marcação acima será renderizada apenas como texto normal, sem nenhum tipo de formatação:
+
+$$${texto}[b]
+
+Se o caractere {$$}[code] for utilizado em qualquer outro lugar ele será simplesmente
+ignorado. Caso queira mesmo inserir esse caractere, repita ele duas vezes:
+
+[code] $$$
+
+Resultado:
+
+$$ ///

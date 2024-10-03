@@ -86,6 +86,7 @@
     <sys:String x:Key="String.Error.ExportDocument" xml:space="preserve">Error exporting document!&#13;(Make sure the directory exists and you have&#13;access privileges)</sys:String>
     <sys:String x:Key="String.Error.ImportPathError" xml:space="preserve">Error importing document &quot;{0}&quot;!&#13;(Make sure the directory or file exists and you have access privileges)</sys:String>
     <sys:String x:Key="String.Error.ImportFileFormatError" xml:space="preserve">Error importing document &quot;{0}&quot; due to invalid format!&#13;(Make sure the file was not modified or corrupted)</sys:String>
+    <sys:String x:Key="String.Error.Tutorial">The tutorial could not be loaded in the selected language.</sys:String>
 
     <sys:String x:Key="String.ClosableTabControl.Close.Tooltip">Close Tab</sys:String>
     

@@ -270,6 +270,7 @@
         <components:IconButton
             Grid.Row="0"
             Grid.Column="11"
+            Click="OnHelpIconClicked"
             ToolTip="{DynamicResource String.Button.Help}"
             IconGeometry="{StaticResource Drawing.QuestionMark}"
             IconPadding="3"/>

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Reflection;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Scribe.Data.Model;
 
@@ -6,7 +7,7 @@ namespace Scribe.Data.Configurations;
 
 public class ConfigurationsRepository : IConfigurationsRepository
 {
-    private const string ConfigFilePath = "./appsettings.json";
+    private const string ConfigFilePath = "./Configurations/appsettings.json";
     private static readonly JsonSerializerOptions SerializerOptions = new()
     { 
         WriteIndented = true, Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
@@ -21,7 +22,7 @@ public class ConfigurationsRepository : IConfigurationsRepository
     {
         var currentAppConfigurations = GetAllConfigurations();
         
-        var newAppConfiguration = currentAppConfigurations with { Language = config};
+        var newAppConfiguration = currentAppConfigurations with { Language = config };
 
         if (currentAppConfigurations != newAppConfiguration)
         {
@@ -36,7 +37,7 @@ public class ConfigurationsRepository : IConfigurationsRepository
     {
         var currentAppConfigurations = GetAllConfigurations();
         
-        var newAppConfiguration = currentAppConfigurations with { Theme = config};
+        var newAppConfiguration = currentAppConfigurations with { Theme = config };
 
         if (currentAppConfigurations != newAppConfiguration)
         {
