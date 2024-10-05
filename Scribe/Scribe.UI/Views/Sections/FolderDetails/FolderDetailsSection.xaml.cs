@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Scribe.Data.Model;
-using Scribe.UI.Command;
+using Scribe.UI.Commands;
 using Scribe.UI.Views.Components;
 using Scribe.UI.Views.Errors;
 using MessageBox = Scribe.UI.Views.Components.MessageBox;

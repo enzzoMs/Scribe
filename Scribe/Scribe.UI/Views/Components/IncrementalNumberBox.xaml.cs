@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Scribe.UI.Command;
+using Scribe.UI.Commands;
 
 namespace Scribe.UI.Views.Components;
 

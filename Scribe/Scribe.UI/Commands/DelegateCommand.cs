@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace Scribe.UI.Command;
+namespace Scribe.UI.Commands;
 
 public class DelegateCommand(
     Action<object?> execute, Func<object?, bool>? canExecute = null

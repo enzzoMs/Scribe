@@ -1,4 +1,6 @@
-﻿namespace Scribe.UI.Views.Screens.Window;
+﻿using System.Windows;
+
+namespace Scribe.UI.Views.Screens.Window;
 
 public partial class Window : System.Windows.Window
 {
@@ -12,8 +14,5 @@ public partial class Window : System.Windows.Window
         InitViewModel();
     }
     
-    private async void InitViewModel()
-    {
-        await _windowViewModel.Load();
-    }
+    private async void InitViewModel() => await _windowViewModel.Load();
 }

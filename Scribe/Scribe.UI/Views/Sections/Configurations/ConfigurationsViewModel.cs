@@ -1,7 +1,7 @@
 ﻿using System.Windows.Input;
 using Scribe.Data.Configurations;
 using Scribe.Data.Model;
-using Scribe.UI.Command;
+using Scribe.UI.Commands;
 using Scribe.UI.Resources;
 
 namespace Scribe.UI.Views.Sections.Configurations;

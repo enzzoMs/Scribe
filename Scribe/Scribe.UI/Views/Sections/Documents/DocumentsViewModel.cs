@@ -4,7 +4,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using Scribe.Data.Model;
 using Scribe.Data.Repositories;
-using Scribe.UI.Command;
+using Scribe.UI.Commands;
 using Scribe.UI.Events;
 
 namespace Scribe.UI.Views.Sections.Documents;

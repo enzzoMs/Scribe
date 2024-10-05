@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:converters="clr-namespace:Scribe.UI.Converters"
     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
     xmlns:sys="clr-namespace:System;assembly=mscorelib"
     mc:Ignorable="d"
@@ -11,8 +12,10 @@
     
     <UserControl.Resources>
         <Thickness x:Key="Dimen.ScrollBar.Vertical.Margin">0</Thickness>
-        <Thickness x:Key="Dimen.ScrollBar.Vertical.OuterMargin" Left="0"/>
-        <sys:Double x:Key="Dimen.ScrollBar.Vertical.Size">9</sys:Double>
+        <Thickness x:Key="Dimen.ScrollBar.Vertical.OuterMargin" Left="11"/>
+        <sys:Double x:Key="Dimen.ScrollBar.Vertical.Size">20</sys:Double>
+        
+        <converters:MarkupConverter x:Key="MarkupConverter"/>
         
         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="LineHeight" Value="20"/>
@@ -211,18 +214,7 @@
         <Style TargetType="{x:Type avalonEdit:TextArea}">
             <Setter Property="SelectionCornerRadius" Value="0" />
         </Style>
-        
-        <Style TargetType="ItemsControl">
-            <Setter Property="ItemsPanel">
-                <Setter.Value>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel/>
-                    </ItemsPanelTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True"/>
-            <Setter Property="VirtualizingStackPanel.VirtualizationMode" Value="Recycling"/>
-        </Style>
+
     </UserControl.Resources>
     
     <Grid>
@@ -234,30 +226,33 @@
             TextChanged="EditorTextBox_OnTextChanged"
             ShowLineNumbers="True"
             VerticalScrollBarVisibility="Auto"
-            Margin="20 12 0 0">
-            <avalonEdit:TextEditor.Style>
-                <Style TargetType="avalonEdit:TextEditor">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding InPreviewMode, ElementName=Root}" Value="True">
-                            <Setter Property="Visibility" Value="Hidden"/>
-                        </DataTrigger>
-                    </Style.Triggers>
+            HorizontalScrollBarVisibility="Auto"
+            Margin="20 0 0 0"/>
+        <ListView
+            Name="MarkupViewerPanel"
+            BorderThickness="0"
+            Margin="20 0 0 0"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.VerticalScrollBarVisibility="Visible"
+            VirtualizingPanel.ScrollUnit="Pixel">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <ContentControl>
+                                    <ContentControl.Content>
+                                        <MultiBinding Converter="{StaticResource MarkupConverter}">
+                                            <Binding ElementName="Root" Mode="OneTime"/>
+                                            <Binding/>
+                                        </MultiBinding>
+                                    </ContentControl.Content>
+                                </ContentControl>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
-            </avalonEdit:TextEditor.Style>
-        </avalonEdit:TextEditor>
-        
-        <ScrollViewer
-            Name="MarkupScrollViewer"
-            Visibility="{Binding
-                InPreviewMode,
-                ElementName=Root,
-                Converter={StaticResource BooleanToVisibilityConverter}}">
-            <ItemsControl
-                Name="MarkupViewerPanel"
-                Margin="20 16 20 16"/>
-            <ScrollViewer.Resources>
-                <Thickness x:Key="Dimen.ScrollBar.Vertical.Margin" Top="12" Bottom="12"/>
-            </ScrollViewer.Resources>
-        </ScrollViewer>
+            </ListView.ItemContainerStyle>
+        </ListView>
     </Grid>
 </UserControl>

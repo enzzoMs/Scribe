@@ -79,6 +79,7 @@
     <sys:String x:Key="String.Markup.Underline">Underline</sys:String>
     <sys:String x:Key="String.Markup.Table">Table</sys:String>
     <sys:String x:Key="String.Markup.Colors">Colors</sys:String>
+    <sys:String x:Key="String.Markup.Link">Link</sys:String>
 
     <sys:String x:Key="String.Error">Error</sys:String>
     <sys:String x:Key="String.Error.RequiredField">* Required</sys:String>

@@ -1,8 +1,8 @@
 ﻿using System.Drawing;
 using System.Globalization;
-using System.Text;
 using System.Text.RegularExpressions;
 using Scribe.Markup.Inlines;
+using Scribe.Markup.Nodes;
 using Scribe.Markup.Nodes.Blocks;
 using Scribe.Markup.Nodes.Leafs;
 
@@ -43,27 +43,26 @@ public static class MarkupParser
 
     private static readonly Regex IgnoreMarkupPattern = new(@"(?<!\$)\$(?!\$)", RegexOptions.Compiled);
 
-    public static DocumentNode ParseText(string documentText)
+    public static IEnumerable<IMarkupNode> ParseText(string documentText)
     {
-        var documentRoot = new DocumentNode();
+        var topLevelNodes = new List<IMarkupNode>();
 
         if (string.IsNullOrWhiteSpace(documentText))
         {
-            return documentRoot;
+            return topLevelNodes;
         }
         
         ParagraphNode? openParagraph = null;
         var paragraphs = new List<ParagraphNode>();
 
-        var openBlocks = new Stack<IBlockNode>();
-        openBlocks.Push(documentRoot);
+        var openMultilineBlocks = new Stack<IBlockNode>();
         
         var tablesGridConfiguration = new Stack<(int Row, int Column)>();
 
         foreach (var docLine in documentText.Split("\n"))
         {
-            var inCodeBlock = openBlocks.Peek() is CodeNode;
-            var inTableBlock = openBlocks.Peek() is TableNode;
+            var inCodeBlock = openMultilineBlocks.TryPeek(out var lastBlock) && lastBlock is CodeNode;
+            var inTableBlock = openMultilineBlocks.TryPeek(out lastBlock) && lastBlock is TableNode;
 
             if (!inCodeBlock && string.IsNullOrWhiteSpace(docLine))
             {
@@ -73,42 +72,36 @@ public static class MarkupParser
 
             var trimmedLine = EmptySpacePattern.Replace(docLine, " ").Trim();
             
-            if (openBlocks.Count > 1 && trimmedLine == "%")
+            if (openMultilineBlocks.Count >= 1 && trimmedLine == "%")
             {
-                if (openBlocks.Peek() is TableNode)
+                openParagraph = null;
+                
+                if (openMultilineBlocks.Peek() is TableNode)
                 {
                     tablesGridConfiguration.Pop();
                 }
-                openBlocks.Pop();
-                openParagraph = null;
+                openMultilineBlocks.Pop();
                 continue;
             }
             
             var newLeafNode = inCodeBlock ? null : GetLeafNodeFromMarkup(trimmedLine);
             if (newLeafNode != null)
             {
-                if (newLeafNode is LabelNode)
-                {
-                    if (openBlocks.Count > 1)
-                    {
-                        documentRoot.Children.Insert(documentRoot.Children.Count - 1, newLeafNode);
-                    }
-                    else
-                    {
-                        documentRoot.Children.Add(newLeafNode);
-                    }
-                }
-                else if (inTableBlock && newLeafNode is DividerNode)
+                openParagraph = null;
+                
+                if (inTableBlock && newLeafNode is DividerNode)
                 {
                     var (currentRow, _) = tablesGridConfiguration.Pop();
                     tablesGridConfiguration.Push((Row: currentRow + 1, Column: 0));
                 }
+                else if (openMultilineBlocks.Count == 0 || newLeafNode is LabelNode)
+                {
+                    topLevelNodes.Add(newLeafNode);
+                }
                 else
                 {
-                    openBlocks.Peek().Children.Add(newLeafNode);    
+                    openMultilineBlocks.Peek().Children.Add(newLeafNode);    
                 }
-                
-                openParagraph = null;
                 continue;  
             }
             
@@ -144,12 +137,20 @@ public static class MarkupParser
         
                 if (newBlockNode != null)
                 {
-                    openBlocks.Peek().Children.Add(newBlockNode);    
                     openParagraph = null;
+
+                    if (openMultilineBlocks.Count >= 1)
+                    {
+                        openMultilineBlocks.Peek().Children.Add(newBlockNode);
+                    }
+                    else
+                    {
+                        topLevelNodes.Add(newBlockNode);
+                    }
             
                     if (trimmedLine.Last() == '%')
                     {
-                        openBlocks.Push(newBlockNode);
+                        openMultilineBlocks.Push(newBlockNode);
                         continue;
                     }
                 
@@ -175,9 +176,13 @@ public static class MarkupParser
                 {
                     newBlockNode.Children.Add(newParagraphNode);
                 }
-                else if (openBlocks.Peek() is not TableNode)
+                else if (openMultilineBlocks.Count >= 1 && openMultilineBlocks.Peek() is not TableNode)
                 {
-                    openBlocks.Peek().Children.Add(newParagraphNode);
+                    openMultilineBlocks.Peek().Children.Add(newParagraphNode);
+                }
+                else
+                {
+                    topLevelNodes.Add(newParagraphNode);
                 }
                 
                 openParagraph = newParagraphNode;
@@ -190,7 +195,7 @@ public static class MarkupParser
             ParseInlines(paragraph);
         }
         
-        return documentRoot;
+        return topLevelNodes;
     }
 
     private static IBlockNode? GetBlockNodeFromMarkup(string markup)
@@ -280,8 +285,10 @@ public static class MarkupParser
         return labelMatch.Success ? new LabelNode(name: labelMatch.Groups[1].Value) : null;
     }
 
-    private static void ParseInlines(ParagraphNode paragraphNode)
+    private static void ParseInlines(ParagraphNode? paragraphNode)
     {
+        if (paragraphNode == null) return;
+        
         var inlineMatches = InlineMarkupPattern.Matches(paragraphNode.RawText);
         
         if (inlineMatches.Count == 0)

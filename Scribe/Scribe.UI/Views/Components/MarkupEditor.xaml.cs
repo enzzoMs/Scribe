@@ -22,9 +22,9 @@ namespace Scribe.UI.Views.Components;
 
 public partial class MarkupEditor : UserControl
 {
-    private const int MarkupViewMargin = 18;
     private const double SubAndSuperscriptFontSizePct = 0.85;
-    
+    public const int MarkupViewMargin = 18;
+
     private static readonly Dictionary<Type, string> MarkupBlockDictionary = new()
     {
         { typeof(HeaderNode), "[#] " },
@@ -36,7 +36,7 @@ public partial class MarkupEditor : UserControl
         { typeof(ImageNode), "[img(100%)= ]" },
         { typeof(ToggleListNode), "[toggle]" },
         { typeof(CalloutNode), "[::callout]" },
-        { typeof(ProgressBarNode), "[ooo..]" },
+        { typeof(ProgressBarNode), "(ooo..)" },
         { typeof(IndentedNode), "[>>]" },
         { typeof(LabelNode), "@label=A" },
         { typeof(TableNode), "[table]%\n\t[cell] Table\n\t=====\n\t[cell] \n%"}
@@ -50,6 +50,8 @@ public partial class MarkupEditor : UserControl
         ConfigureEditorTextBox();        
         ConfigureSyntaxHighlighting();
     }
+    
+    public IEnumerable<IMarkupNode>? MarkupNodes { get; private set; }
     
     public string EditorText
     {
@@ -105,8 +107,11 @@ public partial class MarkupEditor : UserControl
     /// <returns>The image bytes</returns>
     public byte[] GetMarkupAsImage()
     {
-        MarkupScrollViewer.ScrollToTop();
-        MarkupScrollViewer.UpdateLayout();
+        if (MarkupViewerPanel.Items[0] != null)
+        {
+            MarkupViewerPanel.ScrollIntoView(MarkupViewerPanel.Items[0]!);
+        }
+        MarkupViewerPanel.UpdateLayout();
 
         const int rightMargin = 40;
         const int bottomMargin = 50;
@@ -152,8 +157,14 @@ public partial class MarkupEditor : UserControl
     }
     
     public void InsertColorModifier() => InsertMarkupModifier("foreg=#blue");
-    
-    public void RenderTextAsMarkup(string text) => RenderDocumentNode(MarkupParser.ParseText(text));
+
+    public void InsertLinkModifier() => InsertMarkupModifier("link=");
+
+    public void RenderTextAsMarkup(string text)
+    {
+        MarkupNodes = MarkupParser.ParseText(text);
+        MarkupViewerPanel.ItemsSource = MarkupNodes;   
+    }
     
     private void ConfigureEditorTextBox()
     {
@@ -204,7 +215,7 @@ public partial class MarkupEditor : UserControl
     {
         if (EditorTextBox.TextArea.Selection.IsEmpty)
         {
-            EditorTextBox.TextArea.Document.Insert(EditorTextBox.CaretOffset, $"{{}}{modifier}");
+            EditorTextBox.TextArea.Document.Insert(EditorTextBox.CaretOffset, $"{{}}[{modifier}]");
             return;
         }
         var textSelection = EditorTextBox.TextArea.Selection;
@@ -224,6 +235,9 @@ public partial class MarkupEditor : UserControl
         {
             markupEditor.RenderTextAsMarkup(markupEditor.EditorTextBox.Text);
         }
+
+        markupEditor.MarkupViewerPanel.Visibility = markupEditor.InPreviewMode ? Visibility.Visible : Visibility.Hidden;
+        markupEditor.EditorTextBox.Visibility = markupEditor.InPreviewMode ? Visibility.Hidden : Visibility.Visible;
     }
     
     private static void OnEditorTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -244,29 +258,7 @@ public partial class MarkupEditor : UserControl
         }
     }
 
-    private void RenderDocumentNode(DocumentNode documentRoot)
-    {
-        MarkupViewerPanel.Items.Clear();
-        
-        foreach (var node in documentRoot.Children)
-        {
-            var nodeView = GetViewFromMarkupNode(node);
-
-            if (node is not LabelNode)
-            {
-                nodeView.Margin = new Thickness(
-                    left: 0,
-                    top: MarkupViewerPanel.Items.Count == 0 ? 0 : MarkupViewMargin,
-                    right: 0,
-                    bottom: 0
-                );    
-            }
-            
-            MarkupViewerPanel.Items.Add(nodeView);
-        }
-    }
-
-    private FrameworkElement GetViewFromMarkupNode(IMarkupNode node)
+    public FrameworkElement GetViewFromMarkupNode(IMarkupNode node)
     {
         return node switch
         {
@@ -393,13 +385,14 @@ public partial class MarkupEditor : UserControl
             var tableScrollViewer = (ScrollViewer) sender;
 
             FrameworkElement? currentView = tableScrollViewer;
+            
             while (currentView != null)
             {
                 currentView = VisualTreeHelper.GetParent(currentView) as FrameworkElement;
 
-                if (currentView?.Name != "MarkupScrollViewer" || currentView is not ScrollViewer markupScrollViewer) continue;
-            
-                markupScrollViewer.ScrollToVerticalOffset(markupScrollViewer.VerticalOffset - e.Delta);
+                if (currentView is not ScrollViewer markupViewerScrollPanel) continue;
+                
+                markupViewerScrollPanel.ScrollToVerticalOffset(markupViewerScrollPanel.VerticalOffset - e.Delta);
                 e.Handled = true;
                 return;
             }

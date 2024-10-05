@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using Scribe.Data.Model;
 using Scribe.Data.Repositories;
-using Scribe.UI.Command;
+using Scribe.UI.Commands;
 using Scribe.UI.Events;
 using Scribe.UI.Views.Errors;
 

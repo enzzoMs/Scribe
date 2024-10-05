@@ -6,7 +6,7 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit;
 using Scribe.Data.Model;
 using Scribe.Markup.Inlines;
-using Scribe.UI.Command;
+using Scribe.UI.Commands;
 using Scribe.UI.Views.Components;
 using Scribe.UI.Views.Errors;
 using Color = System.Drawing.Color;
@@ -170,6 +170,10 @@ public partial class EditorBody : UserControl
             if (markupType == typeof(Color))
             {
                 MarkupEditor.InsertColorModifier();
+            }
+            else if (markupType == typeof(Uri))
+            {
+                MarkupEditor.InsertLinkModifier();
             }
             else
             {
