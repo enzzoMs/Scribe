@@ -11,8 +11,7 @@
      mc:Ignorable="d"
      d:DesignHeight="800"
      d:DesignWidth="300"
-     d:DataContext="{d:DesignInstance navSection:NavigationViewModel}"
-     Background="{DynamicResource Brush.Surface}">
+     d:DataContext="{d:DesignInstance navSection:NavigationViewModel}">
     
     <Grid
         Width="200"
@@ -56,7 +55,7 @@
             Width="28"
             Height="28"
             IconGeometry="{StaticResource Drawing.DoubleArrow.Left}"
-            IconBrush="{DynamicResource Brush.Text.Primary}"
+            IconBrush="{DynamicResource Brush.Icon}"
             VerticalAlignment="Center"
             ToolTip="{DynamicResource String.Nav.Close}"
             Command="{Binding CollapseNavigationCommand}"

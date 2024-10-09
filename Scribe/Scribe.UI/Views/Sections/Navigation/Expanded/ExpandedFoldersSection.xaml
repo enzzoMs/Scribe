@@ -15,7 +15,7 @@
             <Border 
                 Padding="12 6" 
                 CornerRadius="8" 
-                Background="{DynamicResource Brush.Primary}">
+                Background="{DynamicResource Brush.Item.Selected.Background}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -25,14 +25,14 @@
                         Width="24"
                         Height="24"
                         Data="{StaticResource Drawing.Folder.Opened.Filled}"
-                        Fill="White"
+                        Fill="{DynamicResource Brush.Item.Selected.Foreground}"
                         Stretch="Uniform"
                         VerticalAlignment="Center"/>
                     <TextBlock
                         Grid.Column="1"
                         Text="{Binding Name}"
                         TextTrimming="CharacterEllipsis"
-                        Foreground="White"
+                        Foreground="{DynamicResource Brush.Item.Selected.Foreground}"
                         FontWeight="SemiBold"
                         Margin="14 0 0 0"
                         VerticalAlignment="Center"/>

@@ -167,7 +167,7 @@
             Grid.Row="1"
             Grid.Column="1"
             Text="{DynamicResource String.Folders.Property.Position}"
-            Foreground="{StaticResource Brush.Text.Secondary}"
+            Foreground="{DynamicResource Brush.Text.Secondary}"
             VerticalAlignment="Center"
             Margin="6"/>
         <components:IncrementalNumberBox

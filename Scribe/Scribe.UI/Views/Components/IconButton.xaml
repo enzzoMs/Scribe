@@ -11,22 +11,6 @@
     Padding="0"
     Name="Root">
     
-    <Button.Triggers>
-        <EventTrigger RoutedEvent="Button.Click">
-            <BeginStoryboard>
-                <Storyboard>
-                    <ColorAnimation 
-                        Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" 
-                        From="Transparent" To="#FFEBEBEB" Duration="0:0:0.15"/>
-                    <ColorAnimation 
-                        Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" 
-                        BeginTime="0:0:0.4"
-                        From="#FFEBEBEB" To="Transparent" Duration="0:0:0.15"/>
-                </Storyboard>
-            </BeginStoryboard>
-        </EventTrigger>
-    </Button.Triggers>
-    
     <Button.Template>
         <ControlTemplate TargetType="{x:Type Button}">
             <Grid DataContext="{Binding ElementName=Root}">

@@ -8,7 +8,7 @@
     xmlns:tagsState="clr-namespace:Scribe.UI.Views.Sections.Tags.State"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance tagsSection:TagsViewModel}"
-    d:DesignHeight="100"
+    d:DesignHeight="200"
     d:DesignWidth="200">
     
     <UserControl.Style>
@@ -94,6 +94,7 @@
             ItemsSource="{Binding Tags}"
             SelectionMode="Multiple"
             BorderThickness="0"
+            Background="Transparent"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>

@@ -13,7 +13,10 @@
     d:DataContext="{d:DesignInstance window:WindowViewModel}"
     Title="Scribe"
     Icon="/Resources/Images/scribe_logo.ico"
-    WindowState="Maximized">
+    WindowState="Maximized"
+    Background="{DynamicResource Brush.Background}"
+    KeyDown="OnKeyDown"
+    Activated="OnActivated">
     
     <Window.Resources>
         <DataTemplate DataType="{x:Type splashScreen:SplashViewModel}">
@@ -24,11 +27,18 @@
         </DataTemplate>
     </Window.Resources>
     
-    <ContentControl Content="{Binding CurrentViewModel}">
-        <ContentControl.LayoutTransform>
-            <ScaleTransform
-                ScaleX="{DynamicResource Dimen.App.ScaleX}"
-                ScaleY="{DynamicResource Dimen.App.ScaleY}"/>
-        </ContentControl.LayoutTransform>
-    </ContentControl>
+    <Grid>
+        <Rectangle
+            Name="FocusableRectangle"
+            Width="0" 
+            Height="0" 
+            Focusable="True"/>
+        <ContentControl Content="{Binding CurrentViewModel}">
+            <ContentControl.LayoutTransform>
+                <ScaleTransform
+                    ScaleX="{DynamicResource Dimen.App.ScaleX}"
+                    ScaleY="{DynamicResource Dimen.App.ScaleY}"/>
+            </ContentControl.LayoutTransform>
+        </ContentControl>
+    </Grid>
 </Window>

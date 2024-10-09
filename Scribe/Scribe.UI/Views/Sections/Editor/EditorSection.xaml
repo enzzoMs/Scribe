@@ -10,8 +10,7 @@
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance editorSection:EditorViewModel}"
     d:DesignHeight="800"
-    d:DesignWidth="800"
-    Name="Root">
+    d:DesignWidth="800">
     
     <UserControl.InputBindings>
         <KeyBinding 
@@ -20,27 +19,29 @@
             Modifiers="Ctrl"/>
     </UserControl.InputBindings>
     
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type editorState:DocumentViewState}">
+            <TextBlock>
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                        <Setter Property="Text" Value="{Binding Document.Name}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
+                                <Setter Property="Text" Value="{Binding Document.Name, StringFormat=* {0}}"/>
+                                <Setter Property="FontStyle" Value="Italic"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </DataTemplate>
+    </UserControl.Resources>
+    
     <components:ClosableTabControl
         x:Name="EditorTabControl"
         ItemsSource="{Binding OpenDocuments}"
         SelectedItem="{Binding SelectedDocument, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
         CloseTabClick="OnCloseTabClicked">
-        <components:ClosableTabControl.ItemTemplate>
-            <DataTemplate DataType="{x:Type editorState:DocumentViewState}">
-                <TextBlock>
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                            <Setter Property="Text" Value="{Binding Document.Name}"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
-                                    <Setter Property="Text" Value="{Binding Document.Name, StringFormat=* {0}}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </DataTemplate>
-        </components:ClosableTabControl.ItemTemplate>
         <components:ClosableTabControl.ContentTemplate>
             <DataTemplate>
                 <editorSection:EditorBody 

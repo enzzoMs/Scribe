@@ -39,14 +39,14 @@
                                 <ColorAnimation
                                     Storyboard.TargetName="DocumentItemDivider"
                                     Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" 
-                                    From="{StaticResource Color.Divider}"
-                                    To="{StaticResource Color.Primary}" 
+                                    From="{DynamicResource Color.Divider}"
+                                    To="{DynamicResource Color.Primary}" 
                                     Duration="0:0:0.15"/>
                                 <ColorAnimation
                                     Storyboard.TargetName="DocumentItemDivider"
                                     Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" 
-                                    From="{StaticResource Color.Primary}"
-                                    To="{StaticResource Color.Divider}" 
+                                    From="{DynamicResource Color.Primary}"
+                                    To="{DynamicResource Color.Divider}" 
                                     BeginTime="0:0:0.3"
                                     Duration="0:0:0.15"/>
                             </Storyboard>
@@ -108,14 +108,14 @@
                                 <ColorAnimation
                                     Storyboard.TargetName="NewDocumentDivider"
                                     Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" 
-                                    From="{StaticResource Color.Divider}" 
-                                    To="{StaticResource Color.Primary}" 
+                                    From="{DynamicResource Color.Divider}" 
+                                    To="{DynamicResource Color.Primary}" 
                                     Duration="0:0:0.15"/>
                                 <ColorAnimation
                                     Storyboard.TargetName="NewDocumentDivider"
                                     Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" 
-                                    From="{StaticResource Color.Primary}" 
-                                    To="{StaticResource Color.Divider}" 
+                                    From="{DynamicResource Color.Primary}" 
+                                    To="{DynamicResource Color.Divider}" 
                                     BeginTime="0:0:0.3"
                                     Duration="0:0:0.15"/>
                             </Storyboard>

@@ -33,9 +33,9 @@
                                         SnapsToDevicePixels="False"
                                         StrokeThickness="1"
                                         Margin="1"
-                                        Fill="{StaticResource Brush.Item.Selected.Foreground}"
+                                        Fill="{DynamicResource Brush.Item.Selected.Foreground}"
                                         Stretch="Fill"
-                                        Stroke="{StaticResource Brush.Item.Selected.Foreground}"
+                                        Stroke="{DynamicResource Brush.Item.Selected.Foreground}"
                                         Data="M10,18a1,1,0,0,1-.71-.29l-5-5a1,1,0,0,1,1.42-1.42L10,15.59l8.29-8.3a1,1,0,1,1,1.42,1.42l-9,9A1,1,0,0,1,10,18Z"
                                         FlowDirection="LeftToRight"/>
                                     <Path Visibility="Collapsed"
@@ -45,7 +45,7 @@
                                         SnapsToDevicePixels="False"
                                         Margin="1"
                                         StrokeThickness="1"
-                                        Stroke="{StaticResource Brush.Item.Selected.Foreground}"
+                                        Stroke="{DynamicResource Brush.Item.Selected.Foreground}"
                                         Data="M 0 7 L 7 0"/>
                                 </Grid>
                             </Border>

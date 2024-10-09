@@ -16,7 +16,13 @@ using Scribe.Markup.Inlines;
 using Scribe.Markup.Nodes;
 using Scribe.Markup.Nodes.Blocks;
 using Scribe.Markup.Nodes.Leafs;
+using Application = System.Windows.Application;
+using CheckBox = System.Windows.Controls.CheckBox;
+using HorizontalAlignment = System.Windows.HorizontalAlignment;
+using ListViewItem = System.Windows.Controls.ListViewItem;
+using Orientation = System.Windows.Controls.Orientation;
 using Path = System.Windows.Shapes.Path;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace Scribe.UI.Views.Components;
 
@@ -25,6 +31,9 @@ public partial class MarkupEditor : UserControl
     private const double SubAndSuperscriptFontSizePct = 0.85;
     public const int MarkupViewMargin = 18;
 
+    private readonly XshdColor _syntaxHighlighingColor = new();
+    private readonly XshdSyntaxDefinition _syntaxDefinition = new();
+    
     private static readonly Dictionary<Type, string> MarkupBlockDictionary = new()
     {
         { typeof(HeaderNode), "[#] " },
@@ -49,10 +58,13 @@ public partial class MarkupEditor : UserControl
         InitializeComponent();
         ConfigureEditorTextBox();        
         ConfigureSyntaxHighlighting();
+        EditorTextBox.SyntaxHighlighting = HighlightingLoader.Load(_syntaxDefinition, HighlightingManager.Instance);
     }
     
     public IEnumerable<IMarkupNode>? MarkupNodes { get; private set; }
     
+    public bool IsTextBoxFocused => (bool) GetValue(IsTextBoxFocusedPropertyKey.DependencyProperty);
+
     public string EditorText
     {
         get => (string) GetValue(EditorTextProperty);
@@ -65,13 +77,17 @@ public partial class MarkupEditor : UserControl
         set => SetValue(InPreviewModeProperty, value);
     }
     
+    public SolidColorBrush? EditorBackground
+    {
+        get => (SolidColorBrush?) GetValue(EditorBackgroundProperty);
+        set => SetValue(EditorBackgroundProperty, value);
+    }
+    
     public ICommand? OpenDocumentByNameCommand
     {
         get => (ICommand?) GetValue(OpenDocumentByNameCommandProperty);
         set => SetValue(OpenDocumentByNameCommandProperty, value);
     }
-    
-    public bool IsTextBoxFocused => (bool) GetValue(IsTextBoxFocusedPropertyKey.DependencyProperty);
     
     public static readonly DependencyProperty EditorTextProperty = DependencyProperty.Register(
         name: nameof(EditorText),
@@ -96,6 +112,13 @@ public partial class MarkupEditor : UserControl
         propertyType: typeof(bool),
         ownerType: typeof(MarkupEditor),
         typeMetadata: new FrameworkPropertyMetadata()
+    );
+    
+    private static readonly DependencyProperty EditorBackgroundProperty = DependencyProperty.Register(
+        name: nameof(EditorBackground),
+        propertyType: typeof(SolidColorBrush),
+        ownerType: typeof(MarkupEditor),
+        typeMetadata: new FrameworkPropertyMetadata(propertyChangedCallback: OnEditorBackgroundChanged)
     );
     
     public static readonly DependencyProperty OpenDocumentByNameCommandProperty = DependencyProperty.Register(
@@ -173,15 +196,19 @@ public partial class MarkupEditor : UserControl
         EditorTextBox.GotFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, true); };
         EditorTextBox.LostFocus += (_, _) => { SetValue(IsTextBoxFocusedPropertyKey, false); };
         
-        EditorTextBox.TextArea.TextView.LinkTextForegroundBrush = Brushes.Black;
         EditorTextBox.TextArea.TextView.LinkTextUnderline = false;
         SearchPanel.Install(EditorTextBox);
     }
 
     private void ConfigureSyntaxHighlighting()
     {
-        var markupColor = new XshdColor { Foreground = new SimpleHighlightingBrush(Colors.Black), FontWeight = FontWeights.Bold };
-        var markupColorReference = new XshdReference<XshdColor>(markupColor);
+        var highlighingColor = EditorBackground?.Color == Colors.White ? Colors.Black : Colors.White; 
+        
+        _syntaxHighlighingColor.Foreground = new SimpleHighlightingBrush(highlighingColor);
+        _syntaxHighlighingColor.FontWeight = FontWeights.Bold;
+        EditorTextBox.TextArea.TextView.LinkTextForegroundBrush = new SolidColorBrush(highlighingColor);
+
+        var markupColorReference = new XshdReference<XshdColor>(_syntaxHighlighingColor);
         
         var mainRuleSet = new XshdRuleSet
         {
@@ -205,10 +232,7 @@ public partial class MarkupEditor : UserControl
             }
         };
         
-        var syntaxDefinition = new XshdSyntaxDefinition();
-        syntaxDefinition.Elements.Add(mainRuleSet);
-        
-        EditorTextBox.SyntaxHighlighting = HighlightingLoader.Load(syntaxDefinition, HighlightingManager.Instance);
+        _syntaxDefinition.Elements.Add(mainRuleSet);
     }
     
     private void InsertMarkupModifier(string modifier)
@@ -225,6 +249,20 @@ public partial class MarkupEditor : UserControl
     private void EditorTextBox_OnTextChanged(object? sender, EventArgs e)
     {
         EditorTextChanged?.Invoke(this, EditorTextBox.Text);
+    }
+    
+    private static void OnEditorBackgroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var markupEditor = (MarkupEditor) d;
+
+        var highlighingColor = markupEditor.EditorBackground?.Color == Colors.White ? Colors.Black : Colors.White; 
+        
+        markupEditor._syntaxHighlighingColor.Foreground = new SimpleHighlightingBrush(highlighingColor);
+        markupEditor.EditorTextBox.TextArea.TextView.LinkTextForegroundBrush = new SolidColorBrush(highlighingColor);
+        
+        markupEditor.EditorTextBox.SyntaxHighlighting = HighlightingLoader.Load(
+            markupEditor._syntaxDefinition, HighlightingManager.Instance
+        );
     }
     
     private static void OnPreviewModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -264,7 +302,7 @@ public partial class MarkupEditor : UserControl
         {
             ParagraphNode paragraphNode => GetParagraphView(paragraphNode),
             DividerNode dividerNode => GetDividerView(dividerNode),
-            LabelNode labelNode => GetLabelView(labelNode),
+            LabelNode => GetLabelView(),
             ProgressBarNode progressBarNode => GetProgressBarView(progressBarNode),
             TableNode tableNode => GetTableView(tableNode),
             IBlockNode blockNode => GetViewFromBlockNode(blockNode),
@@ -306,11 +344,14 @@ public partial class MarkupEditor : UserControl
         var progressBarPanel = new StackPanel { Orientation = Orientation.Horizontal };
         for (var i = 0; i < progressBarNode.MaxLength; i++)
         {
-            progressBarPanel.Children.Add(new Border
+            var progressBarItem = new Border { Style = Resources["ProgressBar.Item.Style"] as Style };
+
+            if (i >= progressBarNode.Length)
             {
-                Style = Resources["ProgressBar.Item.Style"] as Style,
-                Background = i < progressBarNode.Length ? Brushes.Black : null
-            });
+                progressBarItem.Background = null;
+            }
+            
+            progressBarPanel.Children.Add(progressBarItem);
         }
 
         progressBarPanel.Children.Add(new TextBlock
@@ -322,7 +363,7 @@ public partial class MarkupEditor : UserControl
         return progressBarPanel;
     }
 
-    private FrameworkElement GetLabelView(LabelNode labelNode) => new() { Tag = labelNode.Name };
+    private FrameworkElement GetLabelView() => new();
 
     private ScrollViewer GetTableView(TableNode tableNode)
     {
@@ -427,7 +468,7 @@ public partial class MarkupEditor : UserControl
             {
                 cellView.HorizontalAlignment = HorizontalAlignment.Center;
             }
-            cellBorder.Background = Application.Current.Resources["Brush.Markup.Surface"] as SolidColorBrush;
+            cellBorder.Style = Resources["TableCell.Header.Style"] as Style;
         }
         
         return cellBorder;
@@ -608,7 +649,7 @@ public partial class MarkupEditor : UserControl
         {
             Text = errorMessage,
             Foreground = Brushes.Red, 
-            Margin = new Thickness(0, 0, 0, bottom: MarkupViewMargin)
+            TextWrapping = TextWrapping.Wrap
         };
 
         childrenList.Items.Insert(0, errorText);
@@ -623,9 +664,12 @@ public partial class MarkupEditor : UserControl
             AddLinkToInline(inline, inlineMarkup.LinkUri, OpenDocumentByNameCommand);
         }
         
+        Brush? inlineForeground = null;
+        Brush? inlineBackground = null;
+        
         if (inlineMarkup.Foreground != null)
         {
-            inline.Foreground = new SolidColorBrush(new Color
+            inlineForeground = new SolidColorBrush(new Color
             {
                 A = inlineMarkup.Foreground.Value.A, R = inlineMarkup.Foreground.Value.R, 
                 G = inlineMarkup.Foreground.Value.G, B = inlineMarkup.Foreground.Value.B
@@ -634,15 +678,14 @@ public partial class MarkupEditor : UserControl
         
         if (inlineMarkup.Background != null)
         {
-            inline.Background = new SolidColorBrush(new Color
+            inlineBackground = new SolidColorBrush(new Color
             {
                 A = inlineMarkup.Background.Value.A, R = inlineMarkup.Background.Value.R, 
                 G = inlineMarkup.Background.Value.G, B = inlineMarkup.Background.Value.B
             });
         }
-        
-        var previousBackground = inline.Background;
-        var previousForeground = inline.Foreground;
+
+        var isSpoilerInline = false;
         
         foreach (var modifier in inlineMarkup.Modifiers)
         {
@@ -669,23 +712,39 @@ public partial class MarkupEditor : UserControl
                     inline.BaselineAlignment = BaselineAlignment.Subscript;
                     break;
                 case InlineMarkupModifiers.Code:
-                    inline.FontFamily = Application.Current.Resources["Text.Monospace"] as FontFamily;
-                    inline.Background = Application.Current.Resources["Brush.Markup.Surface"] as SolidColorBrush;
+                    inline.Style = Resources["CodeInline.Style"] as Style;
                     break;
                 case InlineMarkupModifiers.Spoiler:
-                    inline.Background = Application.Current.Resources["Brush.Markup.Surface"] as SolidColorBrush;
-                    inline.Foreground = Application.Current.Resources["Brush.Markup.Surface"] as SolidColorBrush;
-                    inline.Cursor = Cursors.Hand;
+                    isSpoilerInline = true;
+                    inline.Style = Resources["Spoiler.Style"] as Style;
                     inline.PreviewMouseLeftButtonDown += (_, _) =>
                     {
-                        inline.Foreground = previousForeground;
-                        if (modifier != InlineMarkupModifiers.Code)
+                        inline.Style = null;
+
+                        if (inlineForeground != null)
                         {
-                            inline.Background = previousBackground;
+                            inline.Foreground = inlineForeground;
                         }
-                        inline.Cursor = Cursors.Arrow;
+                        
+                        if (modifier != InlineMarkupModifiers.Code && inlineBackground != null)
+                        {
+                            inline.Background = inlineBackground;
+                        }
                     };
                     break;
+            }
+        }
+
+        if (!isSpoilerInline)
+        {
+            if (inlineForeground != null)
+            {
+                inline.Foreground = inlineForeground;
+            }
+
+            if (inlineBackground != null)
+            {
+                inline.Background = inlineBackground;
             }
         }
 
@@ -698,8 +757,7 @@ public partial class MarkupEditor : UserControl
 
         if (linkUri.StartsWith("doc:"))
         {
-            inline.Cursor = Cursors.Hand;
-            inline.Foreground = Brushes.Blue;
+            inline.Style = Resources["Link.Style"] as Style;
 
             var docName = linkUri[4..];
             inline.PreviewMouseLeftButtonDown += (_, _) =>
@@ -709,8 +767,7 @@ public partial class MarkupEditor : UserControl
         }
         else if (linkUri.StartsWith('@'))
         {
-            inline.Cursor = Cursors.Hand;
-            inline.Foreground = Brushes.Blue;
+            inline.Style = Resources["Link.Style"] as Style;
             
             var labelName = linkUri.TrimStart('@');
             const int scrollMargin = 400;
@@ -718,16 +775,24 @@ public partial class MarkupEditor : UserControl
             {
                 foreach (var item in MarkupViewerPanel.Items)
                 {
-                    if (item is not FrameworkElement { Tag: string labelTag } labelView || labelTag != labelName) continue;
-                    labelView.BringIntoView(new Rect(0, 0, scrollMargin, scrollMargin));
-                    return;
+                    if (item is not LabelNode labelNode || labelNode.Name != labelName) continue;
+                    
+                    MarkupViewerPanel.ScrollIntoView(item);
+                    var view = MarkupViewerPanel.ItemContainerGenerator.ContainerFromItem(labelNode) as ListViewItem;
+                    
+                    if (view == null) continue;
+                    
+                    MarkupViewerPanel.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        view.BringIntoView(new Rect(0, 0, scrollMargin, scrollMargin));
+                    }));
+                    break;
                 }
             };
         }
         else if (Uri.TryCreate(linkUri, UriKind.Absolute, out var uri) && uri.Scheme is "http" or "https" or "file")
         {
-            inline.Cursor = Cursors.Hand;
-            inline.Foreground = Brushes.Blue;
+            inline.Style = Resources["Link.Style"] as Style;
             inline.PreviewMouseLeftButtonDown += (_, _) =>
             {
                 try

@@ -17,11 +17,11 @@
                 DataContext="{Binding DataContext, ElementName=Root}"
                 Padding="12 6" 
                 CornerRadius="8" 
-                Background="#232323">
+                Background="{DynamicResource Brush.Item.Selected.Background}">
                 <TextBlock
                     Text="{Binding SelectedFolder.Name[0], FallbackValue=#}"
                     ToolTip="{Binding SelectedFolder.Name, FallbackValue=#}"
-                    Foreground="White"
+                    Foreground="{DynamicResource Brush.Item.Selected.Foreground}"
                     FontWeight="SemiBold"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"/>

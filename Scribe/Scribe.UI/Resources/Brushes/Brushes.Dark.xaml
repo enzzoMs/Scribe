@@ -2,14 +2,45 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
-    <!--TODO: Implement dark theme -->
-    <SolidColorBrush x:Key="Brush.Primary" Color="#FF09ADAE"/>
-    <SolidColorBrush x:Key="Brush.Surface" Color="#FFFAFAF9"/>
-    <SolidColorBrush x:Key="Brush.Text.Primary" Color="#FFFF0000"/>
-    <SolidColorBrush x:Key="Brush.Text.Secondary" Color="#FF606060"/>
-    <SolidColorBrush x:Key="Brush.Divider" Color="#FFD9D9D9"/>
-    <SolidColorBrush x:Key="Brush.Border.Unselected" Color="#FFD9D9D9"/>
-    <SolidColorBrush x:Key="Brush.Border.Selected" Color="#FFA4A4A3"/>
-    <SolidColorBrush x:Key="Brush.Icon.Dark" Color="#FF00FF00"/>
-    <SolidColorBrush x:Key="Brush.Icon.Light" Color="#FF00FF00"/>
+    <SolidColorBrush x:Key="Brush.Background" Color="#1C1C1C"/>
+    <SolidColorBrush x:Key="Brush.Primary" Color="#D5D5D5"/>
+    <SolidColorBrush x:Key="Brush.Surface" Color="#333333"/>
+    <SolidColorBrush x:Key="Brush.OnSurface" Color="#D5D5D5"/>
+    <SolidColorBrush x:Key="Brush.Warning" Color="#FFFF0000"/>
+    <SolidColorBrush x:Key="Brush.Text.Primary" Color="#D5D5D5"/>
+    <SolidColorBrush x:Key="Brush.Text.Secondary" Color="#B1B1B1"/>
+    <SolidColorBrush x:Key="Brush.Divider" Color="#474747"/>
+    <SolidColorBrush x:Key="Brush.Border.Unselected" Color="#404040"/>
+    <SolidColorBrush x:Key="Brush.Border.Selected" Color="#777777"/>
+    <SolidColorBrush x:Key="Brush.Button.Secondary" Color="#424242"/>
+    <SolidColorBrush x:Key="Brush.Button.Secondary.Highlight" Color="#5C5C5C"/>
+    <SolidColorBrush x:Key="Brush.Button.Secondary.Disabled" Color="#404040"/>
+    <SolidColorBrush x:Key="Brush.Icon" Color="#D5D5D5"/>
+    <SolidColorBrush x:Key="Brush.MenuItem.Highlight" Color="#3d3d3d"/>
+    <SolidColorBrush x:Key="Brush.BackgroundText" Color="#FF8f8f8f" Opacity="0.6"/>
+    <SolidColorBrush x:Key="Brush.BackgroundIcon" Color="#FF8f8f8f" Opacity="0.5"/>
+    <SolidColorBrush x:Key="Brush.Item.Unselected.Background" Color="#333333"/>
+    <SolidColorBrush x:Key="Brush.Item.Selected.Background" Color="#D5D5D5"/>
+    <SolidColorBrush x:Key="Brush.Item.Selected.Foreground" Color="#FF292D32"/>
+    
+    <SolidColorBrush x:Key="Brush.Markup.Surface" Color="#383838"/>
+    <SolidColorBrush x:Key="Brush.Markup.Link" Color="#56a8f5"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Default.Background" Color="#454545"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Default.Icon" Color="#b0b0b0"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Success.Background" Color="#36533f"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Success.Icon" Color="#44cf6e"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Failure.Background" Color="#543133"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Failure.Icon" Color="#fb464c"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Warning.Background" Color="#50402f"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Warning.Icon" Color="#e9973f"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Question.Background" Color="#4a465d"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Question.Icon" Color="#9d80d6"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Favorite.Background" Color="#5c4058"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Favorite.Icon" Color="#c94f92"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Note.Background" Color="#2a3e5a"/>
+    <SolidColorBrush x:Key="Brush.Markup.Callout.Note.Icon" Color="#157aff"/>
+    
+    <Color x:Key="Color.Divider">#404040</Color>
+    <Color x:Key="Color.Primary">#D5D5D5</Color>
+    <Color x:Key="Color.Background">#1C1C1C</Color>
 </ResourceDictionary>

@@ -10,7 +10,8 @@
     ResizeMode="NoResize"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterScreen"
-    Icon="/Resources/Images/scribe_logo.ico">
+    Icon="/Resources/Images/scribe_logo.ico"
+    Background="{DynamicResource Brush.Background}">
     
     <Window.Resources>
         <Thickness x:Key="Dimen.ScrollBar.Vertical.OuterMargin">0</Thickness>
@@ -29,7 +30,7 @@
         </Style>
     </Window.Resources>
     
-    <Grid Margin="18 14 18 18">
+    <Grid Margin="18">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -48,6 +49,7 @@
             Width="420"
             BorderBrush="{DynamicResource Brush.Divider}"
             BorderThickness="2"
+            Background="Transparent"
             ScrollViewer.VerticalScrollBarVisibility="Auto"
             ScrollViewer.HorizontalScrollBarVisibility="Auto">
             <ListView.ItemContainerStyle>

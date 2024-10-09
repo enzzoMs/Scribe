@@ -44,18 +44,19 @@
         <Border 
             RenderOptions.EdgeMode="Aliased"
             Padding="14 6"
-            Background="{StaticResource Brush.Item.Selected.Background}"
-            BorderBrush="{StaticResource Brush.Item.Selected.Background}"
+            Background="{DynamicResource Brush.Item.Selected.Background}"
+            BorderBrush="{DynamicResource Brush.Item.Selected.Background}"
             BorderThickness="2">
             <TextBlock
                 Text="{TemplateBinding Content}"
-                Foreground="{StaticResource Brush.Item.Selected.Foreground}"
+                Foreground="{DynamicResource Brush.Item.Selected.Foreground}"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"/>
         </Border>
     </ControlTemplate>
         
     <Style x:Key="Button.Primary.Style" TargetType="Button">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Item.Selected.Background}"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -73,7 +74,7 @@
     </Style>
     
     <Style x:Key="Button.Secondary.Style" TargetType="Button">
-        <Setter Property="Background" Value="#dfdfdf"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Button.Secondary}"/>
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -91,10 +92,10 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#c0c0c0"/>
+                <Setter Property="Background" Value="{DynamicResource Brush.Button.Secondary.Highlight}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Background" Value="#eaeaea"/>
+                <Setter Property="Background" Value="{DynamicResource Brush.Button.Secondary.Disabled}"/>
                 <Setter Property="Foreground" Value="{DynamicResource Brush.BackgroundText}"/>
             </Trigger>
         </Style.Triggers>
@@ -121,6 +122,7 @@
             <Setter Property="FontFamily" Value="{StaticResource Text.Medium}"/>
             <Setter Property="FontSize" Value="{StaticResource Dimen.TextSize.Normal1}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Text.Primary}"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource Brush.Primary}"/>
             <Setter Property="BorderThickness" Value="0 0 0 2"/>
             <Setter Property="Padding" Value="0 0 0 3"/>
             <Setter Property="Template">
@@ -147,6 +149,12 @@
                 </Setter.Value>
             </Setter>
         </Style.Setters>
+    </Style>
+    
+    <Style TargetType="ToolTip">
+        <Setter Property="Background" Value="{DynamicResource Brush.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Divider}"/>
+        <Setter Property="BorderThickness" Value="2"/>
     </Style>
     
     <Style TargetType="MenuItem">
@@ -176,7 +184,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsHighlighted" Value="True">
-                            <Setter Property="Background" TargetName="MenuItemBackground" Value="#dfdfdf"/>
+                            <Setter 
+                                Property="Background" 
+                                TargetName="MenuItemBackground" 
+                                Value="{DynamicResource Brush.MenuItem.Highlight}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -189,7 +200,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
                     <Border 
-                        Background="White" 
+                        Background="{DynamicResource Brush.Background}" 
                         BorderBrush="{DynamicResource Brush.Divider}" 
                         BorderThickness="2">
                         <StackPanel 

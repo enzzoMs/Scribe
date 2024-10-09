@@ -11,9 +11,10 @@
     ShowInTaskbar="False"
     WindowStartupLocation="CenterScreen"
     Icon="/Resources/Images/scribe_logo.ico"
+    Background="{DynamicResource Brush.Background}"
     Name="Root">
     
-    <Grid Margin="18 14 18 18">
+    <Grid Margin="18">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -29,7 +30,7 @@
             Grid.Column="0"
             Grid.ColumnSpan="2"
             BorderBrush="{DynamicResource Brush.Divider}"
-            BorderThickness="1"
+            BorderThickness="2 2 0 2"
             Padding="10 4">
             <TextBlock
                 Width="350"

@@ -501,8 +501,8 @@ Existem ainda dois tipos de modificadores especiais: {cores}[b] e {links}[b].
 	e o {backg}[code] (de {background}[i]):
 	
 	[code]%
-	${texto em vermelho}[foreg=#FF0000]
-	${texto com fundo vermelho}[backg=#FF0000]
+${texto em vermelho}[foreg=#FF0000]
+${texto com fundo vermelho}[backg=#FF0000]
 	%
 	
 	{texto em vermelho}[foreg=#FF0000]

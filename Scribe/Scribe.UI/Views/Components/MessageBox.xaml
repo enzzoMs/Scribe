@@ -11,6 +11,7 @@
     ShowInTaskbar="False"
     WindowStartupLocation="CenterScreen"
     Icon="/Resources/Images/scribe_logo.ico"
+    Background="{DynamicResource Brush.Background}"
     Name="Root">
     
     <Grid>
@@ -26,7 +27,7 @@
 
         <Border
             Grid.RowSpan="3"
-            Background="{StaticResource Brush.Surface.Dark}"/>
+            Background="{StaticResource Brush.Surface}"/>
         <Path
             Grid.Row="0"
             Grid.RowSpan="3"
@@ -34,7 +35,7 @@
             Width="80"
             Height="80"
             Data="{Binding MessageIconPath, ElementName=Root}"
-            Fill="{StaticResource Brush.OnSurface.Dark}"
+            Fill="{StaticResource Brush.OnSurface}"
             Stretch="Uniform"
             Margin="14"/>
         
@@ -47,7 +48,7 @@
             TextAlignment="Center"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Margin="32 10 32 20"/>
+            Margin="32 20 "/>
         <Rectangle
             Grid.Row="1"
             Grid.Column="1"

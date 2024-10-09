@@ -250,7 +250,7 @@
                 <Style TargetType="{x:Type Rectangle}" BasedOn="{StaticResource Style.Divider.Horizontal}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding InPreviewMode}" Value="False">
-                            <Setter Property="Fill" Value="#232323"/>
+                            <Setter Property="Fill" Value="{DynamicResource Brush.Primary}"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -264,7 +264,7 @@
                 <Style TargetType="{x:Type Rectangle}" BasedOn="{StaticResource Style.Divider.Horizontal}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding InPreviewMode}" Value="True">
-                            <Setter Property="Fill" Value="#232323"/>
+                            <Setter Property="Fill" Value="{DynamicResource Brush.Primary}"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

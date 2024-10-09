@@ -17,6 +17,8 @@
         
         <converters:MarkupConverter x:Key="MarkupConverter"/>
         
+        <Color x:Key="SyntaxHighlightingColor"></Color>
+        
         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="LineHeight" Value="20"/>
             <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>
@@ -70,12 +72,17 @@
             <Setter Property="Margin" Value="20 0 12 0"/>
         </Style>
         
+        <Style x:Key="CodeInline.Style" TargetType="Inline">
+            <Setter Property="FontFamily" Value="{StaticResource Text.Monospace}"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Markup.Surface}"/>
+        </Style>
+        
         <Style x:Key="CodeBlock.Text.Style" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="FontFamily" Value="{StaticResource Text.Monospace}"/>
         </Style>
         
         <Style x:Key="CodeBlock.Border.Style" TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource Brush.Markup.Surface}"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Markup.Surface}"/>
             <Setter Property="Padding" Value="14"/>
         </Style>
         
@@ -117,6 +124,7 @@
             <Setter Property="Width" Value="12"/>
             <Setter Property="Height" Value="12"/>
             <Setter Property="Margin" Value="2 0 3 0"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Primary}"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Primary}"/>
             <Setter Property="RenderOptions.EdgeMode" Value="Aliased"/>
@@ -128,85 +136,100 @@
             <Setter Property="Padding" Value="14 14"/>
         </Style>
         
+        <Style x:Key="TableCell.Header.Style" TargetType="Border" BasedOn="{StaticResource TableCell.Style}">
+            <Setter Property="Background" Value="{DynamicResource Brush.Markup.Surface}"/>
+        </Style>
+        
+        <Style x:Key="Link.Style" TargetType="Inline">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Markup.Link}"/>
+        </Style>
+        
+        <Style x:Key="Spoiler.Style" TargetType="Inline">
+            <Setter Property="Background" Value="{DynamicResource Brush.Markup.Surface}"/>
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Markup.Surface}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
         <Style x:Key="Callout.Default.Style" TargetType="Border">
-            <Setter Property="Background" Value="#F1F1F1"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Markup.Callout.Default.Background}"/>
             <Setter Property="Padding" Value="14"/>
             <Style.Resources>
                 <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
                     <Setter Property="Width" Value="17"/>
                     <Setter Property="Height" Value="17"/>
                     <Setter Property="Data" Value="{StaticResource Drawing.Asterisk}"/>
-                    <Setter Property="Fill" Value="DimGray"/>
+                    <Setter Property="Fill" Value="{DynamicResource Brush.Markup.Callout.Default.Icon}"/>
                     <Setter Property="Margin" Value="0 3 13 0"/>
                 </Style>
             </Style.Resources>
         </Style>
         
         <Style x:Key="Callout.Success.Style" TargetType="Border">
-            <Setter Property="Background" Value="#e3f1e3"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Markup.Callout.Success.Background}"/>
             <Setter Property="Padding" Value="14"/>
             <Style.Resources>
                 <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
                     <Setter Property="Width" Value="17"/>
                     <Setter Property="Height" Value="17"/>
                     <Setter Property="Data" Value="{StaticResource Drawing.Callout.Success}"/>
-                    <Setter Property="Fill" Value="DarkGreen"/>
+                    <Setter Property="Fill" Value="{DynamicResource Brush.Markup.Callout.Success.Icon}"/>
                     <Setter Property="Margin" Value="0 5 11 0"/>
                 </Style>
             </Style.Resources>
         </Style>
         
         <Style x:Key="Callout.Failure.Style" TargetType="Border">
-            <Setter Property="Background" Value="#f1e3e3"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Markup.Callout.Failure.Background}"/>
             <Setter Property="Padding" Value="14"/>
             <Style.Resources>
                 <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
                     <Setter Property="Data" Value="{StaticResource Drawing.Callout.Failure}"/>
-                    <Setter Property="Fill" Value="DarkRed"/>
+                    <Setter Property="Fill" Value="{DynamicResource Brush.Markup.Callout.Failure.Icon}"/>
                 </Style>
             </Style.Resources>
         </Style>
         
         <Style x:Key="Callout.Warning.Style" TargetType="Border">
-            <Setter Property="Background" Value="#fff5e3"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Markup.Callout.Warning.Background}"/>
             <Setter Property="Padding" Value="14"/>
             <Style.Resources>
                 <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
                     <Setter Property="Data" Value="{StaticResource Drawing.Callout.Warning}"/>
-                    <Setter Property="Fill" Value="#FFCF8600"/>
+                    <Setter Property="Fill" Value="{DynamicResource Brush.Markup.Callout.Warning.Icon}"/>
                 </Style>
             </Style.Resources>
         </Style>
         
         <Style x:Key="Callout.Question.Style" TargetType="Border">
-            <Setter Property="Background" Value="#f1e3f1"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Markup.Callout.Question.Background}"/>
             <Setter Property="Padding" Value="14"/>
             <Style.Resources>
                 <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
                     <Setter Property="Data" Value="{StaticResource Drawing.Callout.Question}"/>
-                    <Setter Property="Fill" Value="Purple"/>
+                    <Setter Property="Fill" Value="{DynamicResource Brush.Markup.Callout.Question.Icon}"/>
                 </Style>
             </Style.Resources>
         </Style>
         
         <Style x:Key="Callout.Favorite.Style" TargetType="Border">
-            <Setter Property="Background" Value="#ffeff2"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Markup.Callout.Favorite.Background}"/>
             <Setter Property="Padding" Value="14"/>
             <Style.Resources>
                 <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
                     <Setter Property="Data" Value="{StaticResource Drawing.Callout.Favorite}"/>
-                    <Setter Property="Fill" Value="DeepPink"/>
+                    <Setter Property="Fill" Value="{DynamicResource Brush.Markup.Callout.Favorite.Icon}"/>
                 </Style>
             </Style.Resources>
         </Style>
         
         <Style x:Key="Callout.Note.Style" TargetType="Border">
-            <Setter Property="Background" Value="#ecf2fd"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Markup.Callout.Note.Background}"/>
             <Setter Property="Padding" Value="14"/>
             <Style.Resources>
                 <Style TargetType="Path" BasedOn="{StaticResource Callout.Icon.BaseStyle}">
                     <Setter Property="Data" Value="{StaticResource Drawing.Callout.Note}"/>
-                    <Setter Property="Fill" Value="Blue"/>
+                    <Setter Property="Fill" Value="{DynamicResource Brush.Markup.Callout.Note.Icon}"/>
                 </Style>
             </Style.Resources>
         </Style>
@@ -214,12 +237,12 @@
         <Style TargetType="{x:Type avalonEdit:TextArea}">
             <Setter Property="SelectionCornerRadius" Value="0" />
         </Style>
-
     </UserControl.Resources>
-    
     <Grid>
         <avalonEdit:TextEditor
             Name="EditorTextBox"
+            Background="{Binding EditorBackground, ElementName=Root}"
+            Foreground="{DynamicResource Brush.Text.Primary}"
             FontFamily="{StaticResource Text.Monospace}"
             FontWeight="Medium"
             FontSize="{StaticResource Dimen.TextSize.Normal1}"
@@ -232,6 +255,7 @@
             Name="MarkupViewerPanel"
             BorderThickness="0"
             Margin="20 0 0 0"
+            Background="{Binding EditorBackground, ElementName=Root}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.VerticalScrollBarVisibility="Visible"
             VirtualizingPanel.ScrollUnit="Pixel">

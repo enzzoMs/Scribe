@@ -10,8 +10,7 @@
      mc:Ignorable="d"
      d:DesignHeight="800"
      d:DesignWidth="300"
-     d:DataContext="{d:DesignInstance navSection:NavigationViewModel}"
-     Background="{DynamicResource Brush.Surface}">
+     d:DataContext="{d:DesignInstance navSection:NavigationViewModel}">
     
     <UserControl.Resources>
         <Style x:Key="ConfigItemStyle" TargetType="components:IconButton">
