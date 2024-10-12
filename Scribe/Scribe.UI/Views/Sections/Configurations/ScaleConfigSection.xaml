@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:sectionConfigurations="clr-namespace:Scribe.UI.Views.Sections.Configurations"
     xmlns:componentes="clr-namespace:Scribe.UI.Views.Components"
+    xmlns:model="clr-namespace:Scribe.Data.Model;assembly=Scribe.Data"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance sectionConfigurations:ConfigurationsViewModel}">
     
@@ -33,8 +34,8 @@
             Grid.Column="2"
             CurrentValue="{Binding CurrentScale, Mode=TwoWay}"
             IncrementStep="0.05"
-            MinValue="0.7"
-            MaxValue="1.5"
+            MinValue="{x:Static model:AppConfigurations.MinScale}"
+            MaxValue="{x:Static model:AppConfigurations.MaxScale}"
             TextSize="{StaticResource Dimen.TextSize.Normal2}"
             ShowDecimalPlaces="{StaticResource True}"/>
     </Grid>

@@ -14,7 +14,7 @@ public class FolderDetailsViewModel : BaseViewModel
     private readonly IRepository<Folder> _foldersRepository;
     private readonly IRepository<Document> _documentsRepository;
 
-    private Folder? _folder;
+    private Folder? _selectedFolder;
 
     private bool _inEditMode;
     
@@ -46,12 +46,12 @@ public class FolderDetailsViewModel : BaseViewModel
     
     public static DocumentFileFormats DocumentImportFileFormat => DocumentFileFormats.Json;
     
-    public Folder? Folder
+    public Folder? SelectedFolder
     {
-        get => _folder;
+        get => _selectedFolder;
         set
         {
-            _folder = value;
+            _selectedFolder = value;
             InEditMode = false;
             
             RaisePropertyChanged();
@@ -61,7 +61,7 @@ public class FolderDetailsViewModel : BaseViewModel
     
     public int FolderNavigationPosition
     {
-        get => _folder?.NavigationIndex + 1 ?? 1;
+        get => _selectedFolder?.NavigationIndex + 1 ?? 1;
         set => UpdateFolderPosition(value - 1);
     }
 
@@ -85,10 +85,10 @@ public class FolderDetailsViewModel : BaseViewModel
     
     public async void ExportFolder(string directoryPath)
     {
-        if (_folder == null) return;
+        if (_selectedFolder == null) return;
         try
         {
-            await _foldersRepository.ExportToFile(directoryPath, _folder);
+            await _foldersRepository.ExportToFile(directoryPath, _selectedFolder);
         }
         catch (Exception e) when (e is DirectoryNotFoundException or UnauthorizedAccessException)
         {
@@ -98,7 +98,7 @@ public class FolderDetailsViewModel : BaseViewModel
     
     private async void ImportDocuments(IEnumerable<string> documentsFilePaths)
     {
-        if (_folder == null) return;
+        if (_selectedFolder == null) return;
 
         var newDocuments = new List<Document>();
         
@@ -115,7 +115,7 @@ public class FolderDetailsViewModel : BaseViewModel
                 RaiseViewModelError(new DocumentImportFileFormatError(documentPath));
                 continue;
             }
-            catch (Exception e) when (e is FileNotFoundException or UnauthorizedAccessException)
+            catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException)
             {
                 RaiseViewModelError(new DocumentImportFilePathError(documentPath));
                 continue;
@@ -123,14 +123,14 @@ public class FolderDetailsViewModel : BaseViewModel
 
             // Adding the folder ID to the imported document
             var newDocument = new Document(
-                _folder.Id, importedDocument.CreatedTimestamp, importedDocument.LastModifiedTimestamp, importedDocument.Name
+                _selectedFolder.Id, importedDocument.CreatedTimestamp, importedDocument.LastModifiedTimestamp, importedDocument.Name
             )
             {
                 Content = importedDocument.Content,
                 Tags = importedDocument.Tags
                     .Select(importedTag => importedTag.Name)
                     .Distinct()
-                    .Select(tagName => new Tag(tagName, _folder.Id))
+                    .Select(tagName => new Tag(tagName, _selectedFolder.Id))
                     .ToList()
             };
             
@@ -152,32 +152,32 @@ public class FolderDetailsViewModel : BaseViewModel
     
     private async void UpdateFolderName(string newFolderName)
     {
-        if (_folder == null || _folder.Name == newFolderName) return;
+        if (_selectedFolder == null || _selectedFolder.Name == newFolderName) return;
 
-        _folder.Name = newFolderName.Trim();
-        await _foldersRepository.Update(_folder);
+        _selectedFolder.Name = newFolderName.Trim();
+        await _foldersRepository.Update(_selectedFolder);
         
-        RaisePropertyChanged(nameof(Folder));
-        _eventAggregator.Publish(new FolderUpdatedEvent(_folder.Id));
+        RaisePropertyChanged(nameof(SelectedFolder));
+        _eventAggregator.Publish(new FolderUpdatedEvent(_selectedFolder.Id));
     }
 
     private void UpdateFolderPosition(int newIndex)
     {
-        if (_folder == null || _folder.NavigationIndex == newIndex) return;
+        if (_selectedFolder == null || _selectedFolder.NavigationIndex == newIndex) return;
 
-        var oldIndex = _folder.NavigationIndex;
+        var oldIndex = _selectedFolder.NavigationIndex;
         
-        _eventAggregator.Publish(new FolderPositionUpdatedEvent(_folder.Id, oldIndex, newIndex));
+        _eventAggregator.Publish(new FolderPositionUpdatedEvent(_selectedFolder.Id, oldIndex, newIndex));
     }
 
     private async void DeleteFolder()
     {
-        if (_folder == null) return;
+        if (_selectedFolder == null) return;
         
-        await _foldersRepository.Delete(_folder);
+        await _foldersRepository.Delete(_selectedFolder);
         
-        _eventAggregator.Publish(new FolderDeletedEvent(_folder));
+        _eventAggregator.Publish(new FolderDeletedEvent(_selectedFolder));
     }
 
-    private void OnFolderSelected(FolderSelectedEvent folderEvent) => Folder = folderEvent.Folder;
+    private void OnFolderSelected(FolderSelectedEvent folderEvent) => SelectedFolder = folderEvent.Folder;
 }

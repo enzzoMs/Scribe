@@ -5,29 +5,28 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:navSection="clr-namespace:Scribe.UI.Views.Sections.Navigation"
+    xmlns:model="clr-namespace:Scribe.Data.Model;assembly=Scribe.Data"
     mc:Ignorable="d"
     d:DesignHeight="800" 
     d:DesignWidth="300"
-    d:DataContext="{d:DesignInstance navSection:NavigationViewModel}"
-    Name="Root">
+    d:DataContext="{d:DesignInstance navSection:NavigationViewModel}">
     
     <UserControl.Resources>
-        <ControlTemplate x:Key="SelectedItemTemplate">
+        <ControlTemplate x:Key="SelectedItemTemplate" d:DataContext="{d:DesignInstance model:Folder}">
             <Border 
-                DataContext="{Binding DataContext, ElementName=Root}"
                 Padding="12 6" 
                 CornerRadius="8" 
                 Background="{DynamicResource Brush.Item.Selected.Background}">
                 <TextBlock
-                    Text="{Binding SelectedFolder.Name[0], FallbackValue=#}"
-                    ToolTip="{Binding SelectedFolder.Name, FallbackValue=#}"
+                    Text="{Binding Name[0]}"
+                    ToolTip="{Binding Name}"
                     Foreground="{DynamicResource Brush.Item.Selected.Foreground}"
                     FontWeight="SemiBold"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"/>
             </Border>
         </ControlTemplate>
-        <ControlTemplate x:Key="UnselectedItemTemplate">
+        <ControlTemplate x:Key="UnselectedItemTemplate" d:DataContext="{d:DesignInstance model:Folder}">
             <Border 
                 ToolTip="{Binding Name}"
                 Padding="12 6" 

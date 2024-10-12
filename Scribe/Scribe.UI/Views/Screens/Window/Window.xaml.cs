@@ -18,11 +18,16 @@ public partial class Window : System.Windows.Window
 
     private void OnKeyDown(object sender, KeyEventArgs e)
     {
+        // Preventing focus when system key is pressed
         if (e.Key == Key.System)
         {
             e.Handled = true;
         }
     }
 
-    private void OnActivated(object? sender, EventArgs e) => FocusableRectangle.Focus();
+    private void OnActivated(object? sender, EventArgs e)
+    {
+        // A workaround to avoid focus on a control when the window is activated
+        FocusableRectangle.Focus();
+    }
 }

@@ -13,18 +13,16 @@
     <ContentControl>
         <ContentControl.Style>
             <Style TargetType="ContentControl">
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <expandedNavSection:ExpandedNavSection/>
+                    </Setter.Value>
+                </Setter>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsNavigationCollapsed}" Value="True">
                         <Setter Property="Content">
                             <Setter.Value>
                                 <collapsedNavSection:CollapsedNavSection/>
-                            </Setter.Value>
-                        </Setter>
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding IsNavigationCollapsed}" Value="False">
-                        <Setter Property="Content">
-                            <Setter.Value>
-                                <expandedNavSection:ExpandedNavSection/>
                             </Setter.Value>
                         </Setter>
                     </DataTrigger>

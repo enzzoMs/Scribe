@@ -9,8 +9,7 @@
     xmlns:models="clr-namespace:Scribe.Data.Model;assembly=Scribe.Data"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance editorSection:EditorViewModel}"
-    d:DesignHeight="800" 
-    d:DesignWidth="800"
+    d:DesignWidth="500"
     Name="Root">
     
     <UserControl.Resources>
@@ -45,14 +44,13 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <StackPanel 
-                            Orientation="Horizontal"
-                            Background="White">
+                        <StackPanel Orientation="Horizontal">
                             <TextBox 
                                 Name="TagNameBox"
                                 MinWidth="125"
                                 FontSize="13"
-                                Margin="12 12 8 12"
+                                Background="Transparent"
+                                Margin="8"
                                 VerticalAlignment="Center">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -68,8 +66,8 @@
                             </TextBox>
                             <components:IconButton
                                 Click="OnConfirmTagNameClicked"
-                                Width="27"
-                                Height="27"
+                                Width="30"
+                                Height="30"
                                 IconGeometry="{StaticResource Drawing.Confirm}"
                                 IconBrush="{DynamicResource Brush.Icon}"
                                 Command="{Binding AddTagCommand}"

@@ -12,25 +12,6 @@ public class TagsViewModelTests
     public TagsViewModelTests() => _tagsViewModel = new TagsViewModel(_eventAggregator);
 
     [Fact]
-    public void FolderSelectedEvent_Sets_TagItems()
-    {
-        var folder = new Folder("", 0);
-        var tagA = new Tag("TagA", 0);
-        var tagB = new Tag("TagB", 0);
-        var tagC = new Tag("TagC", 0);
-        folder.Tags.Add(tagA);
-        folder.Tags.Add(tagB);
-        folder.Tags.Add(tagC);
-        
-        _eventAggregator.Publish(new FolderSelectedEvent(folder));
-
-        Assert.Equal(3, _tagsViewModel.Tags!.Count);
-        Assert.Equal("TagA", _tagsViewModel.Tags[0].Name);
-        Assert.Equal("TagB", _tagsViewModel.Tags[1].Name);
-        Assert.Equal("TagC", _tagsViewModel.Tags[2].Name);
-    }
-
-    [Fact]
     public void ToggleTagSelectionCommand_Toggles_TagSelection()
     {
         var folder = new Folder("", 0);
@@ -63,14 +44,34 @@ public class TagsViewModelTests
         Assert.Equal(tag.Name, tagSelectionEvent.TagName);
         Assert.True(tagSelectionEvent.IsSelected);
     }
+    
+    [Fact]
+    public void FolderSelectedEvent_Sets_TagItems()
+    {
+        var folder = new Folder("", 0);
+        var tagA = new Tag("TagA", 0);
+        var tagB = new Tag("TagB", 0);
+        var tagC = new Tag("TagC", 0);
+        folder.Tags.Add(tagA);
+        folder.Tags.Add(tagB);
+        folder.Tags.Add(tagC);
+        
+        _eventAggregator.Publish(new FolderSelectedEvent(folder));
+
+        Assert.NotNull(_tagsViewModel.Tags);
+        Assert.Equal(3, _tagsViewModel.Tags.Count);
+        Assert.Equal("TagA", _tagsViewModel.Tags[0].Name);
+        Assert.Equal("TagB", _tagsViewModel.Tags[1].Name);
+        Assert.Equal("TagC", _tagsViewModel.Tags[2].Name);
+    }
 
     [Fact]
     public void TagAddedEvent_AddsTagItem()
     {
         var folder = new Folder("", 0);
-        var tag = new Tag("Tag", 0);
-        
         _eventAggregator.Publish(new FolderSelectedEvent(folder));
+        
+        var tag = new Tag("Tag", 0);
         _eventAggregator.Publish(new TagAddedEvent(tag));
 
         Assert.Single(_tagsViewModel.Tags!);
@@ -81,10 +82,9 @@ public class TagsViewModelTests
     public void TagAddedEvent_IgnoresTag_IfAlreadyAdded()
     {
         var folder = new Folder("", 0);
-        var tag = new Tag("Tag", 0);
-        
         _eventAggregator.Publish(new FolderSelectedEvent(folder));
-        
+
+        var tag = new Tag("Tag", 0);
         _eventAggregator.Publish(new TagAddedEvent(tag));
         _eventAggregator.Publish(new TagAddedEvent(tag));
 
@@ -96,9 +96,9 @@ public class TagsViewModelTests
     public void TagAddedEvent_IgnoresTag_IfItBelongsToAnotherFolder()
     {
         var folder = new Folder("", 0);
-        var tag = new Tag("Tag", folderId: 1);
-        
         _eventAggregator.Publish(new FolderSelectedEvent(folder));
+
+        var tag = new Tag("Tag", folderId: 1);
         _eventAggregator.Publish(new TagAddedEvent(tag));
 
         Assert.Empty(_tagsViewModel.Tags!);
@@ -127,7 +127,6 @@ public class TagsViewModelTests
         folder.Tags.Add(tag);
         
         _eventAggregator.Publish(new FolderSelectedEvent(folder));
-        folder.Tags.Remove(tag);
         
         _eventAggregator.Publish(new TagRemovedEvent(new Tag("Tag", folderId: 1)));
 
@@ -169,5 +168,21 @@ public class TagsViewModelTests
         Assert.NotNull(tagSelectionEvent);
         Assert.Equal(tag.Name, tagSelectionEvent.TagName);
         Assert.False(tagSelectionEvent.IsSelected);
+    }
+
+    [Fact]
+    public void TagSelectionEvent_Updates_TagSelectionState()
+    {
+        var folder = new Folder("", 0);
+        var tag = new Tag("Tag", 0);
+        folder.Tags.Add(tag);
+        
+        _eventAggregator.Publish(new FolderSelectedEvent(folder));
+        
+        _eventAggregator.Publish(new TagSelectionChangedEvent(tag.Name, IsSelected: true));
+        Assert.True(_tagsViewModel.Tags![0].IsSelected);
+        
+        _eventAggregator.Publish(new TagSelectionChangedEvent(tag.Name, IsSelected: false));
+        Assert.False(_tagsViewModel.Tags![0].IsSelected);
     }
 }

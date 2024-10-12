@@ -140,10 +140,9 @@ public class NavigationViewModel : BaseViewModel
     {
         var folderName = Application.Current?.TryFindResource("String.Folders.DefaultName") as string ?? "New Folder";
         
-        var newFolder = (await _foldersRepository.Add(new Folder(
-            name: folderName,
-            navigationIndex: _allFolders.Count
-        ))).First();
+        var newFolder = (await _foldersRepository.Add(
+            new Folder(name: folderName, navigationIndex: _allFolders.Count)
+        )).First();
         
         _allFolders.Add(newFolder);
         ShowAllFolders();
@@ -155,7 +154,9 @@ public class NavigationViewModel : BaseViewModel
         
         _allFolders.Remove(deletedFolder);
 
-        var foldersAfterDeletedFolder = _allFolders.Where(f => f.NavigationIndex > deletedFolder.NavigationIndex).ToArray();
+        var foldersAfterDeletedFolder = _allFolders.Where(
+            folder => folder.NavigationIndex > deletedFolder.NavigationIndex
+        ).ToArray();
         
         foreach (var folder in foldersAfterDeletedFolder)
         {

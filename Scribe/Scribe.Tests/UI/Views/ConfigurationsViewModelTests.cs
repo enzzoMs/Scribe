@@ -8,108 +8,123 @@ namespace Scribe.Tests.UI.Views;
 
 public class ConfigurationsViewModelTests
 {
+    private readonly ConfigurationsViewModel _configurationsViewModel;
     private readonly IConfigurationsRepository _configurationsRepositoryMock = Substitute.For<IConfigurationsRepository>();
     private readonly IResourceManager _resourceManagerMock = Substitute.For<IResourceManager>();
-    private readonly AppConfigurations _initialConfiguration = new(ThemeConfiguration.Light, LanguageConfiguration.EnUs, 1.0);
+    private readonly AppConfigurations _defaultConfiguration = new(ThemeConfiguration.Light, LanguageConfiguration.EnUs, 1.0);
 
-    public ConfigurationsViewModelTests() 
-        => _configurationsRepositoryMock.GetAllConfigurations().Returns(_initialConfiguration);
+    public ConfigurationsViewModelTests()
+    {
+        _configurationsRepositoryMock.GetAllConfigurations().Returns(_defaultConfiguration);
+
+        _configurationsViewModel = new ConfigurationsViewModel(_configurationsRepositoryMock, _resourceManagerMock);
+    }
     
     [Fact]
     public void InitializesWithCurrentConfigurations()
     {
-        var configurationsViewModel = new ConfigurationsViewModel(_configurationsRepositoryMock, _resourceManagerMock);
-
         _configurationsRepositoryMock.Received(1).GetAllConfigurations();
-        Assert.Equivalent(_initialConfiguration, configurationsViewModel.CurrentConfiguration);
-        Assert.Equal(_initialConfiguration.Scale, configurationsViewModel.CurrentScale);
-    }
-
-    [Theory]
-    [InlineData(LanguageConfiguration.EnUs)]
-    [InlineData(LanguageConfiguration.PtBr)]
-    public void SelectLangCommand_UpdatesConfiguration(LanguageConfiguration newLangConfig)
-    {
-        foreach (var config in Enum.GetValues<LanguageConfiguration>())
-        {
-            _configurationsRepositoryMock.SaveConfiguration(config).Returns( _initialConfiguration with { Language = config });
-        }
-        
-        var configurationsViewModel = new ConfigurationsViewModel(_configurationsRepositoryMock, _resourceManagerMock);
-        
-        configurationsViewModel.SelectLanguageCommand.Execute(newLangConfig);
-
-        Assert.Equal(configurationsViewModel.CurrentConfiguration.Language, newLangConfig);
+        Assert.Equivalent(_defaultConfiguration, _configurationsViewModel.CurrentConfiguration);
+        Assert.Equal(_defaultConfiguration.Scale, _configurationsViewModel.CurrentScale);
     }
     
-    [Theory]
-    [InlineData(ThemeConfiguration.Light)]
-    [InlineData(ThemeConfiguration.Dark)]
-    public void SelectThemeCommand_UpdatesConfiguration(ThemeConfiguration newThemeConfig)
+    [Fact]
+    public void SelectLangCommand_UpdatesConfiguration()
     {
-        foreach (var config in Enum.GetValues<ThemeConfiguration>())
+        var langConfigs = new[] { LanguageConfiguration.PtBr, LanguageConfiguration.EnUs };
+
+        foreach (var newLangConfig in langConfigs)
         {
-            _configurationsRepositoryMock.SaveConfiguration(config).Returns( _initialConfiguration with { Theme = config });
+            _configurationsViewModel.SelectLanguageCommand.Execute(newLangConfig);
+
+            Assert.Equal(_configurationsViewModel.CurrentConfiguration.Language, newLangConfig);
         }
         
-        var configurationsViewModel = new ConfigurationsViewModel(_configurationsRepositoryMock, _resourceManagerMock);
-        
-        configurationsViewModel.SelectThemeCommand.Execute(newThemeConfig);
+        _configurationsRepositoryMock.Received(2).SaveConfiguration(Arg.Any<AppConfigurations>());
+    }
+    
+    [Fact]
+    public void SelectThemeCommand_UpdatesConfiguration()
+    {
+        var themeConfigs = new[] { ThemeConfiguration.Dark, ThemeConfiguration.Light };
 
-        Assert.Equal(configurationsViewModel.CurrentConfiguration.Theme, newThemeConfig);
+        foreach (var newThemeConfig in themeConfigs)
+        {
+            _configurationsViewModel.SelectThemeCommand.Execute(newThemeConfig);
+
+            Assert.Equal(_configurationsViewModel.CurrentConfiguration.Theme, newThemeConfig);
+        }
+        
+        _configurationsRepositoryMock.Received(2).SaveConfiguration(Arg.Any<AppConfigurations>());
     }
     
     [Theory]
     [InlineData(1.5)]
     [InlineData(1.05)]
-    [InlineData(0.99999995)]
-    [InlineData(0.05)]
+    [InlineData(0.95)]
+    [InlineData(0.7)]
     public void ScaleSetter_UpdatesConfiguration(double newScale)
     {
-        _configurationsRepositoryMock.SaveConfiguration(newScale).Returns( _initialConfiguration with { Scale = newScale });
-        
-        var configurationsViewModel = new ConfigurationsViewModel(_configurationsRepositoryMock, _resourceManagerMock)
-        {
-            CurrentScale = newScale
-        };
-
-        Assert.Equal(configurationsViewModel.CurrentScale, newScale);
+        _configurationsViewModel.CurrentScale = newScale;
+            
+        _configurationsRepositoryMock.Received(1).SaveConfiguration(Arg.Any<AppConfigurations>());
+        Assert.Equal(_configurationsViewModel.CurrentScale, newScale);
     }
 
     [Fact]
-    public void SelectLangCommand_Calls_UpdateResource()
+    public void SelectLangCommand_UpdatesResource()
     {
-        const LanguageConfiguration newLangConfig = LanguageConfiguration.PtBr;
-        
-        var configurationsViewModel = new ConfigurationsViewModel(_configurationsRepositoryMock, _resourceManagerMock);
+        var langConfigs = new[] { LanguageConfiguration.PtBr, LanguageConfiguration.EnUs };
 
-        configurationsViewModel.SelectLanguageCommand.Execute(newLangConfig);
-        
-        _resourceManagerMock.Received(1).UpdateLanguageResource(newLangConfig);
+        foreach (var newLangConfig in langConfigs)
+        {
+            _configurationsViewModel.SelectLanguageCommand.Execute(newLangConfig);
+            _resourceManagerMock.Received(1).UpdateLanguageResource(newLangConfig);
+        }
     }
     
     [Fact]
-    public void SelectThemeCommand_Calls_UpdateResource()
+    public void SelectThemeCommand_UpdatesResource()
     {
-        const ThemeConfiguration newThemeConfig = ThemeConfiguration.Dark;
-        
-        var configurationsViewModel = new ConfigurationsViewModel(_configurationsRepositoryMock, _resourceManagerMock);
+        var themeConfigs = new[] { ThemeConfiguration.Dark, ThemeConfiguration.Light };
 
-        configurationsViewModel.SelectThemeCommand.Execute(newThemeConfig);
+        foreach (var newThemeConfig in themeConfigs)
+        {
+            _configurationsViewModel.SelectThemeCommand.Execute(newThemeConfig);
         
-        _resourceManagerMock.Received(1).UpdateThemeResource(newThemeConfig);
+            _resourceManagerMock.Received(1).UpdateThemeResource(newThemeConfig);
+        }
     }
     
-    [Fact]
-    public void ScaleSetter_Calls_UpdateResource()
+    [Theory]
+    [InlineData(1.5)]
+    [InlineData(1.05)]
+    [InlineData(0.95)]
+    [InlineData(0.7)]
+    public void ScaleSetter_UpdatesResource(double newScale)
     {
-        const double newScale = 1.5;
-        
-        new ConfigurationsViewModel(_configurationsRepositoryMock, _resourceManagerMock)
-        {
-            CurrentScale = newScale
-        };
+        _configurationsViewModel.CurrentScale = newScale;
 
         _resourceManagerMock.Received(1).UpdateDimensionsResource(newScale);
+    }
+
+    [Fact]
+    public void UpdatingAnyConfig_RaisesPropertyChanged_ForCurrentConfig()
+    {
+        var propertyChangedCount = 0;
+
+        _configurationsViewModel.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName is nameof(_configurationsViewModel.CurrentConfiguration))
+            {
+                propertyChangedCount++;
+            }
+        };
+
+        _configurationsViewModel.SelectLanguageCommand.Execute(LanguageConfiguration.PtBr);
+        _configurationsViewModel.SelectThemeCommand.Execute(ThemeConfiguration.Dark);
+        _configurationsViewModel.CurrentScale = 1.5;
+        
+        Assert.Equal(3, propertyChangedCount);
     }
 }

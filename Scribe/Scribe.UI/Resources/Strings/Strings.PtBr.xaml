@@ -88,6 +88,7 @@
     <sys:String x:Key="String.Error.ImportPathError" xml:space="preserve">Erro ao importar documento &quot;{0}&quot;!&#13;(Verifique se o diretório ou arquivo existe e você tem privilégios de acesso)</sys:String>
     <sys:String x:Key="String.Error.ImportFileFormatError" xml:space="preserve">Erro ao importar documento &quot;{0}&quot; devido ao formato inválido!&#13;(Verifique se o arquivo não foi modificado ou corrompido)</sys:String>
     <sys:String x:Key="String.Error.Tutorial">Não foi possível carregar o tutorial no idioma selecionado.</sys:String>
+    <sys:String x:Key="String.Error.Database" xml:space="preserve">Não foi possível abrir o banco de dados!&#13;(Verifique que o banco de dados se encontra no caminho&#13;&quot;./Database/scribe_database.db&quot;)</sys:String>
 
     <sys:String x:Key="String.ClosableTabControl.Close.Tooltip">Fechar Aba</sys:String>
 

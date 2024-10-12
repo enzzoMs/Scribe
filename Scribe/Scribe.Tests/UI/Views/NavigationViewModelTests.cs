@@ -43,7 +43,7 @@ public class NavigationViewModelTests
     }
 
     [Fact]
-    public void LoadedFoldersAreSortedByNavIndex()
+    public void LoadedFolders_Are_SortedByNavIndex()
     {
         List<Folder> folders = [
             new Folder("FolderIndex10", navigationIndex: 10), 
@@ -62,7 +62,9 @@ public class NavigationViewModelTests
     public void SearchFoldersFilter_Setter_FiltersFolders()
     {
         List<Folder> folders = [
-            new Folder("No", 0), new Folder("No", 1), new Folder("Yes", 2)
+            new Folder("No", 0), 
+            new Folder("No", 1), 
+            new Folder("Yes", 2)
         ];
         
         _navigationViewModel.LoadFolders(folders);
@@ -74,15 +76,17 @@ public class NavigationViewModelTests
     }
 
     [Fact]
-    public void FolderSelectionRaisesEvent()
+    public void FolderSelection_Raises_FolderSelectedEvent()
     {
-        var folderEventHandled = false;
+        FolderSelectedEvent? folderEvent = null;
         
-        _eventAggregator.Subscribe<FolderSelectedEvent>(this, _ => folderEventHandled = true);
+        _eventAggregator.Subscribe<FolderSelectedEvent>(this, e => folderEvent = e);
 
-        _navigationViewModel.SelectedFolder = new Folder("", 0);
-        
-        Assert.True(folderEventHandled);
+        var selectedFolder = new Folder("", 0);
+        _navigationViewModel.SelectedFolder = selectedFolder;
+
+        Assert.NotNull(folderEvent);
+        Assert.Equal(selectedFolder, folderEvent.Folder);
     }
 
     [Fact]
@@ -91,8 +95,10 @@ public class NavigationViewModelTests
         _navigationViewModel.IsNavigationCollapsed = false;
         
         _navigationViewModel.CollapseNavigationCommand.Execute(true);
-        
         Assert.True(_navigationViewModel.IsNavigationCollapsed);
+        
+        _navigationViewModel.CollapseNavigationCommand.Execute(false);
+        Assert.False(_navigationViewModel.IsNavigationCollapsed);
     }
 
     [Fact]
@@ -108,15 +114,36 @@ public class NavigationViewModelTests
         Assert.Single(_navigationViewModel.CurrentFolders);
         Assert.Equal(newFolder, _navigationViewModel.CurrentFolders[0]);
     }
+    
+    [Fact]
+    public void CreateFolderCommand_ShowsAllFolders()
+    {
+        List<Folder> folders = [
+            new Folder("No", navigationIndex: 0), 
+            new Folder("No", navigationIndex: 1), 
+            new Folder("Yes", navigationIndex: 2)
+        ];
+        
+        _navigationViewModel.LoadFolders(folders);
+        _navigationViewModel.DelayFoldersSearch = false;
+        _navigationViewModel.SearchFoldersFilter = "Yes";
+        
+        var newFolder = new Folder("NewFolder", 0);
+        
+        _folderRepositoryMock.Add(Arg.Any<Folder>()).Returns([newFolder]);
+        _navigationViewModel.CreateFolderCommand.Execute(null);
+
+        Assert.Empty(_navigationViewModel.SearchFoldersFilter);
+        Assert.Equal(4, _navigationViewModel.CurrentFolders.Count);
+    }
 
     [Fact]
     public void FolderDeletedEvent_RemovesFolder()
     {
         List<Folder> folders = [new Folder("", 0), new Folder("", 1)];
-        var deletedFolder = folders[0];
-        
         _navigationViewModel.LoadFolders(folders);
         
+        var deletedFolder = folders[0];
         _eventAggregator.Publish(new FolderDeletedEvent(deletedFolder));
 
         Assert.Single(_navigationViewModel.CurrentFolders);
@@ -131,13 +158,13 @@ public class NavigationViewModelTests
             new Folder("", navigationIndex: 1), 
             new Folder("", navigationIndex: 2)
         ];
-        var deletedFolder = folders[0];
-        
         _navigationViewModel.LoadFolders(folders);
         
+        var deletedFolder = folders[0];
+        var remainingFolders = folders[1..];
         _eventAggregator.Publish(new FolderDeletedEvent(deletedFolder));
 
-        _folderRepositoryMock.Received(1).Update(folders.Skip(1).ToArray());
+        _folderRepositoryMock.Received(1).Update(remainingFolders.ToArray());
         Assert.Equal(0, _navigationViewModel.CurrentFolders[0].NavigationIndex);
         Assert.Equal(1, _navigationViewModel.CurrentFolders[1].NavigationIndex);
     }
@@ -165,7 +192,7 @@ public class NavigationViewModelTests
     }
     
     [Fact]
-    public void UpdatedEventForSelectedFolder_RaisesPropertyChanged()
+    public void UpdatedEvent_ForSelectedFolder_RaisesPropertyChanged()
     {
         var folder = new Folder("", 0);
 
@@ -174,19 +201,52 @@ public class NavigationViewModelTests
         _navigationViewModel.LoadFolders([folder]);
         _navigationViewModel.SelectedFolder = folder;
 
-        _navigationViewModel.PropertyChanged += (_, _) => eventRaised = true;
+        _navigationViewModel.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(_navigationViewModel.SelectedFolder))
+            {
+                eventRaised = true;
+            }
+        };
         _eventAggregator.Publish(new FolderUpdatedEvent(folder.Id));
         
         Assert.True(eventRaised);
     }
+    
+    [Fact]
+    public void FolderDeletedOrUpdatedEvent_ShowsAllFolders()
+    {
+        List<Folder> folders = [
+            new Folder("Yes", navigationIndex: 0), 
+            new Folder("No", navigationIndex: 1), 
+            new Folder("No", navigationIndex: 2)
+        ];
+        
+        _navigationViewModel.LoadFolders(folders);
+        _navigationViewModel.DelayFoldersSearch = false;
+        _navigationViewModel.SearchFoldersFilter = "Yes";
+        
+        _eventAggregator.Publish(new FolderDeletedEvent(folders[0]));
 
+        Assert.Empty(_navigationViewModel.SearchFoldersFilter);
+        Assert.Equal(2, _navigationViewModel.CurrentFolders.Count);
+        
+        _navigationViewModel.DelayFoldersSearch = false;
+        _navigationViewModel.SearchFoldersFilter = "Yes";
+        
+        _eventAggregator.Publish(new FolderPositionUpdatedEvent(0, 0, 1));
+
+        Assert.Empty(_navigationViewModel.SearchFoldersFilter);
+        Assert.Equal(2, _navigationViewModel.CurrentFolders.Count);
+    }
+    
     [Fact]
     public void TagAddedEvent_UpdatesRelatedFolder()
     {
         var folder = new Folder("", navigationIndex: 0);
-        var newTag = new Tag("", folderId: 0);
-        
         _navigationViewModel.LoadFolders([folder]);
+
+        var newTag = new Tag("", folderId: 0);
         _eventAggregator.Publish(new TagAddedEvent(newTag));
 
         Assert.Single(folder.Tags);
@@ -197,9 +257,9 @@ public class NavigationViewModelTests
     public void TagAddedEvent_AddsTagToRepository()
     {
         var folder = new Folder("", navigationIndex: 0);
-        var newTag = new Tag("", folderId: 0);
-        
         _navigationViewModel.LoadFolders([folder]);
+
+        var newTag = new Tag("", folderId: 0);
         _eventAggregator.Publish(new TagAddedEvent(newTag));
 
         _tagRepositoryMock.Received(1).Add(newTag);
@@ -209,9 +269,8 @@ public class NavigationViewModelTests
     public void TagAddedEvent_IgnoresFolder_IfTagAlreadyExists()
     {
         var folder = new Folder("", navigationIndex: 0);
-        folder.Tags.Add(new Tag("", folderId: 0));
-        
         var newTag = new Tag("", folderId: 0);
+        folder.Tags.Add(newTag);
         
         _navigationViewModel.LoadFolders([folder]);
         _eventAggregator.Publish(new TagAddedEvent(newTag));
@@ -235,7 +294,7 @@ public class NavigationViewModelTests
     }
 
     [Fact]
-    public void TagRemovedEvent_RemovesTagInRepository()
+    public void TagRemovedEvent_RemovesTagFromRepository()
     {
         var folder = new Folder("", navigationIndex: 0);
         var tag = new Tag("", folderId: 0);

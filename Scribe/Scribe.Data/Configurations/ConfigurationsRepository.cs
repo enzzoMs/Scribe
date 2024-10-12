@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Scribe.Data.Model;
@@ -7,57 +7,47 @@ namespace Scribe.Data.Configurations;
 
 public class ConfigurationsRepository : IConfigurationsRepository
 {
+    private const string ConfigFileDirectoryPath = "./Configurations";
     private const string ConfigFilePath = "./Configurations/appsettings.json";
+    private readonly AppConfigurations _defaultConfiguration = new(
+        ThemeConfiguration.Light, LanguageConfiguration.EnUs, 1.0
+    );
     private static readonly JsonSerializerOptions SerializerOptions = new()
     { 
         WriteIndented = true, Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
     };
-    
-    public AppConfigurations GetAllConfigurations() => JsonSerializer.Deserialize<AppConfigurations>(
-        File.ReadAllText(ConfigFilePath), options: SerializerOptions
-    );
-    
-    /// <returns>The updated app configuration.</returns>
-    public AppConfigurations SaveConfiguration(LanguageConfiguration config)
+
+    public AppConfigurations GetAllConfigurations()
     {
-        var currentAppConfigurations = GetAllConfigurations();
-        
-        var newAppConfiguration = currentAppConfigurations with { Language = config };
-
-        if (currentAppConfigurations != newAppConfiguration)
+        try
         {
-            File.WriteAllText(ConfigFilePath, JsonSerializer.Serialize(newAppConfiguration, SerializerOptions));
+            var configurations = JsonSerializer.Deserialize<AppConfigurations>(
+                File.ReadAllText(ConfigFilePath), options: SerializerOptions
+            )!;
+            return configurations;
         }
-
-        return newAppConfiguration;
+        catch (Exception e) when (
+            e is FileNotFoundException or DirectoryNotFoundException or UnauthorizedAccessException or JsonException
+        )
+        {
+            return _defaultConfiguration;
+        }
     }
     
-    /// <returns>The updated app configuration.</returns>
-    public AppConfigurations SaveConfiguration(ThemeConfiguration config)
+    public void SaveConfiguration(AppConfigurations newAppConfiguration)
     {
-        var currentAppConfigurations = GetAllConfigurations();
-        
-        var newAppConfiguration = currentAppConfigurations with { Theme = config };
-
-        if (currentAppConfigurations != newAppConfiguration)
+        try
         {
-            File.WriteAllText(ConfigFilePath, JsonSerializer.Serialize(newAppConfiguration, SerializerOptions));
+            Directory.CreateDirectory(ConfigFileDirectoryPath);
+
+            using var fileStream = File.Open(ConfigFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            fileStream.SetLength(0);
+            
+            var serializedConfiguration = JsonSerializer.Serialize(newAppConfiguration, SerializerOptions);
+            var configurationBytes = Encoding.UTF8.GetBytes(serializedConfiguration);
+            
+            fileStream.Write((ReadOnlySpan<byte>) configurationBytes);
         }
-
-        return newAppConfiguration;
-    }
-    
-    public AppConfigurations SaveConfiguration(double scale)
-    {
-        var currentAppConfigurations = GetAllConfigurations();
-        
-        var newAppConfiguration = currentAppConfigurations with { Scale = scale };
-
-        if (currentAppConfigurations != newAppConfiguration)
-        {
-            File.WriteAllText(ConfigFilePath, JsonSerializer.Serialize(newAppConfiguration, SerializerOptions));
-        }
-
-        return newAppConfiguration;
+        catch (Exception e) when (e is UnauthorizedAccessException) {}
     }
 }

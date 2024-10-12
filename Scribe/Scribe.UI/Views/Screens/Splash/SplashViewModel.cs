@@ -8,9 +8,6 @@ public class SplashViewModel(
     IEventAggregator eventAggregator, IRepository<Folder> folderRepository
 ) : BaseViewModel
 {
-    private readonly IRepository<Folder> _folderRepository = folderRepository;
-    private readonly IEventAggregator _eventAggregator = eventAggregator;
-
     private bool _loadEventPublished;
     
     private bool _splashCompleted;
@@ -38,7 +35,7 @@ public class SplashViewModel(
     
     public override async Task Load()
     {
-        _folders ??= await _folderRepository.GetAll();
+        _folders ??= await folderRepository.GetAll();
         CheckSplashCompletion();
     } 
 
@@ -48,7 +45,7 @@ public class SplashViewModel(
     {
         if (!_loadEventPublished && SplashCompleted)
         {
-            _eventAggregator.Publish(new FoldersLoadedEvent(_folders!));
+            eventAggregator.Publish(new FoldersLoadedEvent(_folders!));
             _loadEventPublished = true;
         }
     }

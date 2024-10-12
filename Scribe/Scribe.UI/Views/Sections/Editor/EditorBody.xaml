@@ -13,10 +13,10 @@
     xmlns:drawing="clr-namespace:System.Drawing;assembly=System.Drawing"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance editorSection:EditorViewModel}"
-    d:DesignHeight="300"
+    d:DesignHeight="100"
     d:DesignWidth="1050"
     Name="Root"
-    Loaded="OnEditorBodyLoaded">
+    Loaded="OnLoaded">
     
     <UserControl.Resources>
         <Style TargetType="components:IconButton">

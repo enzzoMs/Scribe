@@ -2,4 +2,4 @@
 
 namespace Scribe.UI.Events;
 
-public record DocumentCreatedEvent(Document Document) : IEvent;
+public record DocumentCreatedEvent(Document CreatedDocument) : IEvent;

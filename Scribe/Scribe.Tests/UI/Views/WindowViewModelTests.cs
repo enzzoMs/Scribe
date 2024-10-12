@@ -3,6 +3,7 @@ using Scribe.Data.Configurations;
 using Scribe.Data.Model;
 using Scribe.Data.Repositories;
 using Scribe.UI.Events;
+using Scribe.UI.Helpers;
 using Scribe.UI.Resources;
 using Scribe.UI.Views.Screens.Main;
 using Scribe.UI.Views.Screens.Splash;
@@ -19,13 +20,15 @@ namespace Scribe.Tests.UI.Views;
 public class WindowViewModelTests
 {
     private readonly EventAggregator _eventAggregator = new();
+    private readonly NavigationViewModel _navigationViewModel;
     private readonly SplashViewModel _splashViewModel;
     private readonly WindowViewModel _windowViewModel;
+    private readonly IRepository<Folder> _foldersRepositoryMock; 
 
     public WindowViewModelTests()
     {
-        var foldersRepositoryMock = Substitute.For<IRepository<Folder>>();
-        foldersRepositoryMock.GetAll().Returns([]);
+        _foldersRepositoryMock = Substitute.For<IRepository<Folder>>();
+        _foldersRepositoryMock.GetAll().Returns([]);
 
         var configurationsRepositoryMock = Substitute.For<IConfigurationsRepository>();
         configurationsRepositoryMock.GetAllConfigurations().Returns(
@@ -35,18 +38,21 @@ public class WindowViewModelTests
         var documentsRepositoryMock = Substitute.For<IRepository<Document>>();
         var tagsRepositoryMock = Substitute.For<IRepository<Tag>>();
         var resourcesManagerMock = Substitute.For<IResourceManager>();
+        var pdfHelperMock = Substitute.For<IPdfHelper>();
 
         var tagsViewModel = new TagsViewModel(_eventAggregator);
         var configurationsViewModel = new ConfigurationsViewModel(configurationsRepositoryMock, resourcesManagerMock);
-        var navigationViewModel = new NavigationViewModel(_eventAggregator, foldersRepositoryMock, tagsRepositoryMock, configurationsViewModel);
-        var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, foldersRepositoryMock, documentsRepositoryMock);
-        var editorViewModel = new EditorViewModel(_eventAggregator, documentsRepositoryMock, configurationsRepositoryMock);
+        var folderDetailsViewModel = new FolderDetailsViewModel(_eventAggregator, _foldersRepositoryMock, documentsRepositoryMock);
+        var editorViewModel = new EditorViewModel(_eventAggregator, documentsRepositoryMock, configurationsRepositoryMock, pdfHelperMock);
         var documentsViewModel = new DocumentsViewModel(_eventAggregator, documentsRepositoryMock);
+
+        _navigationViewModel = new NavigationViewModel(_eventAggregator, _foldersRepositoryMock, tagsRepositoryMock, configurationsViewModel);
+
         var mainViewModel = new MainViewModel(
-            navigationViewModel, folderDetailsViewModel, documentsViewModel, tagsViewModel, editorViewModel
+            _navigationViewModel, folderDetailsViewModel, documentsViewModel, tagsViewModel, editorViewModel
         );
         
-        _splashViewModel = new SplashViewModel(_eventAggregator, foldersRepositoryMock);
+        _splashViewModel = new SplashViewModel(_eventAggregator, _foldersRepositoryMock);
         _windowViewModel = new WindowViewModel(_eventAggregator, _splashViewModel, mainViewModel);
     }
     
@@ -61,5 +67,19 @@ public class WindowViewModelTests
         _splashViewModel.FinishSplash();
         
         Assert.IsType<MainViewModel>(_windowViewModel.CurrentViewModel);
+    }
+
+    [Fact]
+    public async Task FoldersAreLoaded_IntoNavigation_When_SplashFinishes()
+    {
+        var folders = new List<Folder> { new("A", 0), new("B", 1), new("C", 2) };
+
+        _foldersRepositoryMock.GetAll().Returns(folders);
+        
+        await _splashViewModel.Load();
+        _splashViewModel.FinishLogoAnimation();
+        _splashViewModel.FinishSplash();
+        
+        Assert.Equal(folders, _navigationViewModel.CurrentFolders);
     }
 }

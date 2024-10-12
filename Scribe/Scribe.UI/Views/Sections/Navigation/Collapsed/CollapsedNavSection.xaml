@@ -9,15 +9,13 @@
      xmlns:collapsed="clr-namespace:Scribe.UI.Views.Sections.Navigation.Collapsed"
      mc:Ignorable="d"
      d:DesignHeight="800"
-     d:DesignWidth="300"
+     d:DesignWidth="80"
      d:DataContext="{d:DesignInstance navSection:NavigationViewModel}">
     
     <UserControl.Resources>
         <Style x:Key="ConfigItemStyle" TargetType="components:IconButton">
-            <Setter Property="Width" Value="{DynamicResource Dimen.Config.Item.Icon.Size}"/>
-            <Setter Property="Height" Value="{DynamicResource Dimen.Config.Item.Icon.Size}"/>
             <Setter Property="IconPadding" Value="0"/>
-            <Setter Property="IconBrush" Value="{DynamicResource Brush.Text.Primary}"/>
+            <Setter Property="IconBrush" Value="{DynamicResource Brush.Icon}"/>
             <Setter Property="Margin" Value="0 6 0 3"/>
             <Setter Property="Command" Value="{Binding CollapseNavigationCommand}"/>
             <Setter Property="CommandParameter" Value="{StaticResource False}"/>
@@ -42,7 +40,7 @@
             Width="28"
             Height="28"
             IconGeometry="{StaticResource Drawing.DoubleArrow.Right}"
-            IconBrush="{DynamicResource Brush.Text.Primary}"
+            IconBrush="{DynamicResource Brush.Icon}"
             ToolTip="{DynamicResource String.Nav.Open}"
             Command="{Binding CollapseNavigationCommand}"
             CommandParameter="{StaticResource False}"

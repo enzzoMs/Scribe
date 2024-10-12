@@ -17,6 +17,7 @@ public class EditorViewModel : BaseViewModel
     private readonly IEventAggregator _eventAggregator; 
     private readonly IRepository<Document> _documentsRepository;
     private readonly IConfigurationsRepository _configurationsRepository;
+    private readonly IPdfHelper _pdfHelper;
 
     private DocumentViewState? _selectedDocument;
     private ObservableCollection<Tag>? _documentTags;
@@ -27,11 +28,13 @@ public class EditorViewModel : BaseViewModel
     public EditorViewModel(
         IEventAggregator eventAggregator, 
         IRepository<Document> documentsRepository, 
-        IConfigurationsRepository configurationsRepository)
+        IConfigurationsRepository configurationsRepository,
+        IPdfHelper pdfHelper)
     {
         _documentsRepository = documentsRepository;
         _eventAggregator = eventAggregator;
         _configurationsRepository = configurationsRepository;
+        _pdfHelper = pdfHelper;
         
         _eventAggregator.Subscribe<DocumentSelectedEvent>(this, OnDocumentSelected);
         _eventAggregator.Subscribe<FolderDeletedEvent>(this, OnFolderDeleted);
@@ -45,7 +48,6 @@ public class EditorViewModel : BaseViewModel
         {
             if (param is not string docName) return;
             _eventAggregator.Publish(new SelectDocumentByNameEvent(docName));
-            
         });
         SaveAndCloseDocumentCommand = new DelegateCommand(param =>
         {
@@ -182,7 +184,7 @@ public class EditorViewModel : BaseViewModel
         if (_selectedDocument == null) return;
         try
         {
-            PdfHelper.ExportImageAsPdf(directoryPath, _selectedDocument.Document.Name, markupAsImage);   
+            _pdfHelper.ExportImageAsPdf(directoryPath, _selectedDocument.Document.Name, markupAsImage);   
         }
         catch (Exception e) when (e is DirectoryNotFoundException or UnauthorizedAccessException)
         {
@@ -244,6 +246,7 @@ public class EditorViewModel : BaseViewModel
     {
         if (_selectedDocument == null || _selectedDocument.Document.Name == newDocumentName) return;
 
+        _selectedDocument.Name = newDocumentName.Trim();
         _selectedDocument.Document.Name = newDocumentName.Trim();
         await _documentsRepository.Update(_selectedDocument.Document);
         
@@ -292,11 +295,11 @@ public class EditorViewModel : BaseViewModel
 
     private void OnDocumentSelected(DocumentSelectedEvent docEvent)
     {
-        var documentState = OpenDocuments.FirstOrDefault(docState => docState.Document == docEvent.Document);
+        var documentState = OpenDocuments.FirstOrDefault(docState => docState.Document == docEvent.SelectedDocument);
         
         if (documentState == null)
         {
-            documentState = new DocumentViewState(docEvent.Document);
+            documentState = new DocumentViewState(docEvent.SelectedDocument);
             OpenDocuments.Add(documentState);
         }
 

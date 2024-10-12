@@ -6,8 +6,8 @@
      xmlns:screenSplash="clr-namespace:Scribe.UI.Views.Screens.Splash"
      mc:Ignorable="d"
      x:Class="Scribe.UI.Views.Screens.Splash.SplashScreen"
-     d:DesignHeight="800"
-     d:DesignWidth="1000"
+     d:DesignHeight="110"
+     d:DesignWidth="110"
      d:DataContext="{d:DesignInstance screenSplash:SplashViewModel}">
 
     <UserControl.Resources>

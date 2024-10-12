@@ -1,8 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
-using Scribe.UI.Commands;
 using Scribe.UI.Views.Components;
 using Scribe.UI.Views.Sections.Editor.State;
 using MessageBox = Scribe.UI.Views.Components.MessageBox;
@@ -19,16 +17,8 @@ public partial class EditorSection : UserControl
         {
             Application.Current.MainWindow.Closing += (_, _) => { EditorTabControl.CloseAllTabs(); };
         }
-        
-        UpdateDocumentNameProxyCommand = new DelegateCommand(param =>
-        {
-            ((EditorViewModel) DataContext).UpdateSelectedDocumentNameCommand.Execute(param);
-            EditorTabControl.UpdateSelectedTabHeader();
-        });
     }
-
-    public ICommand UpdateDocumentNameProxyCommand { get; }
-
+    
     private void OnCloseTabClicked(object? sender, object e)
     {
         var documentState = (DocumentViewState) e;

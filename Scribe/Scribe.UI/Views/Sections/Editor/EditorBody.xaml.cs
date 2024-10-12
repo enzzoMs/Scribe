@@ -52,7 +52,7 @@ public partial class EditorBody : UserControl
         ownerType: typeof(EditorBody)
     );
     
-    private void OnEditorBodyLoaded(object sender, RoutedEventArgs e)
+    private void OnLoaded(object sender, RoutedEventArgs e)
     {
         if (DataContext is EditorViewModel editorViewModel)
         {

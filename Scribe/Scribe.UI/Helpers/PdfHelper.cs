@@ -1,17 +1,12 @@
 ﻿using System.IO;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Media;
-using System.Windows.Threading;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 
 namespace Scribe.UI.Helpers;
 
-public static class PdfHelper
+public class PdfHelper : IPdfHelper
 {
-    public static void ExportImageAsPdf(string directoryPath, string fileName, byte[] imageBytes)
+    public void ExportImageAsPdf(string directoryPath, string fileName, byte[] imageBytes)
     {
         var document = new PdfDocument();
         var page = document.AddPage();

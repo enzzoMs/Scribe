@@ -66,7 +66,10 @@ public class ConfigurationsViewModel : BaseViewModel
     {
         if (CurrentConfiguration.Language == langConfig) return;
         
-        CurrentConfiguration = _configurationsRepository.SaveConfiguration(langConfig);
+        CurrentConfiguration.Language = langConfig;
+        RaisePropertyChanged(nameof(CurrentConfiguration));
+
+        _configurationsRepository.SaveConfiguration(CurrentConfiguration);
         _resourceManager.UpdateLanguageResource(langConfig);
     }
     
@@ -74,7 +77,10 @@ public class ConfigurationsViewModel : BaseViewModel
     {
         if (CurrentConfiguration.Theme == themeConfig) return;
         
-        CurrentConfiguration = _configurationsRepository.SaveConfiguration(themeConfig);
+        CurrentConfiguration.Theme = themeConfig;
+        RaisePropertyChanged(nameof(CurrentConfiguration));
+        
+        _configurationsRepository.SaveConfiguration(CurrentConfiguration);
         _resourceManager.UpdateThemeResource(themeConfig);
     }
 
@@ -82,8 +88,11 @@ public class ConfigurationsViewModel : BaseViewModel
     {
         const double scaleTolerance = 0.001;
         if (Math.Abs(CurrentConfiguration.Scale - _currentScale) < scaleTolerance) return;
+
+        CurrentConfiguration.Scale = _currentScale;
+        RaisePropertyChanged(nameof(CurrentConfiguration));
         
-        CurrentConfiguration = _configurationsRepository.SaveConfiguration(_currentScale);
+        _configurationsRepository.SaveConfiguration(CurrentConfiguration);
         _resourceManager.UpdateDimensionsResource(_currentScale);
     }
 }

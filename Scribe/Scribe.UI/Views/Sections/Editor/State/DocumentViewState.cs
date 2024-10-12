@@ -6,12 +6,24 @@ namespace Scribe.UI.Views.Sections.Editor.State;
 
 public class DocumentViewState(Document document) : INotifyPropertyChanged
 {
+    private string _name = document.Name;
+    
     private bool _hasUnsavedChanges;
     
     public event PropertyChangedEventHandler? PropertyChanged;
     
     public Document Document { get; } = document;
 
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            _name = value;
+            RaisePropertyChanged();
+        }
+    }
+    
     public bool HasUnsavedChanges
     {
         get => _hasUnsavedChanges;

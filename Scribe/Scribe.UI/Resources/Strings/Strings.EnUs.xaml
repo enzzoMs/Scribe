@@ -28,11 +28,11 @@
     <sys:String x:Key="String.Documents.Save.Message">Do you want to save the changes made to &quot;{0}&quot;?</sys:String>
     <sys:String x:Key="String.Documents.Delete.Message">Do you really want to delete the &quot;{0}&quot; document?</sys:String>
     <sys:String x:Key="String.Documents.Tooltip.Search">Search Document</sys:String>
-    <sys:String x:Key="String.Documents.Tooltip.None">No Document</sys:String>
+    <sys:String x:Key="String.Documents.Tooltip.None">No Documents</sys:String>
 
     <sys:String x:Key="String.Tag.DefaultName">New Tag</sys:String>
     <sys:String x:Key="String.Tags">Tags</sys:String>
-    <sys:String x:Key="String.Tags.Tooltip.None">No Tag</sys:String>
+    <sys:String x:Key="String.Tags.Tooltip.None">No Tags</sys:String>
 
     <sys:String x:Key="String.Config.Theme">Theme</sys:String>
     <sys:String x:Key="String.Config.Theme.Light">Light</sys:String>
@@ -88,6 +88,7 @@
     <sys:String x:Key="String.Error.ImportPathError" xml:space="preserve">Error importing document &quot;{0}&quot;!&#13;(Make sure the directory or file exists and you have access privileges)</sys:String>
     <sys:String x:Key="String.Error.ImportFileFormatError" xml:space="preserve">Error importing document &quot;{0}&quot; due to invalid format!&#13;(Make sure the file was not modified or corrupted)</sys:String>
     <sys:String x:Key="String.Error.Tutorial">The tutorial could not be loaded in the selected language.</sys:String>
+    <sys:String x:Key="String.Error.Database" xml:space="preserve">Unable to open the database!&#13;(Make sure the database is located at &quot;./Database/scribe_database.db&quot;)</sys:String>
 
     <sys:String x:Key="String.ClosableTabControl.Close.Tooltip">Close Tab</sys:String>
     

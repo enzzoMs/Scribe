@@ -55,8 +55,9 @@ public class TagsViewModel : BaseViewModel
     {
         _associatedFolder = folderEvent.Folder;
         
-        Tags = _associatedFolder == null ? 
-            null : new ObservableCollection<TagViewState>(_associatedFolder.Tags.Select(tag => new TagViewState(tag.Name)).ToList());
+        Tags = _associatedFolder == null ? null : new ObservableCollection<TagViewState>(
+            _associatedFolder.Tags.Select(tag => new TagViewState(tag.Name))
+        );
     }
     
     private void OnTagAdded(TagAddedEvent tagEvent)
@@ -80,16 +81,15 @@ public class TagsViewModel : BaseViewModel
         if (_associatedFolder.Tags.All(tag => tag.Name != removedTag.Name))
         {
             var tagState = _tags.FirstOrDefault(tagState => tagState.Name == removedTag.Name);
+
+            if (tagState == null) return;
             
-            if (tagState?.IsSelected == true)
+            if (tagState.IsSelected)
             {
                 _eventAggregator.Publish(new TagSelectionChangedEvent(tagState.Name, false));
             }
-
-            if (tagState != null)
-            {
-                _tags.Remove(tagState);
-            }
+                
+            _tags.Remove(tagState);
         }
     }
 

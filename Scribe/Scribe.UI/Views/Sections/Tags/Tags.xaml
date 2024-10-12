@@ -31,7 +31,6 @@
                 Padding="{StaticResource Dimen.TagItem.Padding}"
                 Margin="{StaticResource Dimen.TagItem.Margin}">
                 <TextBlock
-                    Name="TagBorder"
                     Text="{Binding Name}"
                     Foreground="{DynamicResource Brush.Item.Selected.Foreground}"
                     FontSize="{StaticResource Dimen.TagItem.TextSize}"
@@ -47,7 +46,6 @@
                 Padding="{StaticResource Dimen.TagItem.Padding}"
                 Margin="{StaticResource Dimen.TagItem.Margin}">
                 <TextBlock
-                    Name="TagBorder"
                     Text="{Binding Name}"
                     FontSize="{StaticResource Dimen.TagItem.TextSize}"
                     VerticalAlignment="Center"/>

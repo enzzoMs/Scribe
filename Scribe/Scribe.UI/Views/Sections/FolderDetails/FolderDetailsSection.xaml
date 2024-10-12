@@ -8,14 +8,13 @@
     xmlns:components="clr-namespace:Scribe.UI.Views.Components"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance folderDetailsSection:FolderDetailsViewModel}"
-    d:DesignHeight="600"
-    Loaded="OnFolderDetailsSectionLoaded">
+    Loaded="OnSectionLoaded">
     
     <UserControl.Style>
         <Style TargetType="UserControl">
             <Setter Property="Visibility" Value="Visible"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding Folder}" Value="{x:Null}">
+                <DataTrigger Binding="{Binding SelectedFolder}" Value="{x:Null}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -47,7 +46,7 @@
         <components:EditableTextBlock
             Grid.Row="0"
             Grid.Column="1"
-            Text="{Binding Folder.Name, FallbackValue=#}"
+            Text="{Binding SelectedFolder.Name, FallbackValue=#}"
             FontSize="15"
             OnEditMode="{Binding InEditMode, Mode=TwoWay}"
             ConfirmChangesCommand="{Binding UpdateFolderNameCommand}"

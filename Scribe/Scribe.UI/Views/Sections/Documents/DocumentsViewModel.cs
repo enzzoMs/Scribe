@@ -163,12 +163,12 @@ public class DocumentsViewModel : BaseViewModel
         
         ShowAllDocuments();
 
-        _associatedFolder.Documents.Add(documentEvent.Document);
-        _allDocuments.Add(documentEvent.Document);
+        _associatedFolder.Documents.Add(documentEvent.CreatedDocument);
+        _allDocuments.Add(documentEvent.CreatedDocument);
 
         if (_selectedTagNames.Count == 0)
         {
-            CurrentDocuments.Add(documentEvent.Document);
+            CurrentDocuments.Add(documentEvent.CreatedDocument);
         }
     }
 

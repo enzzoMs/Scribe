@@ -2,4 +2,4 @@
 
 namespace Scribe.UI.Events;
 
-public record DocumentSelectedEvent(Document Document) : IEvent;
+public record DocumentSelectedEvent(Document SelectedDocument) : IEvent;

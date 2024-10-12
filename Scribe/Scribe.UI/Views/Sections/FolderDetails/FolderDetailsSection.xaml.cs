@@ -31,7 +31,7 @@ public partial class FolderDetailsSection : UserControl
         });
     }
 
-    private void OnFolderDetailsSectionLoaded(object sender, RoutedEventArgs e)
+    private void OnSectionLoaded(object sender, RoutedEventArgs e)
     {
         if (DataContext is FolderDetailsViewModel folderDetailsViewModel)
         {
@@ -68,6 +68,16 @@ public partial class FolderDetailsSection : UserControl
         }
     }
 
+    private void OnFolderActionsButtonClicked(object sender, MouseButtonEventArgs e)
+    {
+        var contextMenu = FolderActionsButton.ContextMenu;
+        
+        if (contextMenu == null) return;
+        
+        contextMenu.PlacementTarget = FolderActionsButton;
+        contextMenu.IsOpen = true;
+    }
+    
     private void OnDeleteFolderClicked(object sender, RoutedEventArgs e)
     {
         var detailsViewModel = (FolderDetailsViewModel) DataContext;
@@ -75,23 +85,23 @@ public partial class FolderDetailsSection : UserControl
         
         string boxMessage;
 
-        if (detailsViewModel.Folder?.Documents.Count == 0)
+        if (detailsViewModel.SelectedFolder?.Documents.Count == 0)
         {
             boxMessage = string.Format(
                 appResources["String.Folders.Delete.Message"] as string ?? "", 
-                detailsViewModel.Folder.Name
+                detailsViewModel.SelectedFolder.Name
             );
         }
         else
         {
             var deleteMessage = string.Format(
                 appResources["String.Folders.Delete.Message"] as string ?? "",
-                detailsViewModel.Folder?.Name
+                detailsViewModel.SelectedFolder?.Name
             );
 
             var documentsWarningMessage = string.Format(
                 appResources["String.Folders.Delete.DocumentsWarning"] as string ?? "",
-                detailsViewModel.Folder?.Documents.Count
+                detailsViewModel.SelectedFolder?.Documents.Count
             );
             
             boxMessage = $"{deleteMessage}\n{documentsWarningMessage}";
@@ -108,16 +118,6 @@ public partial class FolderDetailsSection : UserControl
                 new MessageBoxOption(appResources["String.Button.Cancel"] as string ?? "")
             ]
         }.ShowDialog();
-    }
-    
-    private void OnFolderActionsButtonClicked(object sender, MouseButtonEventArgs e)
-    {
-        var contextMenu = FolderActionsButton.ContextMenu;
-        
-        if (contextMenu == null) return;
-        
-        contextMenu.PlacementTarget = FolderActionsButton;
-        contextMenu.IsOpen = true;
     }
 
     private void OnExportFolderClicked(object sender, RoutedEventArgs e)

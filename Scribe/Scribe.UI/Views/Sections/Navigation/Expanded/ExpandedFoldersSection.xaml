@@ -5,13 +5,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:navSection="clr-namespace:Scribe.UI.Views.Sections.Navigation"
+    xmlns:model="clr-namespace:Scribe.Data.Model;assembly=Scribe.Data"
     mc:Ignorable="d"
     d:DesignHeight="800" 
     d:DesignWidth="300"
     d:DataContext="{d:DesignInstance navSection:NavigationViewModel}">
     
     <UserControl.Resources>
-        <ControlTemplate x:Key="SelectedItemTemplate">
+        <ControlTemplate x:Key="SelectedItemTemplate" d:DataContext="{d:DesignInstance model:Folder}">
             <Border 
                 Padding="12 6" 
                 CornerRadius="8" 
@@ -40,7 +41,7 @@
             </Border>
         </ControlTemplate>
         
-        <ControlTemplate x:Key="UnselectedItemTemplate">
+        <ControlTemplate x:Key="UnselectedItemTemplate" d:DataContext="{d:DesignInstance model:Folder}">
             <Border 
                 Padding="12 6" 
                 CornerRadius="8"
