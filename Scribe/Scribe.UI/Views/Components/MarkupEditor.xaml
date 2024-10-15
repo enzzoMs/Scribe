@@ -258,6 +258,7 @@
             Background="{Binding EditorBackground, ElementName=Root}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.VerticalScrollBarVisibility="Visible"
+            VirtualizingPanel.IsVirtualizing="False"
             VirtualizingPanel.ScrollUnit="Pixel">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">

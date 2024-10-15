@@ -130,17 +130,16 @@ public partial class MarkupEditor : UserControl
     /// <returns>The image bytes</returns>
     public byte[] GetMarkupAsImage()
     {
-        if (MarkupViewerPanel.Items[0] != null)
-        {
-            MarkupViewerPanel.ScrollIntoView(MarkupViewerPanel.Items[0]!);
-        }
-        MarkupViewerPanel.UpdateLayout();
-
-        const int rightMargin = 40;
-        const int bottomMargin = 50;
+        MarkupViewerPanel.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, ScrollBarVisibility.Hidden);
+        var defaultMargin = MarkupViewerPanel.Margin;
+        MarkupViewerPanel.Margin = defaultMargin with { Right = defaultMargin.Left };
         
-        var panelWidth = (int) MarkupViewerPanel.ActualWidth + rightMargin;
-        var panelHeight = (int) MarkupViewerPanel.ActualHeight + bottomMargin;
+        var panelWidth = (int) MarkupViewerPanel.ActualWidth;
+        
+        MarkupViewerPanel.Measure(new Size(MarkupViewerPanel.ActualWidth, double.PositiveInfinity));
+        MarkupViewerPanel.Arrange(new Rect(0, 0, panelWidth, MarkupViewerPanel.DesiredSize.Height));
+        
+        var panelHeight = (int) MarkupViewerPanel.ActualHeight;
 
         var renderBitmap = new RenderTargetBitmap(panelWidth, panelHeight, 96d, 96d, PixelFormats.Pbgra32);
         renderBitmap.Render(MarkupViewerPanel);
@@ -150,7 +149,10 @@ public partial class MarkupEditor : UserControl
         var encoder = new PngBitmapEncoder();
         encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
         encoder.Save(outStream);
-
+        
+        MarkupViewerPanel.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, ScrollBarVisibility.Visible);
+        MarkupViewerPanel.Margin = defaultMargin;
+            
         return outStream.ToArray();
     }
     
